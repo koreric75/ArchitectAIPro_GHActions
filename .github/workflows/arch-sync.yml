@@ -204,8 +204,14 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "docs: auto-update architecture diagram via Architect AI Pro [skip ci]"
-            git pull --rebase origin "${{ github.ref_name }}" || true
-            git push
+            # Pull with theirs-strategy to resolve conflicts on auto-generated files
+            if ! git pull --rebase -X theirs origin "${{ github.ref_name }}"; then
+              echo "⚠️ Rebase conflict — aborting rebase and force-pushing"
+              git rebase --abort 2>/dev/null || true
+              git push --force-with-lease || git push
+            else
+              git push
+            fi
           fi
 
       # ── Comment on PR ──

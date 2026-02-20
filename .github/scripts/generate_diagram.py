@@ -219,8 +219,9 @@ def build_system_prompt(config: dict) -> str:
         15. The top-level subgraph containing the entire application MUST be titled:
             `"{org} — <RepoName> Architecture"`
         16. Include a footer note node at the bottom of the diagram:
-            `FOOTER["🏗️ Created with Architect AI Pro | {org}"]`
+            `FOOTER["🏗️ Created with Architect AI Pro · {org}"]`
             Style it: `style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6`
+            IMPORTANT: NEVER use the pipe character `|` inside node labels — it is the Mermaid link-label delimiter and causes parse errors.
 
         GITHUB MERMAID COMPATIBILITY (critical — these cause parse errors on GitHub):
         17. Do NOT use `direction TD` or `direction LR` inside subgraphs — GitHub does not support it.
@@ -403,6 +404,12 @@ def sanitize_mermaid(code: str) -> str:
             line,
         )
 
+        # Safety net: replace pipe characters inside node labels [... | ...] → [... · ...]
+        # Pipes inside [...] are interpreted as link-label delimiters and cause parse errors.
+        def fix_pipes_in_labels(m):
+            return '[' + m.group(1).replace('|', '·') + ']'
+        line = re.sub(r'\[([^\]]*\|[^\]]*)\]', fix_pipes_in_labels, line)
+
         out_lines.append(line)
 
     return '\n'.join(out_lines)
@@ -481,7 +488,7 @@ def ensure_branding(mermaid_code: str, repo_name: str, config: dict) -> str:
     # --- 3. Ensure footer attribution node ---
     footer_id = "FOOTER"
     if footer_id not in joined:
-        footer_node = f'    {footer_id}["🏗️ Created with Architect AI Pro | {org}"]'
+        footer_node = f'    {footer_id}[🏗️ Created with Architect AI Pro · {org}]'
         footer_style = f"    style {footer_id} fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6"
         joined += f"\n{footer_node}\n{footer_style}"
 
