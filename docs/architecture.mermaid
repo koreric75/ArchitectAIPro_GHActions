@@ -2,73 +2,66 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        subgraph "External Users"
-            User[End User]
+        User[Developer/User] -->|Code Push/PR| GitHubRepo[GitHub Repository]
+        GitHubRepo -->|Triggers Workflow| GHA[GitHub Actions]
+
+        subgraph "CI/CD & Automation"
+            GHA -->|OIDC Auth| WIF[GCP Workload Identity Federation]
+            WIF -->|Assumes SA Identity| ForemanSA[Architect AI Foreman SA]
+            ForemanSA -->|Access Secrets| SecretManager[Cloud Secret Manager]
+            SecretManager -->|Retrieve API Keys| GHA
+            GHA -->|Run generate_diagram.py| DiagramGenerator[Architect AI Pro Generator Script]
+            DiagramGenerator -->|API Call HTTPS| GeminiAPI[Google Gemini API]
+            GeminiAPI -->|Mermaid.js Diagram| DiagramGenerator
+            DiagramGenerator -->|Output Diagram| Docs[docs/architecture.md · .mermaid · .drawio · .png]
+            DiagramGenerator -->|Run foreman_audit.py| ForemanAudit[Foreman Audit Engine]
+            ForemanAudit -->|Audit Report| GHA
+            GHA --.->|If Audit Fails: Remediation| DiagramGenerator
+            DiagramGenerator -->|Render PNG CLI| DrawioCLI[Draw.io CLI - xvfb-run]
+            DiagramGenerator -->|Render PNG API| MermaidInk[mermaid.ink API]
+            DrawioCLI -->|PNG Output| Docs
+            MermaidInk -->|PNG Output| Docs
+            GHA -->|Commit Changes| GitHubRepo
+            GHA -->|Build Docker Image| CloudBuild[Cloud Build]
+            CloudBuild -->|Stores Image| ArtifactRegistry[Artifact Registry]
+            GHA -->|Terraform Apply| Terraform[Terraform IaC]
+            Terraform -->|Manage State| GCSBackend[Cloud Storage · Terraform State]
+            Terraform -->|Provision/Update| CloudRunGallery[Cloud Run · Architecture Gallery]
+            Terraform -->|Provision/Update| SecretManager
+            Terraform -->|Provision/Update| WIF
+            Terraform -->|Provision/Update| GlobalLB[Global External HTTP- S Load Balancer]
+            Terraform -->|Provision/Update| CloudArmor[Cloud Armor]
+            Terraform -->|Provision/Update| CDN[Cloud CDN]
         end
 
-        subgraph "GitHub Actions Pipeline"
-            GHRepo[GitHub Repository]
-            GHActionsRunner[GitHub Actions Runner]
-            ArchAIGen[Architect AI Pro Scripts · Generator & Audit]
-            TerraformCLI[Terraform CLI]
+        subgraph "Application"
+            CloudRunGallery -->|Pulls Image| ArtifactRegistry
+            CloudRunGallery -->|Fetch Repo Data HTTPS| GitHubAPI[GitHub API]
+            CloudRunGallery -->|Retrieve GITHUB_TOKEN| SecretManager
+            CloudRunGallery -->|Runs as| ForemanSA
+            CDN[Cloud CDN]
         end
 
         subgraph "Security"
-            CloudArmor[Cloud Armor]
-            LoadBalancer[Cloud Load Balancer]
-            WIF[Workload Identity Federation]
-            SecretManager[Cloud Secret Manager]
-            ForemanSA[Service Account · architect-ai-foreman]
+            Internet[Internet User] -->|HTTPS Request| GlobalLB
+            GlobalLB -->|WAF Rules| CloudArmor
+            CloudArmor -->|Filter Traffic| GlobalLB
         end
         style Security fill:#1E40AF,color:#BFDBFE
 
-        subgraph "Application"
-            CloudRunGallery[Cloud Run · Architecture Gallery]
-            CloudRunDomain[Cloud Run Domain Mapping · arch.bluefalconink.com]
-        end
-        style Application fill:#1E3A5F
-
         subgraph "Data"
-            GCSState[Cloud Storage · Terraform State Backend]
-            ArtifactRegistry[Artifact Registry · Docker Images]
-        end
-        style Data fill:#0F172A
-
-        subgraph "External Integrations"
-            GoogleGemini[Google Gemini API]
-            GitHubAPI[GitHub API]
-            MermaidInk[Mermaid.ink API · PNG Fallback]
-            Stripe[Stripe API · Payment Processing]
+            SecretManager
+            GCSBackend
+            ArtifactRegistry
         end
 
-        User -->|HTTPS Request| LoadBalancer
-        LoadBalancer -->|Traffic Filtering| CloudArmor
-        CloudArmor -->|Protected Traffic| CloudRunGallery
-        CloudRunGallery -->|Serves Gallery UI| User
-        CloudRunGallery -->|Fetches Repo Data| GitHubAPI
-        CloudRunGallery -->|Accesses GITHUB_TOKEN| SecretManager
-
-        GHRepo -->|Code Push/PR| GHActionsRunner
-        GHActionsRunner -->|Executes Scripts| ArchAIGen
-        ArchAIGen -->|Calls AI| GoogleGemini
-        ArchAIGen -->|Accesses GEMINI_API_KEY| SecretManager
-        ArchAIGen -->|Commits Diagrams| GHRepo
-        ArchAIGen -->|PNG Render Fallback| MermaidInk
-
-        GHActionsRunner -->|Authenticates via OIDC| WIF
-        WIF -->|Assumes Identity| ForemanSA
-        ForemanSA -->|Authorizes GCP Operations| TerraformCLI
-        ForemanSA -->|Accesses Secrets| SecretManager
-        ForemanSA -->|Pushes Docker Images| ArtifactRegistry
-
-        TerraformCLI -->|Manages State| GCSState
-        TerraformCLI -->|Deploys Cloud Run Service| CloudRunGallery
-        TerraformCLI -->|Configures Domain Mapping| CloudRunDomain
-
-        CloudRunDomain -->|DNS Resolution| LoadBalancer
-
-        SecretManager -->|Stores API Keys for| Stripe
-
+        GlobalLB -->|Route Traffic| CDN
+        CDN -->|Request Content| CloudRunGallery
     end
+
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
+
+    style BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture fill:#1E3A5F,color:#BFDBFE
+    style Security fill:#1E40AF,color:#BFDBFE
+    style Data fill:#0F172A,color:#BFDBFE
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
