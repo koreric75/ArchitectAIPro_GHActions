@@ -1,0 +1,22 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" version="23.1.5">
+  <diagram id="architectaipro_ghactions_architecture" name="BlueFalconInk LLC Architecture">
+    <mxGraphModel dx="1434" dy="782" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" background="#0F172A" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title Bar -->
+        <mxCell id="titleBar" value="BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=#1E40AF;fontColor=#BFDBFE;fontSize=24;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="0" y="0" width="1400" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Internet User -->
+        <mxCell id="internetUser" value="Internet User" style="shape=mxgraph.basic.user;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#0F172A;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="650" y="90" width="100" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Subgraphs -->
+        <mxCell id="securityContainer" value="Security" style="swimlane;startSize=30;html=1;collapsible=0;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#1E40AF;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="220" width="250" height="350" as="geometry" />
+        </mxCell>
+        <mxCell id="cicdContainer" value="CI/CD &amp; Automation" style="swimlane;startSize=30;html=1;collapsible=0;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#1E40AF;rounded=1;" vertex
