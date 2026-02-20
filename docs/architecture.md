@@ -1,7 +1,7 @@
 # 🏗️ BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture
 
 > **Created with [Architect AI Pro](https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/)** — the flagship architecture tool by **BlueFalconInk LLC**
-> Auto-generated on 2026-02-20 08:24 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
+> Auto-generated on 2026-02-20 08:25 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
 
 ![BlueFalconInk LLC](https://img.shields.io/badge/BlueFalconInk%20LLC-Standard-1E40AF)
 ![Architect AI Pro](https://img.shields.io/badge/Created%20with-Architect%20AI%20Pro-3B82F6)
@@ -12,78 +12,76 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture"
-        subgraph "External Services"
-            DEV[Developer]
-            USER[End User]
-            GitHub[GitHub]
-            GoogleGeminiAPI[Google Gemini API]
-            Stripe[Stripe - Payment Gateway]
+        subgraph "User & External Integrations"
+            Developer[Developer]
+            PublicUser[Public User]
+            GoogleGemini[Google Gemini API]
+            GitHubAPI[GitHub API]
         end
 
-        subgraph "CI/CD & Automation"
-            GHActions[GitHub Actions CI/CD]
-            ArchitectAIGen[Architect AI Pro Diagram Generator - Python]
-            ForemanAudit[Foreman AI Compliance Audit - Python]
-            Terraform[Terraform IaC]
-            CloudBuild[Cloud Build - Container Image]
-            GCPWIF[GCP Workload Identity Federation]
-            GCPServiceAccount[GCP Service Account - architect-ai-foreman]
-        end
-
-        subgraph "Application"
-            CloudRunGallery[Cloud Run Service - FastAPI Gallery]
-            CloudDNS[Cloud DNS - arch.bluefalconink.com]
+        subgraph "GitHub Platform"
+            GitHubRepo[GitHub Repository]
+            GHActions[GitHub Actions Workflow]
+            WIF[GCP Workload Identity Federation]
         end
 
         subgraph "Security"
-            CloudRunLB[Cloud Run Load Balancer]
-            CloudArmor[Cloud Armor - WAF]
+            CloudArmor[Cloud Armor]
+            LoadBalancer[Cloud Load Balancer]
         end
 
-        subgraph "Data & Secrets"
+        subgraph "Application"
+            ArchitectAIPro_Engine[Architect AI Pro Engine - Python Script]
+            ForemanAI_Audit[Foreman AI Audit - Python Script]
+            GalleryApp[Architecture Gallery - Cloud Run]
+            CloudBuild[Cloud Build]
+        end
+
+        subgraph "Data"
             SecretManager[Cloud Secret Manager]
-            ArtifactRegistry[Artifact Registry - Container Images]
+            ArtifactRegistry[Artifact Registry]
+            GCSBackend[Cloud Storage - Terraform State]
         end
 
-        %% Flows
-        DEV -- Pushes Code --> GitHub
-        GitHub -- Triggers CI/CD --> GHActions
-        GHActions -- Runs generate_diagram.py --> ArchitectAIGen
-        ArchitectAIGen -- Sends Repo Context --> GoogleGeminiAPI
-        GoogleGeminiAPI -- Returns Mermaid Code --> ArchitectAIGen
-        ArchitectAIGen -- Generates Diagram --> GitHub
-        GHActions -- Runs foreman_audit.py --> ForemanAudit
-        ForemanAudit -- Audits Diagram --> GitHub
-        GHActions -- Authenticates via --> GCPWIF
-        GCPWIF -- Grants Access to --> GCPServiceAccount
-        GCPServiceAccount -- Executes --> Terraform
-        Terraform -- Manages --> CloudRunGallery
-        Terraform -- Manages --> CloudDNS
-        Terraform -- Manages --> SecretManager
-        Terraform -- Manages --> ArtifactRegistry
-        GHActions -- Triggers --> CloudBuild
-        CloudBuild -- Builds Image from --> GitHub
-        CloudBuild -- Pushes Image to --> ArtifactRegistry
-        ArtifactRegistry -- Provides Image to --> CloudRunGallery
+        subgraph "Infrastructure as Code"
+            Terraform[Terraform CLI]
+        end
 
-        USER -- Accesses arch.bluefalconink.com --> CloudDNS
-        CloudDNS -- Routes Traffic --> CloudRunLB
-        CloudRunLB -- Protects with --> CloudArmor
-        CloudArmor -- Forwards Requests to --> CloudRunGallery
-        CloudRunGallery -- Fetches GITHUB_TOKEN --> SecretManager
-        CloudRunGallery -- Calls GitHub API --> GitHub
-        GitHub -- Returns Repo Data --> CloudRunGallery
-        CloudRunGallery -- Serves HTML/Mermaid --> USER
-
-        SecretManager -- Stores API Keys for --> Stripe
-
-        %% Styling
-        style Application fill:#1E3A5F,color:#BFDBFE
-        style Security fill:#1E40AF,color:#BFDBFE
-        style "Data & Secrets" fill:#0F172A,color:#BFDBFE
-        FOOTER[🏗️ Created with Architect AI Pro | BlueFalconInk LLC]
-        style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
+        Developer -- "1. Push/PR" --> GitHubRepo
+        GitHubRepo -- "2. Trigger CI/CD" --> GHActions
+        GHActions -- "3. Executes generate_diagram.py" --> ArchitectAIPro_Engine
+        ArchitectAIPro_Engine -- "4. Calls for diagram generation" --> GoogleGemini
+        GoogleGemini -- "5. Returns Mermaid.js" --> ArchitectAIPro_Engine
+        ArchitectAIPro_Engine -- "6. Outputs diagram" --> ForemanAI_Audit
+        ForemanAI_Audit -- "7. Audit Report" --> GHActions
+        GHActions -- "8. Commits/Previews Diagram" --> GitHubRepo
+        GHActions -- "9. Authenticates via" --> WIF
+        WIF -- "10. Grants access to GCP" --> SecretManager
+        WIF -- "10. Grants access to GCP" --> ArtifactRegistry
+        WIF -- "10. Grants access to GCP" --> Terraform
+        GHActions -- "11. Executes deploy-infra.yml" --> Terraform
+        Terraform -- "12. Manages state" --> GCSBackend
+        Terraform -- "13. Provisions/Updates" --> GalleryApp
+        Terraform -- "13. Provisions/Updates" --> SecretManager
+        Terraform -- "13. Provisions/Updates" --> ArtifactRegistry
+        Terraform -- "13. Provisions/Updates" --> CloudArmor
+        Terraform -- "13. Provisions/Updates" --> LoadBalancer
+        GHActions -- "14. Builds Docker Image" --> CloudBuild
+        CloudBuild -- "15. Pushes Image" --> ArtifactRegistry
+        ArtifactRegistry -- "16. Deploys Image" --> GalleryApp
+        GalleryApp -- "17. Reads GITHUB_TOKEN" --> SecretManager
+        GalleryApp -- "18. Fetches repo data" --> GitHubAPI
+        PublicUser -- "19. Accesses arch.bluefalconink.com" --> LoadBalancer
+        LoadBalancer -- "20. Protects with" --> CloudArmor
+        CloudArmor -- "21. Routes traffic to" --> GalleryApp
     end
+
+    FOOTER[🏗️ Created with Architect AI Pro | BlueFalconInk LLC]
+
+    style Security fill:#1E40AF,color:#BFDBFE
+    style Application fill:#1E3A5F,color:#BFDBFE
+    style Data fill:#0F172A,color:#BFDBFE
+    style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
 
 ---
