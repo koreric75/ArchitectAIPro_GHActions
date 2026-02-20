@@ -2,66 +2,89 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        User[Developer/User] -->|Code Push/PR| GitHubRepo[GitHub Repository]
-        GitHubRepo -->|Triggers Workflow| GHA[GitHub Actions]
-
-        subgraph "CI/CD & Automation"
-            GHA -->|OIDC Auth| WIF[GCP Workload Identity Federation]
-            WIF -->|Assumes SA Identity| ForemanSA[Architect AI Foreman SA]
-            ForemanSA -->|Access Secrets| SecretManager[Cloud Secret Manager]
-            SecretManager -->|Retrieve API Keys| GHA
-            GHA -->|Run generate_diagram.py| DiagramGenerator[Architect AI Pro Generator Script]
-            DiagramGenerator -->|API Call HTTPS| GeminiAPI[Google Gemini API]
-            GeminiAPI -->|Mermaid.js Diagram| DiagramGenerator
-            DiagramGenerator -->|Output Diagram| Docs[docs/architecture.md · .mermaid · .drawio · .png]
-            DiagramGenerator -->|Run foreman_audit.py| ForemanAudit[Foreman Audit Engine]
-            ForemanAudit -->|Audit Report| GHA
-            GHA --.->|If Audit Fails: Remediation| DiagramGenerator
-            DiagramGenerator -->|Render PNG CLI| DrawioCLI[Draw.io CLI - xvfb-run]
-            DiagramGenerator -->|Render PNG API| MermaidInk[mermaid.ink API]
-            DrawioCLI -->|PNG Output| Docs
-            MermaidInk -->|PNG Output| Docs
-            GHA -->|Commit Changes| GitHubRepo
-            GHA -->|Build Docker Image| CloudBuild[Cloud Build]
-            CloudBuild -->|Stores Image| ArtifactRegistry[Artifact Registry]
-            GHA -->|Terraform Apply| Terraform[Terraform IaC]
-            Terraform -->|Manage State| GCSBackend[Cloud Storage · Terraform State]
-            Terraform -->|Provision/Update| CloudRunGallery[Cloud Run · Architecture Gallery]
-            Terraform -->|Provision/Update| SecretManager
-            Terraform -->|Provision/Update| WIF
-            Terraform -->|Provision/Update| GlobalLB[Global External HTTP- S Load Balancer]
-            Terraform -->|Provision/Update| CloudArmor[Cloud Armor]
-            Terraform -->|Provision/Update| CDN[Cloud CDN]
-        end
-
-        subgraph "Application"
-            CloudRunGallery -->|Pulls Image| ArtifactRegistry
-            CloudRunGallery -->|Fetch Repo Data HTTPS| GitHubAPI[GitHub API]
-            CloudRunGallery -->|Retrieve GITHUB_TOKEN| SecretManager
-            CloudRunGallery -->|Runs as| ForemanSA
-            CDN[Cloud CDN]
+        subgraph "External Systems"
+            GitHubUser[GitHub User]
+            GitHubActions[GitHub Actions]
+            GoogleGemini[Google Gemini API]
+            DrawioCLI[Draw.io CLI]
+            MermaidInk[mermaid.ink API]
         end
 
         subgraph "Security"
-            Internet[Internet User] -->|HTTPS Request| GlobalLB
-            GlobalLB -->|WAF Rules| CloudArmor
-            CloudArmor -->|Filter Traffic| GlobalLB
+            CloudArmor[Cloud Armor · WAF]
+            CloudLB[Cloud Load Balancer]
+            WIF[Workload Identity Federation]
+            SecretManager[Cloud Secret Manager]
         end
-        style Security fill:#1E40AF,color:#BFDBFE
+
+        subgraph "Application"
+            ArchitectAIProGHActions[Architect AI Pro Workflows]
+            DiagramGenerator[Diagram Generator Script]
+            ForemanAudit[Foreman Audit Script]
+            RepoAuditor[Repo Auditor Script]
+            CleanupAgent[Cleanup Agent Script]
+            DashboardGenerator[Dashboard Generator Script]
+            ProdReadiness[Prod Readiness Script]
+            GalleryApp[Architecture Gallery App · Cloud Run]
+            Terraform[Terraform IaC]
+        end
 
         subgraph "Data"
-            SecretManager
-            GCSBackend
-            ArtifactRegistry
+            CloudStorage[Cloud Storage · Artifacts]
+            AuditReport[Audit Report JSON]
+            DiagramFiles[Diagram Files · Mermaid/Draw.io/PNG]
         end
 
-        GlobalLB -->|Route Traffic| CDN
-        CDN -->|Request Content| CloudRunGallery
+        GitHubUser -->|Triggers workflows| GitHubActions
+        GitHubActions -->|Orchestrates execution| ArchitectAIProGHActions
+        ArchitectAIProGHActions -->|Executes| DiagramGenerator
+        ArchitectAIProGHActions -->|Executes| ForemanAudit
+        ArchitectAIProGHActions -->|Executes| RepoAuditor
+        ArchitectAIProGHActions -->|Executes| CleanupAgent
+        ArchitectAIProGHActions -->|Executes| DashboardGenerator
+        ArchitectAIProGHActions -->|Executes| ProdReadiness
+        ArchitectAIProGHActions -->|Applies infrastructure| Terraform
+        ArchitectAIProGHActions -->|Authenticates via| WIF
+        WIF -->|Accesses secrets| SecretManager
+        WIF -->|Manages resources| CloudStorage
+        WIF -->|Deploys services| GalleryApp
+
+        DiagramGenerator -->|Sends code context| GoogleGemini
+        GoogleGemini -->|Returns Mermaid diagram| DiagramGenerator
+        DiagramGenerator -->|Generates| DiagramFiles
+        DiagramGenerator -->|Renders PNG| DrawioCLI
+        DiagramGenerator -->|Renders PNG fallback| MermaidInk
+        DrawioCLI -->|Outputs PNG| DiagramFiles
+        MermaidInk -->|Outputs PNG| DiagramFiles
+        DiagramFiles -->|Stored in| CloudStorage
+
+        ForemanAudit -->|Reads| DiagramFiles
+        ForemanAudit -->|Generates| AuditReport
+        RepoAuditor -->|Queries GitHub API| GitHubActions
+        RepoAuditor -->|Generates| AuditReport
+        AuditReport -->|Stored in| CloudStorage
+
+        CleanupAgent -->|Modifies repos via| GitHubActions
+
+        DashboardGenerator -->|Reads| AuditReport
+        DashboardGenerator -->|Generates HTML| CloudStorage
+
+        Terraform -->|Deploys/Manages| GalleryApp
+        Terraform -->|Configures| CloudArmor
+        Terraform -->|Configures| CloudLB
+        Terraform -->|Manages| SecretManager
+        Terraform -->|Manages| CloudStorage
+
+        GitHubUser -->|Accesses Gallery via HTTPS| CloudLB
+        CloudLB -->|Protects| CloudArmor
+        CloudArmor -->|Routes traffic to| GalleryApp
+        GalleryApp -->|Serves diagrams from| CloudStorage
+        GalleryApp -->|Retrieves runtime secrets from| SecretManager
+
+        FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     end
 
-    FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
-
-    style BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture fill:#1E3A5F,color:#BFDBFE
     style Security fill:#1E40AF,color:#BFDBFE
+    style Application fill:#1E3A5F,color:#BFDBFE
     style Data fill:#0F172A,color:#BFDBFE
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
