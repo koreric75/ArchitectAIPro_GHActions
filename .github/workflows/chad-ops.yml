@@ -215,11 +215,11 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: Update CHAD audit report and dashboard [skip ci]
-
-Repos audited: ${{ needs.audit.outputs.total_repos }}
-API calls used: ${{ needs.audit.outputs.api_calls }}
-Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            REPOS="${{ needs.audit.outputs.total_repos }}"
+            CALLS="${{ needs.audit.outputs.api_calls }}"
+            STAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git commit -m "chore: Update CHAD audit report and dashboard [skip ci]" \
+              -m "Repos audited: ${REPOS} | API calls: ${CALLS} | Generated: ${STAMP}"
             
             git pull --rebase origin main || true
             git push origin main
