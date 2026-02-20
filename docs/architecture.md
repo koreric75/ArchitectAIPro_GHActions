@@ -15,82 +15,81 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        subgraph "User & External Systems"
-            User[User/Developer]
-            GitHub[GitHub Platform]
-            Gemini[Google Gemini API]
+        Developer[Developer]
+        User[End User]
+
+        subgraph "Security"
+            CloudArmor[Cloud Armor]
+            LoadBalancer[Cloud Load Balancer]
+            WIF[Workload Identity Federation]
+            ForemanSA[Foreman Service Account]
+        end
+
+        subgraph "CI/CD & Automation"
+            GHActions[GitHub Actions]
+            GenerateDiagram[Architect AI Pro Generator]
+            ForemanAudit[Foreman Audit Engine]
+            RemediateDiagram[Architect AI Pro Remediation]
+            Terraform[Terraform - IaC]
+            CloudBuild[Cloud Build]
+        end
+
+        subgraph "Application"
+            CloudRun[Cloud Run Service]
+            GalleryApp[Architecture Gallery - FastAPI]
+            CloudCDN[Cloud CDN]
+        end
+
+        subgraph "Data"
+            SecretManager[Cloud Secret Manager]
+            ArtifactRegistry[Artifact Registry]
+        end
+
+        subgraph "External Services"
+            GitHubAPI[GitHub API]
+            GeminiAPI[Google Gemini API]
+            MermaidInk[mermaid.ink API]
             Stripe[Stripe Payment Gateway]
         end
 
-        subgraph "Security"
-            CloudArmor[Cloud Armor · Load Balancer]
-            WIF[Workload Identity Federation]
-            ForemanSA[Service Account · architect-ai-foreman]
-        end
+        %% Flows
+        Developer -->|Pushes Code| GHActions
+        GHActions -->|Authenticates via OIDC| WIF
+        WIF -->|Grants Access To| ForemanSA
+        GHActions -- "Runs as ForemanSA" --> GenerateDiagram
+        GenerateDiagram -->|Calls API| GeminiAPI
+        GenerateDiagram -->|Renders PNG| MermaidInk
+        GenerateDiagram -->|Generated Diagram| ForemanAudit
+        ForemanAudit -- "Audit Report" --> RemediateDiagram
+        RemediateDiagram -->|Corrected Diagram| GeminiAPI
+        GHActions -- "Runs as ForemanSA" --> GitHubAPI
+        GHActions -- "Runs as ForemanSA" --> Terraform
+        Terraform -->|Provisions Resources| CloudRun
+        Terraform -->|Manages Secrets| SecretManager
+        GHActions -- "Runs as ForemanSA" --> CloudBuild
+        CloudBuild -->|Pushes Docker Image| ArtifactRegistry
+        CloudRun -->|Pulls Image From| ArtifactRegistry
 
-        subgraph "Architect AI Pro Core Automation"
-            GHActions[GitHub Actions Workflows]
-            DiagramGenerator[Diagram Generator Script]
-            ForemanAudit[Foreman Audit Script]
-            TerraformIaC[Terraform IaC]
-            ArchitectConfig[ARCHITECT_CONFIG.json]
-        end
+        User -->|Accesses Gallery via HTTPS| LoadBalancer
+        LoadBalancer -->|Protects Traffic| CloudArmor
+        CloudArmor -->|Routes Requests| CloudCDN
+        CloudCDN -->|Serves Content| CloudRun
+        CloudRun -->|Fetches Repo Data| GitHubAPI
+        CloudRun -->|Retrieves GITHUB_TOKEN| SecretManager
 
-        subgraph "Architecture Gallery Application"
-            CloudRun[Cloud Run]
-            GalleryApp[FastAPI App · Architecture Gallery]
-        end
-
-        subgraph "GCP Data & Storage"
-            SecretManager[Secret Manager]
-            ArtifactRegistry[Artifact Registry]
-            GCSBackend[Cloud Storage · Terraform State]
-            GITHUB_PAT[GitHub PAT]
-            ARCHITECT_AI_API_KEY[Architect AI API Key]
-            STRIPE_SECRET_KEY[Stripe Secret Key]
-            STRIPE_WEBHOOK_SECRET[Stripe Webhook Secret]
-        end
-
-        User -->|Code Push/PR| GitHub
-        GitHub -->|Triggers CI/CD| GHActions
-        GHActions -->|Runs generate_diagram.py| DiagramGenerator
-        DiagramGenerator -->|Reads config| ArchitectConfig
-        DiagramGenerator -->|Calls API| Gemini
-        Gemini -->|Mermaid.js Output| DiagramGenerator
-        DiagramGenerator -->|Commits docs| GitHub
-        GHActions -->|Runs foreman_audit.py| ForemanAudit
-        ForemanAudit -->|Reads config & diagram| ArchitectConfig
-        ForemanAudit -.->|Remediation Trigger| DiagramGenerator
-        GHActions -->|Runs deploy-infra.yml| TerraformIaC
-        TerraformIaC -->|Authenticates via OIDC| WIF
-        WIF -->|Grants SA Token| ForemanSA
-        ForemanSA -->|Manages GCP Resources| TerraformIaC
-        TerraformIaC -->|Provisions/Configures| CloudRun
-        TerraformIaC -->|Provisions/Configures| SecretManager
-        TerraformIaC -->|Configures Backend| GCSBackend
-        GHActions -->|Builds & Pushes Docker Image| ArtifactRegistry
-        ArtifactRegistry -->|Deploys Image| CloudRun
-        CloudRun -->|Runs as| ForemanSA
-        CloudRun -->|Hosts| GalleryApp
-        GalleryApp -->|Accesses GITHUB_TOKEN| SecretManager
-        GalleryApp -->|Fetches Repo Content| GitHub
-        User -->|Accesses arch.bluefalconink.com| CloudArmor
-        CloudArmor -->|Routes Traffic| CloudRun
-
-        SecretManager -->|Stores| GITHUB_PAT
-        SecretManager -->|Stores| ARCHITECT_AI_API_KEY
-        SecretManager -->|Stores| STRIPE_SECRET_KEY
-        SecretManager -->|Stores| STRIPE_WEBHOOK_SECRET
-        STRIPE_SECRET_KEY -.->|Used by other BFI apps| Stripe
+        SecretManager -->|Stores API Keys| GeminiAPI
+        SecretManager -->|Stores PAT| GitHubAPI
+        SecretManager -->|Stores Payment Keys| Stripe
 
     end
 
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
 
     style Security fill:#1E40AF,color:#BFDBFE
-    style Architect AI Pro Core Automation fill:#1E3A5F,color:#BFDBFE
-    style Architecture Gallery Application fill:#1E3A5F,color:#BFDBFE
-    style GCP Data & Storage fill:#0F172A,color:#BFDBFE
+    style CI/CD & Automation fill:#1E3A5F,color:#BFDBFE
+    style Application fill:#1E3A5F,color:#BFDBFE
+    style Data fill:#0F172A,color:#BFDBFE
+    style External Services fill:#BFDBFE,color:#1E40AF
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
 
