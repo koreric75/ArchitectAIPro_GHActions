@@ -34,6 +34,8 @@ Rewrite the Mermaid.js code to resolve **all** violations listed above. Follow t
 6. Include BlueFalconInk LLC branding in the diagram title.
 7. For subscription services, ensure a clear `subgraph Payment` boundary separates Stripe logic from core application logic.
 8. Ensure a CDN (CloudFront) is present for any content delivery paths.
+9. Apply brand color `#1E40AF` to the Security subgraph: `style Security fill:#1E40AF,color:#BFDBFE`
+10. Include a footer node: `FOOTER["🏗️ Created with Architect AI Pro | BlueFalconInk LLC"]` with `style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6`
 
 ---
 
@@ -41,15 +43,16 @@ Rewrite the Mermaid.js code to resolve **all** violations listed above. Follow t
 
 - Return **only** the corrected Mermaid.js code block.
 - Wrap in triple backticks with `mermaid` language identifier.
-- Include a comment at the top: `%% Remediated by Architect AI Pro Foreman`
+- Include a comment at the top: `%% Remediated by Architect AI Pro Foreman | BlueFalconInk LLC`
+- Include a comment on line 2: `%% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/`
 
 ---
 
 **Example Output:**
 
 ```mermaid
-%% Remediated by Architect AI Pro Foreman
-%% BlueFalconInk LLC Architecture Standard v1.0
+%% Remediated by Architect AI Pro Foreman | BlueFalconInk LLC
+%% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 
 graph TB
     subgraph Security["🛡️ Security Boundary"]
@@ -66,4 +69,10 @@ graph TB
     WAF --> ALB
     ALB --> API
     API --> DB
+
+    FOOTER["🏗️ Created with Architect AI Pro | BlueFalconInk LLC"]
+
+    style Security fill:#1E40AF,color:#BFDBFE
+    style Application fill:#1E3A5F,color:#BFDBFE
+    style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```

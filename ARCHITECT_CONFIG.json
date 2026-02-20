@@ -47,9 +47,23 @@
       }
     }
   },
+  "branding": {
+    "org_name": "BlueFalconInk LLC",
+    "flagship_tool": "Architect AI Pro",
+    "live_app_url": "https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/",
+    "github_action_repo": "https://github.com/koreric75/ArchitectAIPro_GHActions",
+    "primary_color": "#1E40AF",
+    "secondary_color": "#BFDBFE",
+    "accent_color": "#3B82F6",
+    "dark_bg": "#0F172A",
+    "tagline": "Automated Governance. Living Blueprints. Ruthless Consistency.",
+    "copyright": "© BlueFalconInk LLC. All rights reserved."
+  },
   "compliance": {
     "require_security_subgraph": true,
     "require_branding": true,
+    "require_tool_attribution": true,
+    "require_brand_colors": true,
     "block_non_standard_providers": true,
     "require_waf_alb_for_public": true,
     "pci_compliance_for_payments": true
