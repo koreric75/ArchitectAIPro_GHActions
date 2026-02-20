@@ -8,7 +8,7 @@
 # 4. Commits reports + dashboard back to this repo
 #
 # Secrets required:
-#   GITHUB_TOKEN (automatic)
+#   GH_PAT (Personal Access Token with repo+workflow scope — sees private repos)
 #   GEMINI_API_KEY (for AI-assisted analysis)
 ############################################################
 name: "CHAD Ops — Agent Orchestration"
@@ -72,7 +72,8 @@ jobs:
       - name: Run Repo Auditor
         id: audit
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python .github/scripts/repo_auditor.py \
@@ -155,7 +156,8 @@ jobs:
 
       - name: Run Cleanup Agent
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           MODE="${{ github.event.inputs.run_cleanup || 'dry-run' }}"
           ACTIONS="${{ github.event.inputs.cleanup_actions || 'all' }}"
@@ -193,7 +195,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
