@@ -1,15 +1,11 @@
 # 🏗️ BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture
 
 > **Created with [Architect AI Pro](https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/)** — the flagship architecture tool by **BlueFalconInk LLC**
-> Auto-generated on 2026-02-20 15:16 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
+> Auto-generated on 2026-02-20 15:48 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
 
 ![BlueFalconInk LLC](https://img.shields.io/badge/BlueFalconInk%20LLC-Standard-1E40AF)
 ![Architect AI Pro](https://img.shields.io/badge/Created%20with-Architect%20AI%20Pro-3B82F6)
 ![Gemini](https://img.shields.io/badge/Powered%20by-Google%20Gemini-4285F4)
-
-## Architecture Diagram
-
-![ArchitectAIPro_GHActions Architecture](architecture.png)
 
 <details>
 <summary>📄 View Mermaid Source Code</summary>
@@ -19,87 +15,82 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-
-        subgraph "External"
+        subgraph "User & External Systems"
             User[User/Developer]
-            GitHub[GitHub Repositories]
-            GeminiAPI[Google Gemini API]
+            GitHub[GitHub Platform]
+            Gemini[Google Gemini API]
+            Stripe[Stripe Payment Gateway]
         end
 
-        subgraph "GitHub Actions CI/CD"
+        subgraph "Security"
+            CloudArmor[Cloud Armor · Load Balancer]
+            WIF[Workload Identity Federation]
+            ForemanSA[Service Account · architect-ai-foreman]
+        end
+
+        subgraph "Architect AI Pro Core Automation"
             GHActions[GitHub Actions Workflows]
-            GenScript[generate_diagram.py]
-            AuditScript[foreman_audit.py]
-            ProdReadiness[production_readiness.py]
-            MermaidCLI[Mermaid CLI - mmdc]
-            TerraformCLI[Terraform CLI]
+            DiagramGenerator[Diagram Generator Script]
+            ForemanAudit[Foreman Audit Script]
+            TerraformIaC[Terraform IaC]
+            ArchitectConfig[ARCHITECT_CONFIG.json]
         end
 
-        subgraph "Google Cloud Platform (GCP)"
-            subgraph "Security"
-                CloudArmor[Cloud Armor]
-                WIF[Workload Identity Federation]
-                SecretManager[Cloud Secret Manager]
-                ForemanSA[Architect AI Foreman Service Account]
-            end
-            style Security fill:#1E40AF,color:#BFDBFE
-
-            subgraph "Application"
-                GalleryCR[Cloud Run - Architecture Gallery]
-                CloudCDN[Cloud CDN]
-            end
-            style Application fill:#1E3A5F,color:#BFDBFE
-
-            subgraph "Data"
-                GCSBackend[Cloud Storage · Terraform State]
-                ArtifactRegistry[Artifact Registry]
-            end
-            style Data fill:#0F172A,color:#BFDBFE
-
-            subgraph "Infrastructure as Code"
-                Terraform[Terraform Configuration]
-            end
+        subgraph "Architecture Gallery Application"
+            CloudRun[Cloud Run]
+            GalleryApp[FastAPI App · Architecture Gallery]
         end
 
-        %% Data Flows
-        User -->|Triggers Workflows/Views Gallery| GitHub
-        GitHub -->|Code Changes/Push| GHActions
-        GHActions -->|Executes Python Scripts| GenScript
-        GHActions -->|Executes Python Scripts| AuditScript
-        GHActions -->|Executes Python Scripts| ProdReadiness
-        GHActions -->|Executes Terraform CLI| TerraformCLI
+        subgraph "GCP Data & Storage"
+            SecretManager[Secret Manager]
+            ArtifactRegistry[Artifact Registry]
+            GCSBackend[Cloud Storage · Terraform State]
+            GITHUB_PAT[GitHub PAT]
+            ARCHITECT_AI_API_KEY[Architect AI API Key]
+            STRIPE_SECRET_KEY[Stripe Secret Key]
+            STRIPE_WEBHOOK_SECRET[Stripe Webhook Secret]
+        end
 
-        GenScript -->|Scans Repo Code| GitHub
-        GenScript -->|Prompt for Diagram| GeminiAPI
-        GeminiAPI -->|Mermaid.js Diagram| GenScript
-        GenScript -->|Renders PNG| MermaidCLI
-        MermaidCLI -->|PNG Output| GenScript
-        GenScript -->|Generated Diagram| AuditScript
-        AuditScript -->|Audit Report| GHActions
-        GHActions -->|Commits Diagram to Repo| GitHub
-
-        TerraformCLI -->|Authenticates via OIDC| WIF
-        WIF -->|Grants SA Impersonation| ForemanSA
-        TerraformCLI -->|Manages GCP Resources| Terraform
-        Terraform -->|Stores State| GCSBackend
-
+        User -->|Code Push/PR| GitHub
+        GitHub -->|Triggers CI/CD| GHActions
+        GHActions -->|Runs generate_diagram.py| DiagramGenerator
+        DiagramGenerator -->|Reads config| ArchitectConfig
+        DiagramGenerator -->|Calls API| Gemini
+        Gemini -->|Mermaid.js Output| DiagramGenerator
+        DiagramGenerator -->|Commits docs| GitHub
+        GHActions -->|Runs foreman_audit.py| ForemanAudit
+        ForemanAudit -->|Reads config & diagram| ArchitectConfig
+        ForemanAudit -.->|Remediation Trigger| DiagramGenerator
+        GHActions -->|Runs deploy-infra.yml| TerraformIaC
+        TerraformIaC -->|Authenticates via OIDC| WIF
+        WIF -->|Grants SA Token| ForemanSA
+        ForemanSA -->|Manages GCP Resources| TerraformIaC
+        TerraformIaC -->|Provisions/Configures| CloudRun
+        TerraformIaC -->|Provisions/Configures| SecretManager
+        TerraformIaC -->|Configures Backend| GCSBackend
         GHActions -->|Builds & Pushes Docker Image| ArtifactRegistry
-        ArtifactRegistry -->|Deploys Image| GalleryCR
+        ArtifactRegistry -->|Deploys Image| CloudRun
+        CloudRun -->|Runs as| ForemanSA
+        CloudRun -->|Hosts| GalleryApp
+        GalleryApp -->|Accesses GITHUB_TOKEN| SecretManager
+        GalleryApp -->|Fetches Repo Content| GitHub
+        User -->|Accesses arch.bluefalconink.com| CloudArmor
+        CloudArmor -->|Routes Traffic| CloudRun
 
-        GalleryCR -->|Fetches GITHUB_TOKEN| SecretManager
-        GalleryCR -->|Fetches Repo Diagrams| GitHub
-        SecretManager -->|Stores GITHUB_PAT, Gemini Key, Stripe Keys| ForemanSA
+        SecretManager -->|Stores| GITHUB_PAT
+        SecretManager -->|Stores| ARCHITECT_AI_API_KEY
+        SecretManager -->|Stores| STRIPE_SECRET_KEY
+        SecretManager -->|Stores| STRIPE_WEBHOOK_SECRET
+        STRIPE_SECRET_KEY -.->|Used by other BFI apps| Stripe
 
-        User -->|Accesses arch.bluefalconink.com via HTTPS| CloudArmor
-        CloudArmor -->|Protects Public Endpoint| CloudCDN
-        CloudCDN -->|Serves Content| GalleryCR
-
-        ForemanSA -->|Accesses Secrets| SecretManager
-        ForemanSA -->|Manages Cloud Run Services| GalleryCR
-
-        FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     end
 
+    FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
+
+    style Security fill:#1E40AF,color:#BFDBFE
+    style Architect AI Pro Core Automation fill:#1E3A5F,color:#BFDBFE
+    style Architecture Gallery Application fill:#1E3A5F,color:#BFDBFE
+    style GCP Data & Storage fill:#0F172A,color:#BFDBFE
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
 
