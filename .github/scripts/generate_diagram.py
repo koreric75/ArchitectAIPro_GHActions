@@ -214,6 +214,16 @@ def build_system_prompt(config: dict) -> str:
             `FOOTER["🏗️ Created with Architect AI Pro | {org}"]`
             Style it: `style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6`
 
+        GITHUB MERMAID COMPATIBILITY (critical — these cause parse errors on GitHub):
+        16. Do NOT use `direction TD` or `direction LR` inside subgraphs — GitHub does not support it.
+        17. Use simple node IDs with square brackets only: `NodeID[Label Text]`.
+            Do NOT use stadium shapes `([...])`, cylindrical `[(...)`, or `["..."]` — they break GitHub rendering.
+        18. Do NOT use `<br>` or HTML tags in node labels — use short plain-text labels instead.
+        19. Do NOT put parentheses in node labels — e.g. use `NodeApp[Node.js Express Proxy]` not `NodeApp[Node.js (Express) Proxy]`.
+        20. Prefer plain quoted subgraph names: `subgraph "Security"` not `subgraph Security Layer`.
+        21. Every node must be on its own line. Never place two statements on the same line.
+        22. Use `---` (solid link), `-->` (arrow), or `-.->` (dotted) for edges. Do not use `~~~` or unusual link types.
+
         DO NOT include any explanation, markdown headings, or text outside the mermaid code block.
         DO NOT wrap the output in any additional markdown formatting — ONLY the fenced mermaid block.
     """)
@@ -334,6 +344,46 @@ def call_gemini(system_prompt: str, user_prompt: str, api_key: str) -> str:
 # ---------------------------------------------------------------------------
 # Output Processing
 # ---------------------------------------------------------------------------
+
+def sanitize_mermaid(code: str) -> str:
+    """Remove Mermaid syntax constructs that GitHub's renderer cannot handle.
+
+    GitHub uses an older Mermaid.js version with limited feature support.
+    This strips known-incompatible patterns so diagrams render correctly.
+    """
+    out_lines = []
+    for line in code.splitlines():
+        stripped = line.strip()
+
+        # Remove `direction TD/LR/BT/RL` lines (not supported inside subgraphs)
+        if re.match(r'^direction\s+(TD|LR|BT|RL)\s*$', stripped):
+            continue
+
+        # Replace stadium-shaped nodes  (["text"]) -> [text]
+        line = re.sub(r'\(\["([^"]+)"\]\)', r'[\1]', line)
+        line = re.sub(r'\(\[([^\]]+)\]\)', r'[\1]', line)
+
+        # Replace ["text"] -> [text]  (stadium shorthand)
+        line = re.sub(r'\["([^"]+)"\]', r'[\1]', line)
+
+        # Replace cylindrical [("text")] -> [text]
+        line = re.sub(r'\[\("([^"]+)"\)\]', r'[\1]', line)
+        line = re.sub(r'\[\(([^\)]+)\)\]', r'[\1]', line)
+
+        # Strip <br> / <br/> tags from node labels — replace with space
+        line = re.sub(r'<br\s*/?>', ' ', line)
+
+        # Remove parentheses inside square-bracket labels: [Foo (Bar)] -> [Foo - Bar]
+        def fix_parens_in_brackets(m):
+            inner = m.group(1)
+            inner = inner.replace('(', '- ').replace(')', '')
+            return '[' + inner + ']'
+        line = re.sub(r'\[([^\]]*\([^\]]*\)[^\]]*)\]', fix_parens_in_brackets, line)
+
+        out_lines.append(line)
+
+    return '\n'.join(out_lines)
+
 
 def extract_mermaid(text: str) -> str:
     """Extract the Mermaid code block from the Gemini response."""
@@ -545,6 +595,9 @@ def main():
 
     # Inject branding guarantees
     mermaid_code = ensure_branding(mermaid_code, repo_name, config)
+
+    # Sanitize for GitHub Mermaid compatibility
+    mermaid_code = sanitize_mermaid(mermaid_code)
 
     print(f"✅ Generated Mermaid diagram ({len(mermaid_code)} chars)")
 
