@@ -50,7 +50,7 @@ def load_diagram(file_path: str) -> str:
 def check_cloud_provider_alignment(diagram: str, config: dict) -> List[Violation]:
     """Check 1: Ensure only the preferred cloud provider is referenced."""
     violations = []
-    preferred = config.get("technical_constraints", {}).get("preferred_cloud", "AWS")
+    preferred = config.get("technical_constraints", {}).get("preferred_cloud", "GCP")
 
     non_standard_providers = {
         "AWS": ["Azure", "Google Cloud", "GCP", "DigitalOcean", "Heroku"],

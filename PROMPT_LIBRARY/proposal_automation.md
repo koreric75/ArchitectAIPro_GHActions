@@ -6,17 +6,17 @@ and document automation platform (ProposalBuddyAI).
 ## Key Components
 
 1. **Web Frontend** (React or Next.js)
-2. **Document Ingestion** (S3 upload + text extraction)
-3. **AI Analysis Engine** (LLM API integration — OpenAI / Anthropic)
+2. **Document Ingestion** (Cloud Storage upload + text extraction)
+3. **AI Analysis Engine** (LLM API integration — Google Gemini)
 4. **Template Engine** (Jinja2 / DOCX generation)
 5. **Compliance Checker** (Rule-based + AI validation)
-6. **Database** (PostgreSQL for proposals, metadata, and audit trails)
+6. **Database** (Cloud SQL PostgreSQL for proposals, metadata, and audit trails)
 7. **Export Service** (PDF/DOCX/Markdown generation pipeline)
-8. **Notification Service** (SES for email, SNS for alerts)
+8. **Notification Service** (Cloud Pub/Sub for alerts, SendGrid for email)
 
 ## Requirements
 
-- Include a `subgraph Security` boundary with WAF and ALB
+- Include a `subgraph Security` boundary with Cloud Armor and Load Balancer
 - Show the full proposal lifecycle: Ingest → Analyze → Generate → Review → Export
 - Use the BlueFalconInk LLC primary color `#1E40AF`
 - Include audit trail / compliance logging

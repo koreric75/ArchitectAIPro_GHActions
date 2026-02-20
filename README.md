@@ -34,15 +34,15 @@ Every project in the BlueFalconInk LLC ecosystem follows an autonomous lifecycle
 
 To maintain consistency across our portfolio, all AI-generated diagrams must adhere to:
 
-- **Primary Stack**: AWS (Amazon Web Services)
-- **Security First**: Mandatory WAF, ALB, and Private Subnet visualization for data layers.
+- **Primary Stack**: Google Cloud Platform (GCP)
+- **Security First**: Mandatory Cloud Armor, Load Balancer, and VPC visualization for data layers.
 - **Visual Identity**:
   - Theme: Dark
   - Primary Color: `#1E40AF` (Blue Falcon Blue)
 - **Output Format**: Mermaid.js (native GitHub rendering)
-- **Container Orchestration**: Kubernetes (EKS)
-- **Database Standards**: PostgreSQL, Redis
-- **API Standard**: GraphQL
+- **Container Orchestration**: Cloud Run (serverless containers)
+- **Database Standards**: Cloud SQL (PostgreSQL), Cloud Memorystore (Redis), Firestore
+- **API Standard**: REST/GraphQL
 
 ---
 
@@ -117,7 +117,7 @@ The Foreman AI performs the following checks on every architecture diagram:
 | Check | Level | Description |
 |-------|-------|-------------|
 | Cloud Provider Alignment | 🔴 Critical | Flags non-standard cloud providers |
-| Security Layer | 🔴 Critical | Requires WAF/ALB/Security subgraph |
+| Security Layer | 🔴 Critical | Requires Cloud Armor/Load Balancer/Security subgraph |
 | Mermaid Syntax | 🔴 Critical | Validates output is renderable |
 | Branding | 📝 Note | Ensures BlueFalconInk LLC identity |
 | Data Flow | ⚠️ Warning | Verifies directional arrows exist |

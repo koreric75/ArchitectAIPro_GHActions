@@ -145,9 +145,9 @@ def scan_repo(root: str) -> dict:
 def build_system_prompt(config: dict) -> str:
     """Build the system instruction using ARCHITECT_CONFIG building codes."""
     org = config.get("org_name", "BlueFalconInk LLC")
-    cloud = config.get("technical_constraints", {}).get("preferred_cloud", "AWS")
+    cloud = config.get("technical_constraints", {}).get("preferred_cloud", "GCP")
     iac = config.get("technical_constraints", {}).get("iac_tool", "Terraform")
-    orch = config.get("technical_constraints", {}).get("container_orchestration", "Kubernetes")
+    orch = config.get("technical_constraints", {}).get("container_orchestration", "Cloud Run")
     dbs = ", ".join(config.get("technical_constraints", {}).get("database_defaults", []))
     api_std = config.get("technical_constraints", {}).get("api_standard", "GraphQL")
     flagships = config.get("flagships", {})
@@ -267,7 +267,7 @@ def build_user_prompt(scan_result: dict, repo_name: str) -> str:
 def build_remediation_prompt(violations: str, current_diagram: str, config: dict) -> str:
     """Build a remediation prompt when the current diagram failed audit."""
     org = config.get("org_name", "BlueFalconInk LLC")
-    cloud = config.get("technical_constraints", {}).get("preferred_cloud", "AWS")
+    cloud = config.get("technical_constraints", {}).get("preferred_cloud", "GCP")
 
     return textwrap.dedent(f"""\
         The following architecture diagram FAILED the {org} Foreman compliance audit.
@@ -479,7 +479,7 @@ def format_output(mermaid_code: str, repo_name: str, config: dict) -> str:
     app_url = "https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/"
     gh_url = "https://github.com/koreric75/ArchitectAIPro_GHActions"
     org_badge = org.replace(' ', '%20')
-    cloud = config.get('technical_constraints', {}).get('preferred_cloud', 'AWS')
+    cloud = config.get('technical_constraints', {}).get('preferred_cloud', 'GCP')
     iac = config.get('technical_constraints', {}).get('iac_tool', 'Terraform')
     orch = config.get('technical_constraints', {}).get('container_orchestration', 'Kubernetes')
     api_std = config.get('technical_constraints', {}).get('api_standard', 'GraphQL')

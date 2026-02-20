@@ -38,7 +38,8 @@ def audit_diagram(diagram_text: str, config_path: str) -> list:
 
     # Check 2: Security Layer Presence
     if config["diagram_rules"]["include_security_layer"]:
-        if "subgraph Security" not in diagram_text and "WAF" not in diagram_text:
+        security_terms = ["subgraph Security", "Cloud Armor", "WAF", "Load Balancer", "IAP"]
+        if not any(term in diagram_text for term in security_terms):
             violations.append(
                 "⚠️ Warning: No explicit 'Security' boundary found in architecture."
             )

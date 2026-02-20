@@ -13,12 +13,12 @@
 **Required Standards (from ARCHITECT_CONFIG.json):**
 
 - **Primary Cloud:** {{PREFERRED_CLOUD}}
-- **Security Policy:** All public traffic must pass through a WAF/ALB.
+- **Security Policy:** All public traffic must pass through Cloud Armor and a Load Balancer.
 - **Brand Identity:** Use `#1E40AF` for primary service nodes.
 - **Output Format:** Valid Mermaid.js syntax
-- **CDN Required:** Yes — all streaming/content delivery must route through CloudFront or equivalent
-- **Database Standards:** PostgreSQL, Redis
-- **Container Orchestration:** Kubernetes (EKS)
+- **CDN Required:** Yes — all streaming/content delivery must route through Cloud CDN or equivalent
+- **Database Standards:** Cloud SQL (PostgreSQL), Cloud Memorystore (Redis), Firestore
+- **Container Orchestration:** Cloud Run (serverless containers)
 
 ---
 
@@ -30,10 +30,10 @@ Rewrite the Mermaid.js code to resolve **all** violations listed above. Follow t
 2. Ensure the updated diagram is **valid Mermaid syntax** that renders correctly on GitHub.
 3. Add a `subgraph Security` block if one is missing.
 4. Replace any non-standard cloud provider references with the mandated provider's equivalents.
-5. Ensure all public-facing endpoints pass through a WAF/ALB/API Gateway before reaching application services.
+5. Ensure all public-facing endpoints pass through Cloud Armor and a Load Balancer before reaching application services.
 6. Include BlueFalconInk LLC branding in the diagram title.
 7. For subscription services, ensure a clear `subgraph Payment` boundary separates Stripe logic from core application logic.
-8. Ensure a CDN (CloudFront) is present for any content delivery paths.
+8. Ensure a CDN (Cloud CDN) is present for any content delivery paths.
 9. Apply brand color `#1E40AF` to the Security subgraph: `style Security fill:#1E40AF,color:#BFDBFE`
 10. Include a footer node: `FOOTER["🏗️ Created with Architect AI Pro | BlueFalconInk LLC"]` with `style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6`
 
@@ -56,18 +56,18 @@ Rewrite the Mermaid.js code to resolve **all** violations listed above. Follow t
 
 graph TB
     subgraph Security["🛡️ Security Boundary"]
-        WAF[AWS WAF]
-        ALB[Application Load Balancer]
+        ARMOR[Cloud Armor]
+        LB[Cloud Load Balancer]
     end
 
     subgraph Application["BlueFalconInk LLC Service"]
-        API[FastAPI Backend]
-        DB[(PostgreSQL)]
+        API[FastAPI Backend on Cloud Run]
+        DB[(Cloud SQL PostgreSQL)]
     end
 
-    Internet((Public Internet)) --> WAF
-    WAF --> ALB
-    ALB --> API
+    Internet((Public Internet)) --> ARMOR
+    ARMOR --> LB
+    LB --> API
     API --> DB
 
     FOOTER["🏗️ Created with Architect AI Pro | BlueFalconInk LLC"]

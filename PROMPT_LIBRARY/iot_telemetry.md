@@ -6,12 +6,12 @@ Generate a Mermaid.js architecture diagram for an IoT data platform
 ## Key Components
 
 1. **Device Layer** (IoT sensors, RC telemetry transmitters)
-2. **Ingestion** (AWS IoT Core or MQTT broker)
-3. **Stream Processing** (Amazon Kinesis or Kafka)
-4. **Storage** (S3 for raw data, DynamoDB/TimescaleDB for time-series)
+2. **Ingestion** (Cloud IoT Core or MQTT broker via Pub/Sub)
+3. **Stream Processing** (Cloud Dataflow or Apache Kafka on GKE)
+4. **Storage** (Cloud Storage for raw data, Firestore/BigQuery for time-series)
 5. **Analytics API** (FastAPI)
 6. **Dashboard** (React/Next.js with real-time WebSocket updates)
-7. **CDN** (CloudFront for dashboard assets)
+7. **CDN** (Cloud CDN for dashboard assets)
 
 ## Requirements
 
