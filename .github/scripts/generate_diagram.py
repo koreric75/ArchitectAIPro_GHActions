@@ -231,6 +231,7 @@ def build_system_prompt(config: dict) -> str:
         21. Prefer plain quoted subgraph names: `subgraph "Security"` not `subgraph Security Layer`.
         22. Every node must be on its own line. Never place two statements on the same line.
         23. Use `---` (solid link), `-->` (arrow), or `-.->` (dotted) for edges. Do not use `~~~` or unusual link types.
+        24. In `style` directives, use bare unquoted identifiers: `style Security fill:...` NOT `style "Security" fill:...`. Quoted strings in style lines cause parse errors.
 
         DO NOT include any explanation, markdown headings, or text outside the mermaid code block.
         DO NOT wrap the output in any additional markdown formatting — ONLY the fenced mermaid block.
@@ -387,7 +388,9 @@ def sanitize_mermaid(code: str) -> str:
             inner = inner.replace('(', '- ').replace(')', '')
             return '[' + inner + ']'
         line = re.sub(r'\[([^\]]*\([^\]]*\)[^\]]*)\]', fix_parens_in_brackets, line)
-
+        # Strip quotes from style directives: style "Foo" fill:... -> style Foo fill:...
+        line = re.sub(r'^(\s*style\s+)"([^"]+)"', r'\1\2', line)
+        line = re.sub(r"^(\s*style\s+)'([^']+)'", r'\1\2', line)
         out_lines.append(line)
 
     return '\n'.join(out_lines)
