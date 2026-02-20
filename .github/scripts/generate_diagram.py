@@ -518,48 +518,47 @@ def ensure_branding(mermaid_code: str, repo_name: str, config: dict) -> str:
 
 
 def render_png(mermaid_path: str, png_path: str) -> bool:
-    """Render a .mermaid file to PNG using mermaid-cli (mmdc).
+    """Render Mermaid source to PNG via the mermaid.ink public API.
 
-    Returns True if the PNG was created successfully.
+    No local renderer required — the diagram is sent to mermaid.ink which
+    returns a high-quality PNG rendered by the full Mermaid.js engine, with
+    proper theming and layout quality matching the live editor.
+
+    Returns True if the PNG was saved successfully.
     """
-    import subprocess
-    import tempfile
+    import base64
 
-    print(f"🖼️  Rendering PNG: {mermaid_path} → {png_path}")
+    mermaid_code = Path(mermaid_path).read_text(encoding="utf-8")
+    print(f"🖼️  Rendering PNG via mermaid.ink: {mermaid_path} → {png_path}")
 
-    # Write a puppeteer config to disable Chromium sandboxing (required on GH Actions)
-    puppeteer_cfg = Path(tempfile.gettempdir()) / "puppeteer-config.json"
-    puppeteer_cfg.write_text('{"args": ["--no-sandbox"]}')
+    # URL-safe base64 encode the Mermaid source
+    encoded = base64.urlsafe_b64encode(mermaid_code.encode("utf-8")).decode("ascii")
+
+    # mermaid.ink API — dark theme, BlueFalconInk navy background, 1600px wide
+    api_url = (
+        f"https://mermaid.ink/img/{encoded}"
+        f"?theme=dark&bgColor=0F172A&width=1600"
+    )
 
     try:
-        result = subprocess.run(
-            [
-                "mmdc",
-                "-i", mermaid_path,
-                "-o", png_path,
-                "-b", "transparent",
-                "-t", "dark",
-                "-s", "2",          # 2x scale for crisp images
-                "-p", str(puppeteer_cfg),
-            ],
-            capture_output=True,
-            text=True,
-            timeout=120,
-        )
-        if result.returncode == 0 and Path(png_path).exists():
-            size_kb = Path(png_path).stat().st_size / 1024
-            print(f"✅ PNG rendered ({size_kb:.0f} KB)")
+        import requests as req
+        resp = req.get(api_url, timeout=45, allow_redirects=True)
+        content_type = resp.headers.get("content-type", "")
+
+        if resp.status_code == 200 and "image" in content_type:
+            Path(png_path).write_bytes(resp.content)
+            size_kb = len(resp.content) / 1024
+            print(f"✅ PNG rendered via mermaid.ink ({size_kb:.0f} KB)")
             return True
-        else:
-            print(f"⚠️  mmdc exited with code {result.returncode}")
-            if result.stderr:
-                print(f"   stderr: {result.stderr[:500]}")
-            return False
-    except FileNotFoundError:
-        print("⚠️  mmdc not found — PNG rendering skipped (Mermaid CLI not installed)")
+
+        # mermaid.ink returns 400 when the diagram has a syntax error — surface it
+        print(f"⚠️  mermaid.ink returned HTTP {resp.status_code} ({content_type})")
+        detail = resp.text[:400] if resp.text else "(no body)"
+        print(f"   detail: {detail}")
         return False
-    except subprocess.TimeoutExpired:
-        print("⚠️  mmdc timed out after 120s")
+
+    except Exception as exc:  # network errors, timeouts, etc.
+        print(f"⚠️  mermaid.ink request failed: {exc}")
         return False
 
 
