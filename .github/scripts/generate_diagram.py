@@ -234,6 +234,9 @@ def build_system_prompt(config: dict) -> str:
         23. Use `---` (solid link), `-->` (arrow), or `-.->` (dotted) for edges. Do not use `~~~` or unusual link types.
         24. In `style` directives, use bare unquoted identifiers: `style Security fill:...` NOT `style "Security" fill:...`. Quoted strings in style lines cause parse errors.
         25. For link/edge labels, use the pipe syntax `A -->|label text| B`. NEVER use colon syntax `A --> B : label text` — that is sequence diagram syntax and causes parse errors in flowcharts.
+        26. NEVER put parentheses inside link/edge labels — e.g. use `-->|API Calls via HTTPS| B` NOT `-->|API Calls (HTTPS)| B`. Parentheses inside pipe labels are parsed as node shape delimiters.
+        27. Do NOT use parallelogram shapes `[/text/]` or `[\text\]`. Do NOT start node labels with `/` — e.g. use `Webhook[api stripe webhook]` NOT `Webhook[/api/stripe/webhook]`.
+        28. NEVER use the pipe character `|` inside node labels `[...]` — it is the link-label delimiter. Use `·` (middle dot) instead.
 
         DO NOT include any explanation, markdown headings, or text outside the mermaid code block.
         DO NOT wrap the output in any additional markdown formatting — ONLY the fenced mermaid block.
@@ -409,6 +412,21 @@ def sanitize_mermaid(code: str) -> str:
         def fix_pipes_in_labels(m):
             return '[' + m.group(1).replace('|', '·') + ']'
         line = re.sub(r'\[([^\]]*\|[^\]]*)\]', fix_pipes_in_labels, line)
+
+        # Sanitize parentheses inside pipe link labels: -->|text (stuff)| Node → -->|text - stuff| Node
+        # Mermaid interprets ( inside link labels as node-shape openers, causing parse errors.
+        def fix_parens_in_pipe_labels(m):
+            label = m.group(1)
+            label = label.replace('(', '').replace(')', '')
+            return '|' + label + '|'
+        line = re.sub(r'\|([^|]*\([^|]*\)[^|]*)\|', fix_parens_in_pipe_labels, line)
+
+        # Fix forward-slash node shapes: [/text/] or [/text] → [text]
+        # Mermaid interprets [/ as parallelogram shape start; strip leading/trailing slashes.
+        line = re.sub(r'\[/([^\]]*)/\]', r'[\1]', line)   # [/text/] → [text]
+        line = re.sub(r'\[/([^\]]*)\]', r'[\1]', line)    # [/text]  → [text]
+        line = re.sub(r'\[\\([^\]]*)\\\]', r'[\1]', line) # [\text\] → [text]
+        line = re.sub(r'\[\\([^\]]*)\]', r'[\1]', line)   # [\text]  → [text]
 
         out_lines.append(line)
 
