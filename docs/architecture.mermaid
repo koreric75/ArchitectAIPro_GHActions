@@ -2,87 +2,75 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture"
-        subgraph "External Users"
-            User[End User]
-            Developer[Developer]
-        end
-
-        subgraph "Security"
-            CloudLoadBalancer[Cloud Load Balancer]
-            CloudArmor[Cloud Armor]
-        end
-
-        subgraph "Application: Architecture Gallery"
-            CloudRunGallery[Cloud Run Service: Architecture Gallery]
-            FastAPIApp[FastAPI App: main.py]
-            InMemCache[In-Memory Cache]
+        subgraph "External Services"
+            DEV[Developer]
+            USER[End User]
+            GitHub[GitHub]
+            GoogleGeminiAPI[Google Gemini API]
+            Stripe[Stripe - Payment Gateway]
         end
 
         subgraph "CI/CD & Automation"
-            GitHubActions[GitHub Actions Workflow]
-            WIF[Workload Identity Federation]
-            ForemanSA[Foreman Service Account]
-            GenerateDiagramScript[generate_diagram.py]
-            ForemanAuditScript[foreman_audit.py]
-            ProdReadinessScript[production_readiness.py]
-            GitAutoCommit[Git Auto Commit Action]
+            GHActions[GitHub Actions CI/CD]
+            ArchitectAIGen[Architect AI Pro Diagram Generator - Python]
+            ForemanAudit[Foreman AI Compliance Audit - Python]
+            Terraform[Terraform IaC]
+            CloudBuild[Cloud Build - Container Image]
+            GCPWIF[GCP Workload Identity Federation]
+            GCPServiceAccount[GCP Service Account - architect-ai-foreman]
         end
 
-        subgraph "AI & Data Sources"
-            GoogleGeminiAPI[Google Gemini API]
-            GitHubAPI[GitHub API]
+        subgraph "Application"
+            CloudRunGallery[Cloud Run Service - FastAPI Gallery]
+            CloudDNS[Cloud DNS - arch.bluefalconink.com]
+        end
+
+        subgraph "Security"
+            CloudRunLB[Cloud Run Load Balancer]
+            CloudArmor[Cloud Armor - WAF]
+        end
+
+        subgraph "Data & Secrets"
             SecretManager[Cloud Secret Manager]
-            GCSBackend[Cloud Storage: Terraform State]
+            ArtifactRegistry[Artifact Registry - Container Images]
         end
 
-        subgraph "Infrastructure as Code"
-            Terraform[Terraform]
-        end
+        %% Flows
+        DEV -- Pushes Code --> GitHub
+        GitHub -- Triggers CI/CD --> GHActions
+        GHActions -- Runs generate_diagram.py --> ArchitectAIGen
+        ArchitectAIGen -- Sends Repo Context --> GoogleGeminiAPI
+        GoogleGeminiAPI -- Returns Mermaid Code --> ArchitectAIGen
+        ArchitectAIGen -- Generates Diagram --> GitHub
+        GHActions -- Runs foreman_audit.py --> ForemanAudit
+        ForemanAudit -- Audits Diagram --> GitHub
+        GHActions -- Authenticates via --> GCPWIF
+        GCPWIF -- Grants Access to --> GCPServiceAccount
+        GCPServiceAccount -- Executes --> Terraform
+        Terraform -- Manages --> CloudRunGallery
+        Terraform -- Manages --> CloudDNS
+        Terraform -- Manages --> SecretManager
+        Terraform -- Manages --> ArtifactRegistry
+        GHActions -- Triggers --> CloudBuild
+        CloudBuild -- Builds Image from --> GitHub
+        CloudBuild -- Pushes Image to --> ArtifactRegistry
+        ArtifactRegistry -- Provides Image to --> CloudRunGallery
 
-        User -->|Accesses arch.bluefalconink.com| CloudLoadBalancer
-        CloudLoadBalancer -->|Protects Public Endpoint| CloudArmor
-        CloudArmor -->|Traffic to| CloudRunGallery
-        CloudRunGallery -->|Hosts| FastAPIApp
-        FastAPIApp -->|Caches data| InMemCache
-        FastAPIApp -->|Fetches repo data, diagrams| GitHubAPI
-        FastAPIApp -->|Retrieves GITHUB_TOKEN| SecretManager
+        USER -- Accesses arch.bluefalconink.com --> CloudDNS
+        CloudDNS -- Routes Traffic --> CloudRunLB
+        CloudRunLB -- Protects with --> CloudArmor
+        CloudArmor -- Forwards Requests to --> CloudRunGallery
+        CloudRunGallery -- Fetches GITHUB_TOKEN --> SecretManager
+        CloudRunGallery -- Calls GitHub API --> GitHub
+        GitHub -- Returns Repo Data --> CloudRunGallery
+        CloudRunGallery -- Serves HTML/Mermaid --> USER
 
-        Developer -->|Pushes code to GitHub| GitHubRepos[GitHub Repositories]
-        GitHubRepos -->|Triggers| GitHubActions
-        GitHubActions -->|Authenticates via| WIF
-        WIF -->|Assumes role of| ForemanSA
-        ForemanSA -->|Executes| GenerateDiagramScript
-        GenerateDiagramScript -->|Calls AI for diagram| GoogleGeminiAPI
-        GenerateDiagramScript -->|Reads repo context| GitHubRepos
-        ForemanSA -->|Executes| ForemanAuditScript
-        ForemanAuditScript -->|Audits generated diagram| GitHubRepos
-        ForemanSA -->|Executes| ProdReadinessScript
-        GitHubActions -->|Commits updated docs/architecture.md| GitAutoCommit
-        GitAutoCommit -->|Updates| GitHubRepos
+        SecretManager -- Stores API Keys for --> Stripe
 
-        GitHubActions -->|Manages infrastructure via| Terraform
-        Terraform -->|Authenticates via WIF| WIF
-        Terraform -->|Manages| CloudRunGallery
-        Terraform -->|Manages| ForemanSA
-        Terraform -->|Manages| SecretManager
-        Terraform -->|Stores state in| GCSBackend
-
-        SecretManager -->|Stores| GITHUB_PAT[GITHUB_PAT]
-        SecretManager -->|Stores| ARCHITECT_AI_API_KEY[ARCHITECT_AI_API_KEY]
-        SecretManager -->|Stores| STRIPE_SECRET_KEY[STRIPE_SECRET_KEY]
-        SecretManager -->|Stores| STRIPE_WEBHOOK_SECRET[STRIPE_WEBHOOK_SECRET]
-
-        ForemanSA -->|Accesses| SecretManager
-        ForemanSA -->|Deploys images to| ArtifactRegistry[Cloud Artifact Registry]
-        CloudRunGallery -->|Pulls image from| ArtifactRegistry
-
+        %% Styling
+        style Application fill:#1E3A5F,color:#BFDBFE
+        style Security fill:#1E40AF,color:#BFDBFE
+        style "Data & Secrets" fill:#0F172A,color:#BFDBFE
+        FOOTER[🏗️ Created with Architect AI Pro | BlueFalconInk LLC]
+        style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
     end
-
-    FOOTER[🏗️ Created with Architect AI Pro | BlueFalconInk LLC]
-
-    style Security fill:#1E40AF,color:#BFDBFE
-    style Application fill:#1E3A5F,color:#BFDBFE
-    style CI/CD & Automation fill:#1E3A5F,color:#BFDBFE
-    style AI & Data Sources fill:#0F172A,color:#BFDBFE
-    style Infrastructure as Code fill:#0F172A,color:#BFDBFE
-    style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
