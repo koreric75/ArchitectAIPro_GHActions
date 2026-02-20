@@ -1,0 +1,21 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY .github/scripts/repo_auditor.py /app/repo_auditor.py
+COPY .github/scripts/dashboard_generator.py /app/dashboard_generator.py
+COPY .github/scripts/token_budget.py /app/token_budget.py
+
+RUN pip install --no-cache-dir requests flask gunicorn
+
+# Copy the pre-built dashboard and audit data
+COPY docs/dashboard.html /app/static/dashboard.html
+COPY docs/audit_report.json /app/static/audit_report.json
+
+# Server script
+COPY dashboard-server.py /app/server.py
+
+EXPOSE 8080
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "2", "--timeout", "120", "server:app"]
