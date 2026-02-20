@@ -3,95 +3,97 @@
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
         subgraph "External"
-            User[External User/Developer]
-            GitHub[GitHub Repository]
-            GeminiAPI[Google Gemini API]
+            User[External User]
             GitHubAPI[GitHub API]
+            GeminiAPI[Google Gemini API]
         end
 
         subgraph "Security"
+            style Security fill:#1E40AF,color:#BFDBFE
             CloudArmor[Cloud Armor]
-            LoadBalancer[Cloud Load Balancer]
-            SecretManager[Secret Manager]
-            WIF[Workload Identity Federation]
+            LoadBalancer[Global HTTP- S Load Balancer]
         end
 
         subgraph "Application"
-            GH_Actions[GitHub Actions · Orchestrator]
-            ArchitectAIGen[Architect AI Pro · Diagram Generator]
-            ForemanAudit[Foreman AI · Auditor]
-            RepoAuditorGH[Repo Auditor · GHA Script]
-            DashboardGenGH[Dashboard Generator · GHA Script]
-            CleanupAgent[Cleanup Agent · GHA Script]
-            CHADDashboard[CHAD Dashboard · Cloud Run]
-            RepoAuditorCR[Repo Auditor · CR Subprocess]
-            DashboardGenCR[Dashboard Generator · CR Subprocess]
-            ArchGallery[Architecture Gallery · Cloud Run]
+            style Application fill:#1E3A5F,color:#BFDBFE
+            DashboardCR[Cloud Run · CHAD Dashboard]
+            DashboardApp[Flask App · dashboard-server.py]
+            GalleryCR[Cloud Run · Architecture Gallery]
+            GalleryApp[FastAPI App · gallery/main.py]
         end
 
-        subgraph "Data"
-            CloudStorage[Cloud Storage · Diagrams]
-            ArtifactRegistry[Artifact Registry]
-            AuditReport[audit_report.json]
-            ForemanReport[foreman_report.txt]
-            ARCHITECT_CONFIG[ARCHITECT_CONFIG.json]
-        end
-
-        subgraph "Infrastructure"
-            Terraform[Terraform · IaC]
+        subgraph "Automation & CI/CD"
+            GHActions[GitHub Actions Runner]
             CloudBuild[Cloud Build]
+            ArtifactRegistry[Artifact Registry]
+            Terraform[Terraform IaC]
+
+            subgraph "Architect AI Pro Scripts"
+                DiagramGen[generate_diagram.py]
+                ForemanAudit[foreman_audit.py]
+                CleanupAgent[cleanup_agent.py]
+                MermaidPlugins[Mermaid Conversion Plugins]
+            end
+
+            subgraph "CHAD Dashboard Scripts"
+                RepoAuditor[repo_auditor.py]
+                DashboardGen[dashboard_generator.py]
+            end
         end
 
-        subgraph "Generated Artifacts"
-            MermaidDiagram[Mermaid.js Diagram]
-            DrawIOXML[Draw.io XML]
-            PNGDiagram[PNG Diagram]
+        subgraph "Data & Storage"
+            style Data fill:#0F172A,color:#BFDBFE
+            SecretManager[Cloud Secret Manager]
+            CloudStorage[Cloud Storage · Diagrams & Reports]
         end
 
-        CloudCDN[Cloud CDN]
+        %% Data Flows
+        User -->|HTTPS Request| LoadBalancer
+        LoadBalancer -->|Traffic Filtering| CloudArmor
+        CloudArmor -->|Secure Traffic| DashboardCR
+        CloudArmor -->|Secure Traffic| GalleryCR
 
-        %% Flows
-        User -->|Code Changes/PR| GitHub
-        GitHub -->|Push/PR Event| GH_Actions
-        GH_Actions -->|Authenticates via| WIF
-        WIF -->|Grants Access| SecretManager
-        GH_Actions -->|Reads Config| ARCHITECT_CONFIG
-        GH_Actions -->|Executes| ArchitectAIGen
-        ArchitectAIGen -->|Scans Repo Files| GitHub
-        ArchitectAIGen -->|Calls API| GeminiAPI
-        GeminiAPI -->|Generates Mermaid| ArchitectAIGen
-        ArchitectAIGen -->|Outputs| MermaidDiagram
-        MermaidDiagram -->|Audited by| ForemanAudit
-        ForemanAudit -->|Reads Config| ARCHITECT_CONFIG
-        ForemanAudit -->|Outputs| ForemanReport
-        ArchitectAIGen -->|Converts to| DrawIOXML
-        ArchitectAIGen -->|Converts to| PNGDiagram
+        DashboardCR -->|Hosts| DashboardApp
+        DashboardApp -->|Invokes Subprocess| RepoAuditor
+        DashboardApp -->|Invokes Subprocess| DashboardGen
+        DashboardApp -->|Reads/Writes JSON| CloudStorage
+        DashboardApp -->|Auth Token| SecretManager
+        DashboardApp -->|GitHub API Calls| GitHubAPI
 
-        GH_Actions -->|Executes| RepoAuditorGH
-        RepoAuditorGH -->|Calls API| GitHubAPI
-        GitHubAPI -->|Repo Data| RepoAuditorGH
-        RepoAuditorGH -->|Outputs| AuditReport
+        GalleryCR -->|Hosts| GalleryApp
+        GalleryApp -->|Reads Diagrams/Reports| CloudStorage
 
-        GH_Actions -->|Executes| DashboardGenGH
-        DashboardGenGH -->|Reads| AuditReport
-        DashboardGenGH -->|Deploys Static Assets| CHADDashboard
+        GHActions -->|Trigger Workflow| DiagramGen
+        GHActions -->|Trigger Workflow| ForemanAudit
+        GHActions -->|Trigger Workflow| CleanupAgent
+        GHActions -->|Execute IaC| Terraform
 
-        GH_Actions -->|Executes| CleanupAgent
-        CleanupAgent -->|Calls API| GitHubAPI
-        GitHubAPI -->|Modifies Repos| CleanupAgent
+        DiagramGen -->|API Request| GeminiAPI
+        DiagramGen -->|Generates Mermaid| CloudStorage
+        DiagramGen -->|Uses| MermaidPlugins
+        MermaidPlugins -->|Output XML/JSON| CloudStorage
 
-        GH_Actions -->|Deploys Infra via| Terraform
-        Terraform -->|Manages| CHADDashboard
-        Terraform -->|Manages| ArchGallery
-        Terraform -->|Manages| SecretManager
-        Terraform -->|Manages| ArtifactRegistry
-        Terraform -->|Manages| CloudStorage
+        ForemanAudit -->|Reads Mermaid| CloudStorage
+        ForemanAudit -->|Writes Report| CloudStorage
 
-        GH_Actions -->|Triggers Build| CloudBuild
-        CloudBuild -->|Builds Docker Images| ArtifactRegistry
-        ArtifactRegistry -->|Deploys to| CHADDashboard
-        ArtifactRegistry -->|Deploys to| ArchGallery
+        CleanupAgent -->|Auth Token| SecretManager
+        CleanupAgent -->|GitHub API Calls| GitHubAPI
 
-        User -->|Accesses via HTTPS| Load
+        Terraform -->|Provisions Resources| DashboardCR
+        Terraform -->|Provisions Resources| GalleryCR
+        Terraform -->|Manages Secrets| SecretManager
+        Terraform -->|Manages Storage| CloudStorage
+        Terraform -->|Manages Registry| ArtifactRegistry
+
+        GHActions -->|Trigger Build| CloudBuild
+        CloudBuild -->|Build Docker Image| ArtifactRegistry
+        ArtifactRegistry -->|Deploy Image| DashboardCR
+        ArtifactRegistry -->|Deploy Image| GalleryCR
+
+        SecretManager -->|Provides API Keys| DiagramGen
+        SecretManager -->|Provides GH Token| GHActions
+        SecretManager -->|Provides GH Token| DashboardApp
+    end
+
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
