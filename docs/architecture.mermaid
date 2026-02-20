@@ -2,58 +2,115 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        Internet[Internet]
+
+        subgraph "External Users"
+            User[Developer Browser]
+        end
 
         subgraph "Security"
-            LoadBalancer[Cloud Load Balancer]
-            CloudArmor[Cloud Armor]
-        end
-
-        subgraph "CI/CD & Automation"
-            GitHubUser[GitHub User · Developer]
-            GitHubActions[GitHub Actions]
+            LB[Cloud Load Balancer]
+            CA[Cloud Armor]
             WIF[Workload Identity Federation]
-            AutomationScripts[BlueFalconInk AI Scripts]
-            Terraform[Terraform · IaC]
         end
-        style Data fill:#0F172A,color:#BFDBFE
-
-        subgraph "Application"
-            ArchitectAIGallery[Architect AI Pro Gallery · Cloud Run]
-        end
-
-        subgraph "Data & AI Services"
-            GeminiAPI[Google Gemini API]
-            SecretManager[Cloud Secret Manager]
-            CloudStorage[Cloud Storage · Diagrams & Reports]
-        end
-
-        GitHubUser -->|Code Push| GitHubActions
-        GitHubActions -->|Authenticate via OIDC| WIF
-        WIF -->|GCP Credentials| AutomationScripts
-        WIF -->|GCP Credentials| Terraform
-
-        AutomationScripts -->|Scan Repo & Generate Diagram| GeminiAPI
-        AutomationScripts -->|Retrieve API Keys| SecretManager
-        AutomationScripts -->|Store Generated Files Mermaid, Draw.io, PNG, Reports| CloudStorage
-        AutomationScripts -->|Audit Diagram & Generate Dashboard| AutomationScripts
-
-        Terraform -->|Deploys & Configures| ArchitectAIGallery
-        Terraform -->|Manages| SecretManager
-        Terraform -->|Manages| CloudStorage
-
-        Internet -->|HTTPS Request| LoadBalancer
-        LoadBalancer -->|WAF Protection| CloudArmor
-        CloudArmor -->|Route Traffic| ArchitectAIGallery
-
-        ArchitectAIGallery -->|Fetch Diagrams & Reports| CloudStorage
-        ArchitectAIGallery -->|Retrieve Operational Secrets| SecretManager
-
         style Security fill:#1E40AF,color:#BFDBFE
-        style Application fill:#1E3A5F,color:#BFDBFE
-        style Data fill:#0F172A,color:#BFDBFE
+
+        subgraph "GitHub Platform"
+            GHRepo[GitHub Repository]
+            GHA[GitHub Actions Workflows]
+        end
+
+        subgraph "Application Layer"
+            style Application fill:#1E3A5F,color:#BFDBFE
+
+            subgraph "CHAD Dashboard Service"
+                DashboardCR[Cloud Run: CHAD Dashboard]
+                DashboardApp[Flask App: dashboard-server.py]
+            end
+
+            subgraph "Architecture Gallery Service"
+                GalleryCR[Cloud Run: Architecture Gallery]
+                GalleryApp[FastAPI App: gallery/main.py]
+            end
+        end
+
+        subgraph "Data & Artifacts"
+            style Data fill:#0F172A,color:#BFDBFE
+            CS[Cloud Storage: Diagrams · Reports]
+            SM[Secret Manager]
+            AR[Artifact Registry]
+        end
+
+        subgraph "GCP Shared Services"
+            CB[Cloud Build]
+        end
+
+        subgraph "External Services"
+            GeminiAPI[Google Gemini API]
+            GitHubAPI[GitHub API]
+        end
+
+        subgraph "Internal Scripts & Tools"
+            DiagGen[Script: generate_diagram.py]
+            Foreman[Script: foreman_audit.py]
+            RepoAudit[Script: repo_auditor.py]
+            DashGen[Script: dashboard_generator.py]
+            Cleanup[Script: cleanup_agent.py]
+            Terraform[Terraform IaC]
+        end
+
+        %% Data Flows
+        User -->|HTTPS Request| LB
+        LB -->|Protected Traffic| CA
+        CA -->|Route Traffic| DashboardCR
+        CA -->|Route Traffic| GalleryCR
+
+        GHA -->|Trigger Workflow| DiagGen
+        GHA -->|Trigger Workflow| Foreman
+        GHA -->|Trigger Workflow| RepoAudit
+        GHA -->|Trigger Workflow| DashGen
+        GHA -->|Trigger Workflow| Cleanup
+        GHA -->|Trigger Workflow| Terraform
+
+        DiagGen -->|Prompt & Context| GeminiAPI
+        GeminiAPI -->|Mermaid Diagram| DiagGen
+        DiagGen -->|Generated Diagram| Foreman
+        Foreman -->|Audit Report| GHA
+        GHA -->|Store Diagram & Report| CS
+
+        RepoAudit -->|Scan Repos| GitHubAPI
+        GitHubAPI -->|Repo Metadata| RepoAudit
+        RepoAudit -->|Audit Data JSON| CS
+
+        DashGen -->|Read Audit Data| CS
+        DashGen -->|Generate HTML| CS
+
+        Cleanup -->|Modify Repos| GitHubAPI
+
+        DashboardCR -->|API Refresh Request| DashboardApp
+        DashboardApp -->|Execute Repo Audit| RepoAudit
+        DashboardApp -->|Execute Dashboard Gen| DashGen
+        DashboardApp -->|Read Audit Report| CS
+        DashboardApp -->|Serve Dashboard HTML| User
+
+        GalleryCR -->|Serve Diagrams| CS
+        GalleryCR -->|Display to User| User
+
+        GHA -- WIF --> SM
+        GHA -- WIF --> CB
+        GHA -- WIF --> AR
+        GHA -- WIF --> CS
+        Terraform -- WIF --> CB
+        Terraform -- WIF --> AR
+        Terraform -- WIF --> SM
+        Terraform -- WIF --> DashboardCR
+        Terraform -- WIF --> GalleryCR
+        Terraform -- WIF --> CS
+
+        CB -->|Build & Push Docker Image| AR
+        AR -->|Deploy Image| DashboardCR
+        AR -->|Deploy Image| GalleryCR
+
     end
 
-    style Security fill:#1E40AF,color:#BFDBFE
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6

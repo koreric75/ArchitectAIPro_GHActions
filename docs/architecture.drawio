@@ -1,160 +1,514 @@
-<mxfile host="app.diagrams.net" modified="2023-10-27T12:00:00.000Z" agent="Architect AI Pro" etag="unique-etag" version="22.0.8" type="atlas">
-  <diagram id="architect-ai-pro-diagram" name="Page-1">
-    <mxGraphModel dx="1434" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageEnabled="1" pageScale="1" pageWidth="1100" pageHeight="850" background="#FFFFFF" math="0" shadow="0">
+<mxfile host="app.diagrams.net" modified="2023-10-27T12:00:00.000Z" agent="ArchitectAIPro" etag="unique-etag" version="22.0.8" type="device">
+  <diagram id="0" name="Page-1">
+    <mxGraphModel dx="1434" dy="860" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageEnabled="1" pageScale="1" pageWidth="1100" pageHeight="850" background="#FFFFFF" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
         <!-- Title Bar -->
-        <mxCell id="3" value="&lt;font style=&quot;font-size: 24px;&quot; color=&quot;#BFDBFE&quot;&gt;&lt;b&gt;BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#1E40AF;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="0" y="0" width="1100" height="60" as="geometry" />
+        <mxCell id="titleBar" value="BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#1E40AF;fontStyle=1;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="50" y="30" width="1000" height="60" as="geometry" />
         </mxCell>
 
-        <!-- Main Diagram Container (Invisible, acts as a parent for layout) -->
-        <mxCell id="2" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;" vertex="1" parent="1">
-          <mxGeometry x="0" y="60" width="1100" height="700" as="geometry" />
+        <!-- External Users Subgraph -->
+        <mxCell id="externalUsersContainer" value="External Users" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E40AF;rounded=1;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="100" y="120" width="180" height="120" as="geometry" />
         </mxCell>
-
-        <!-- Internet -->
-        <mxCell id="5" value="&lt;font color=&quot;#1E293B&quot;&gt;&lt;b&gt;Internet&lt;/b&gt;&lt;/font&gt;" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#F0F8FF;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=14;" vertex="1" parent="2">
-          <mxGeometry x="50" y="150" width="100" height="70" as="geometry" />
-        </mxCell>
-
-        <!-- CI/CD & Automation Subgraph -->
-        <mxCell id="9" value="&lt;font style=&quot;font-size: 18px;&quot; color=&quot;#1E293B&quot;&gt;&lt;b&gt;CI/CD &amp;amp; Automation&lt;/b&gt;&lt;/font&gt;" style="swimlane;whiteSpace=wrap;html=1;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;" vertex="1" parent="2">
-          <mxGeometry x="200" y="80" width="300" height="450" as="geometry" />
-        </mxCell>
-        <mxCell id="10" value="&lt;font color=&quot;#1E293B&quot;&gt;&lt;b&gt;GitHub User&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 11px;&quot;&gt;Developer&lt;/span&gt;&lt;/font&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#F0F8FF;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="9">
-          <mxGeometry x="75" y="60" width="60" height="100" as="geometry" />
-        </mxCell>
-        <mxCell id="11" value="&lt;font color=&quot;#1E293B&quot;&gt;&lt;b&gt;GitHub Actions&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F8FF;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="9">
-          <mxGeometry x="75" y="180" width="150" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="12" value="&lt;font color=&quot;#1E293B&quot;&gt;&lt;b&gt;Workload Identity Federation&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F8FF;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="9">
-          <mxGeometry x="75" y="260" width="150" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="13" value="&lt;font color=&quot;#1E293B&quot;&gt;&lt;b&gt;BlueFalconInk AI Scripts&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F8FF;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="9">
-          <mxGeometry x="160" y="340" width="120" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="14" value="&lt;font color=&quot;#1E293B&quot;&gt;&lt;b&gt;Terraform&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 11px;&quot;&gt;IaC&lt;/span&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F8FF;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="9">
-          <mxGeometry x="20" y="340" width="120" height="50" as="geometry" />
+        <mxCell id="userNode" value="Developer Browser" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="externalUsersContainer">
+          <mxGeometry x="25" y="50" width="130" height="50" as="geometry" />
         </mxCell>
 
         <!-- Security Subgraph -->
-        <mxCell id="6" value="&lt;font style=&quot;font-size: 18px;&quot; color=&quot;#BFDBFE&quot;&gt;&lt;b&gt;Security&lt;/b&gt;&lt;/font&gt;" style="swimlane;whiteSpace=wrap;html=1;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#1E40AF;strokeColor=#3B82F6;fontColor=#BFDBFE;rounded=1;" vertex="1" parent="2">
-          <mxGeometry x="600" y="80" width="250" height="200" as="geometry" />
+        <mxCell id="securityContainer" value="Security" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#1E40AF;rounded=1;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="100" y="270" width="180" height="220" as="geometry" />
         </mxCell>
-        <mxCell id="7" value="&lt;font color=&quot;#BFDBFE&quot;&gt;&lt;b&gt;Cloud Load Balancer&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3B82F6;strokeColor=#BFDBFE;fontColor=#BFDBFE;fontSize=12;" vertex="1" parent="6">
-          <mxGeometry x="50" y="60" width="150" height="50" as="geometry" />
+        <mxCell id="lbNode" value="Cloud Load Balancer" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="securityContainer">
+          <mxGeometry x="25" y="40" width="130" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="8" value="&lt;font color=&quot;#BFDBFE&quot;&gt;&lt;b&gt;Cloud Armor&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3B82F6;strokeColor=#BFDBFE;fontColor=#BFDBFE;fontSize=12;" vertex="1" parent="6">
-          <mxGeometry x="50" y="130" width="150" height="50" as="geometry" />
+        <mxCell id="caNode" value="Cloud Armor" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="securityContainer">
+          <mxGeometry x="25" y="100" width="130" height="50" as="geometry" />
         </mxCell>
-
-        <!-- Application Subgraph -->
-        <mxCell id="15" value="&lt;font style=&quot;font-size: 18px;&quot; color=&quot;#BFDBFE&quot;&gt;&lt;b&gt;Application&lt;/b&gt;&lt;/font&gt;" style="swimlane;whiteSpace=wrap;html=1;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#1E3A5F;strokeColor=#3B82F6;fontColor=#BFDBFE;rounded=1;" vertex="1" parent="2">
-          <mxGeometry x="600" y="300" width="250" height="150" as="geometry" />
-        </mxCell>
-        <mxCell id="16" value="&lt;font color=&quot;#BFDBFE&quot;&gt;&lt;b&gt;Architect AI Pro Gallery&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 11px;&quot;&gt;Cloud Run&lt;/span&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3B82F6;strokeColor=#BFDBFE;fontColor=#BFDBFE;fontSize=12;" vertex="1" parent="15">
-          <mxGeometry x="50" y="60" width="150" height="50" as="geometry" />
+        <mxCell id="wifNode" value="Workload Identity Federation" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="securityContainer">
+          <mxGeometry x="25" y="160" width="130" height="50" as="geometry" />
         </mxCell>
 
-        <!-- Data & AI Services Subgraph -->
-        <mxCell id="17" value="&lt;font style=&quot;font-size: 18px;&quot; color=&quot;#BFDBFE&quot;&gt;&lt;b&gt;Data &amp;amp; AI Services&lt;/b&gt;&lt;/font&gt;" style="swimlane;whiteSpace=wrap;html=1;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#0F172A;strokeColor=#3B82F6;fontColor=#BFDBFE;rounded=1;" vertex="1" parent="2">
-          <mxGeometry x="400" y="550" width="500" height="150" as="geometry" />
+        <!-- GitHub Platform Subgraph -->
+        <mxCell id="githubPlatformContainer" value="GitHub Platform" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E40AF;rounded=1;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="350" y="120" width="180" height="200" as="geometry" />
         </mxCell>
-        <mxCell id="18" value="&lt;font color=&quot;#BFDBFE&quot;&gt;&lt;b&gt;Google Gemini API&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3B82F6;strokeColor=#BFDBFE;fontColor=#BFDBFE;fontSize=12;" vertex="1" parent="17">
-          <mxGeometry x="20" y="60" width="150" height="50" as="geometry" />
+        <mxCell id="ghRepoNode" value="GitHub Repository" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="githubPlatformContainer">
+          <mxGeometry x="25" y="40" width="130" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="19" value="&lt;font color=&quot;#BFDBFE&quot;&gt;&lt;b&gt;Cloud Secret Manager&lt;/b&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3B82F6;strokeColor=#BFDBFE;fontColor=#BFDBFE;fontSize=12;" vertex="1" parent="17">
-          <mxGeometry x="180" y="60" width="150" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="20" value="&lt;font color=&quot;#BFDBFE&quot;&gt;&lt;b&gt;Cloud Storage&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size: 11px;&quot;&gt;Diagrams &amp;amp; Reports&lt;/span&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3B82F6;strokeColor=#BFDBFE;fontColor=#BFDBFE;fontSize=12;" vertex="1" parent="17">
-          <mxGeometry x="340" y="60" width="150" height="50" as="geometry" />
+        <mxCell id="ghaNode" value="GitHub Actions Workflows" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="githubPlatformContainer">
+          <mxGeometry x="25" y="100" width="130" height="70" as="geometry" />
         </mxCell>
 
-        <!-- Connectors -->
-        <mxCell id="21" value="&lt;font color=&quot;#1E293B&quot;&gt;Code Push&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="10" target="11">
-          <mxGeometry relative="1" as="geometry" />
+        <!-- Application Layer Subgraph -->
+        <mxCell id="applicationLayerContainer" value="Application Layer" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#1E3A5F;rounded=1;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="600" y="120" width="380" height="320" as="geometry" />
         </mxCell>
-        <mxCell id="22" value="&lt;font color=&quot;#1E293B&quot;&gt;Authenticate via OIDC&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="11" target="12">
-          <mxGeometry relative="1" as="geometry" />
+        <!-- CHAD Dashboard Service Subgraph -->
+        <mxCell id="chadDashboardContainer" value="CHAD Dashboard Service" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E40AF;rounded=1;startSize=30;" vertex="1" parent="applicationLayerContainer">
+          <mxGeometry x="20" y="40" width="160" height="250" as="geometry" />
         </mxCell>
-        <mxCell id="23" value="&lt;font color=&quot;#1E293B&quot;&gt;GCP Credentials&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="12" target="13">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="dashboardCRNode" value="Cloud Run: CHAD Dashboard" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="chadDashboardContainer">
+          <mxGeometry x="15" y="40" width="130" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="24" value="&lt;font color=&quot;#1E293B&quot;&gt;GCP Credentials&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="12" target="14">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="dashboardAppNode" value="Flask App: dashboard-server.py" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="chadDashboardContainer">
+          <mxGeometry x="15" y="100" width="130" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="25" value="&lt;font color=&quot;#1E293B&quot;&gt;Scan Repo &amp;amp; Generate Diagram&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="13" target="18">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="420" y="550" as="targetPoint" />
+        <!-- Architecture Gallery Service Subgraph -->
+        <mxCell id="archGalleryContainer" value="Architecture Gallery Service" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E40AF;rounded=1;startSize=30;" vertex="1" parent="applicationLayerContainer">
+          <mxGeometry x="200" y="40" width="160" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="galleryCRNode" value="Cloud Run: Architecture Gallery" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="archGalleryContainer">
+          <mxGeometry x="15" y="40" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="galleryAppNode" value="FastAPI App: gallery/main.py" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="archGalleryContainer">
+          <mxGeometry x="15" y="100" width="130" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Data & Artifacts Subgraph -->
+        <mxCell id="dataArtifactsContainer" value="Data &amp; Artifacts" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;fillColor=#0F172A;fontColor=#BFDBFE;strokeColor=#0F172A;rounded=1;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="350" y="350" width="180" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="csNode" value="Cloud Storage: Diagrams · Reports" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="dataArtifactsContainer">
+          <mxGeometry x="25" y="40" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="smNode" value="Secret Manager" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="dataArtifactsContainer">
+          <mxGeometry x="25" y="100" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="arNode" value="Artifact Registry" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="dataArtifactsContainer">
+          <mxGeometry x="25" y="160" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- GCP Shared Services Subgraph -->
+        <mxCell id="gcpSharedServicesContainer" value="GCP Shared Services" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E40AF;rounded=1;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="600" y="470" width="180" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="cbNode" value="Cloud Build" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="gcpSharedServicesContainer">
+          <mxGeometry x="25" y="50" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- External Services Subgraph -->
+        <mxCell id="externalServicesContainer" value="External Services" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E40AF;rounded=1;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="810" y="470" width="180" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="geminiAPINode" value="Google Gemini API" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="externalServicesContainer">
+          <mxGeometry x="25" y="40" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="githubAPINode" value="GitHub API" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="externalServicesContainer">
+          <mxGeometry x="25" y="100" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Internal Scripts & Tools Subgraph -->
+        <mxCell id="internalScriptsContainer" value="Internal Scripts &amp; Tools" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E40AF;rounded=1;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="100" y="520" width="200" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="diagGenNode" value="Script: generate_diagram.py" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="internalScriptsContainer">
+          <mxGeometry x="35" y="40" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="foremanNode" value="Script: foreman_audit.py" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="internalScriptsContainer">
+          <mxGeometry x="35" y="100" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="repoAuditNode" value="Script: repo_auditor.py" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="internalScriptsContainer">
+          <mxGeometry x="35" y="160" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="dashGenNode" value="Script: dashboard_generator.py" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="internalScriptsContainer">
+          <mxGeometry x="35" y="220" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cleanupNode" value="Script: cleanup_agent.py" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="internalScriptsContainer">
+          <mxGeometry x="35" y="280" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="terraformNode" value="Terraform IaC" style="whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="internalScriptsContainer">
+          <mxGeometry x="35" y="340" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Data Flows -->
+        <mxCell id="userToLb" value="HTTPS Request" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="userNode" target="lbNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="200" y="240" as="sourcePoint" />
+            <mxPoint x="200" y="270" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="26" value="&lt;font color=&quot;#1E293B&quot;&gt;Retrieve API Keys&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="13" target="19">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="420" y="550" as="targetPoint" />
+        <mxCell id="lbToCa" value="Protected Traffic" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="lbNode" target="caNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="200" y="340" as="sourcePoint" />
+            <mxPoint x="200" y="370" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="27" value="&lt;font color=&quot;#1E293B&quot;&gt;Store Generated Files&lt;br&gt;Mermaid, Draw.io, PNG, Reports&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="13" target="20">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="420" y="550" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="28" value="&lt;font color=&quot;#1E293B&quot;&gt;Audit Diagram &amp;amp;&lt;br&gt;Generate Dashboard&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;curved=1;" edge="1" parent="2" source="13" target="13">
-          <mxGeometry x="0.0001" y="10" relative="1" as="geometry">
+        <mxCell id="caToDashboardCR" value="Route Traffic" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="caNode" target="dashboardCRNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="280" y="400" as="sourcePoint" />
+            <mxPoint x="600" y="400" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="420" y="400" />
-              <mxPoint x="420" y="380" />
-              <mxPoint x="380" y="380" />
-              <mxPoint x="380" y="400" />
+              <mxPoint x="440" y="400" />
+              <mxPoint x="440" y="190" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="29" value="&lt;font color=&quot;#1E293B&quot;&gt;Deploys &amp;amp; Configures&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="14" target="16">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="500" y="375" as="targetPoint" />
+        <mxCell id="caToGalleryCR" value="Route Traffic" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="caNode" target="galleryCRNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="280" y="410" as="sourcePoint" />
+            <mxPoint x="600" y="410" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="440" y="410" />
+              <mxPoint x="440" y="270" />
+            </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="30" value="&lt;font color=&quot;#1E293B&quot;&gt;Manages&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="14" target="19">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="280" y="550" as="targetPoint" />
+
+        <mxCell id="ghaToDiagGen" value="Trigger Workflow" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="ghaNode" target="diagGenNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="440" y="320" as="sourcePoint" />
+            <mxPoint x="440" y="520" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="31" value="&lt;font color=&quot;#1E293B&quot;&gt;Manages&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="14" target="20">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="280" y="550" as="targetPoint" />
+        <mxCell id="ghaToForeman" value="Trigger Workflow" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="ghaNode" target="foremanNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="450" y="320" as="sourcePoint" />
+            <mxPoint x="450" y="580" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="32" value="&lt;font color=&quot;#1E293B&quot;&gt;HTTPS Request&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="5" target="7">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="550" y="185" as="targetPoint" />
+        <mxCell id="ghaToRepoAudit" value="Trigger Workflow" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="ghaNode" target="repoAuditNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="460" y="320" as="sourcePoint" />
+            <mxPoint x="460" y="640" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="33" value="&lt;font color=&quot;#1E293B&quot;&gt;WAF Protection&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="7" target="8">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="34" value="&lt;font color=&quot;#1E293B&quot;&gt;Route Traffic&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="8" target="16">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="725" y="300" as="targetPoint" />
+        <mxCell id="ghaToDashGen" value="Trigger Workflow" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="ghaNode" target="dashGenNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="470" y="320" as="sourcePoint" />
+            <mxPoint x="470" y="700" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="35" value="&lt;font color=&quot;#1E293B&quot;&gt;Fetch Diagrams &amp;amp; Reports&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="16" target="20">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="725" y="550" as="targetPoint" />
+        <mxCell id="ghaToCleanup" value="Trigger Workflow" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="ghaNode" target="cleanupNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="480" y="320" as="sourcePoint" />
+            <mxPoint x="480" y="760" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="36" value="&lt;font color=&quot;#1E293B&quot;&gt;Retrieve Operational Secrets&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="2" source="16" target="19">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="725" y="550" as="targetPoint" />
+        <mxCell id="ghaToTerraform" value="Trigger Workflow" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="ghaNode" target="terraformNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="490" y="320" as="sourcePoint" />
+            <mxPoint x="490" y="820" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="diagGenToGemini" value="Prompt &amp; Context" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="diagGenNode" target="geminiAPINode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="570" as="sourcePoint" />
+            <mxPoint x="810" y="570" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="550" y="570" />
+              <mxPoint x="550" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="geminiToDiagGen" value="Mermaid Diagram" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="geminiAPINode" target="diagGenNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="810" y="510" as="sourcePoint" />
+            <mxPoint x="300" y="510" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="550" y="510" />
+              <mxPoint x="550" y="560" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="diagGenToForeman" value="Generated Diagram" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="diagGenNode" target="foremanNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="200" y="590" as="sourcePoint" />
+            <mxPoint x="200" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="foremanToGHA" value="Audit Report" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="foremanNode" target="ghaNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="630" as="sourcePoint" />
+            <mxPoint x="350" y="630" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="325" y="630" />
+              <mxPoint x="325" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ghaToCS" value="Store Diagram &amp; Report" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="ghaNode" target="csNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="530" y="200" as="sourcePoint" />
+            <mxPoint x="350" y="200" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="560" y="200" />
+              <mxPoint x="560" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="repoAuditToGitHubAPI" value="Scan Repos" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="repoAuditNode" target="githubAPINode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="680" as="sourcePoint" />
+            <mxPoint x="810" y="680" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="550" y="680" />
+              <mxPoint x="550" y="610" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="githubAPIToRepoAudit" value="Repo Metadata" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="githubAPINode" target="repoAuditNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="810" y="620" as="sourcePoint" />
+            <mxPoint x="300" y="620" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="550" y="620" />
+              <mxPoint x="550" y="670" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="repoAuditToCS" value="Audit Data JSON" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="repoAuditNode" target="csNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="690" as="sourcePoint" />
+            <mxPoint x="350" y="690" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="325" y="690" />
+              <mxPoint x="325" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="dashGenToCSRead" value="Read Audit Data" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="dashGenNode" target="csNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="750" as="sourcePoint" />
+            <mxPoint x="350" y="750" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="325" y="750" />
+              <mxPoint x="325" y="410" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dashGenToCSGen" value="Generate HTML" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="dashGenNode" target="csNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="760" as="sourcePoint" />
+            <mxPoint x="350" y="760" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="325" y="760" />
+              <mxPoint x="325" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="cleanupToGitHubAPI" value="Modify Repos" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="cleanupNode" target="githubAPINode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="810" as="sourcePoint" />
+            <mxPoint x="810" y="810" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="550" y="810" />
+              <mxPoint x="550" y="630" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="dashboardCRToDashboardApp" value="API Refresh Request" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="dashboardCRNode" target="dashboardAppNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="700" y="240" as="sourcePoint" />
+            <mxPoint x="700" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dashboardAppToRepoAudit" value="Execute Repo Audit" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="dashboardAppNode" target="repoAuditNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="680" y="300" as="sourcePoint" />
+            <mxPoint x="200" y="650" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="680" y="400" />
+              <mxPoint x="300" y="400" />
+              <mxPoint x="300" y="650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dashboardAppToDashGen" value="Execute Dashboard Gen" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="dashboardAppNode" target="dashGenNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="690" y="300" as="sourcePoint" />
+            <mxPoint x="200" y="710" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="690" y="410" />
+              <mxPoint x="300" y="410" />
+              <mxPoint x="300" y="710" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dashboardAppToCS" value="Read Audit Report" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="dashboardAppNode" target="csNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="300" as="sourcePoint" />
+            <mxPoint x="350" y="300" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="580" y="300" />
+              <mxPoint x="580" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dashboardAppToUser" value="Serve Dashboard HTML" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="dashboardAppNode" target="userNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="290" as="sourcePoint" />
+            <mxPoint x="280" y="290" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="580" y="290" />
+              <mxPoint x="580" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="galleryCRToCS" value="Serve Diagrams" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="galleryCRNode" target="csNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="800" y="240" as="sourcePoint" />
+            <mxPoint x="440" y="240" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="800" y="390" />
+              <mxPoint x="440" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="galleryCRToUser" value="Display to User" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="galleryCRNode" target="userNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="800" y="230" as="sourcePoint" />
+            <mxPoint x="280" y="230" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="800" y="180" />
+              <mxPoint x="280" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- WIF Connections -->
+        <mxCell id="ghaToSmWIF" value="WIF" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="ghaNode" target="smNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="530" y="210" as="sourcePoint" />
+            <mxPoint x="350" y="210" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="560" y="210" />
+              <mxPoint x="560" y="440" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ghaToCbWIF" value="WIF" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="ghaNode" target="cbNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="530" y="220" as="sourcePoint" />
+            <mxPoint x="600" y="220" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="560" y="220" />
+              <mxPoint x="560" y="530" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ghaToArWIF" value="WIF" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="ghaNode" target="arNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="530" y="230" as="sourcePoint" />
+            <mxPoint x="350" y="230" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="560" y="230" />
+              <mxPoint x="560" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ghaToCsWIF" value="WIF" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="ghaNode" target="csNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="530" y="240" as="sourcePoint" />
+            <mxPoint x="350" y="240" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="560" y="240" />
+              <mxPoint x="560" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="terraformToCbWIF" value="WIF" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="terraformNode" target="cbNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="830" as="sourcePoint" />
+            <mxPoint x="600" y="830" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="450" y="830" />
+              <mxPoint x="450" y="540" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="terraformToArWIF" value="WIF" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="terraformNode" target="arNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="840" as="sourcePoint" />
+            <mxPoint x="350" y="840" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="450" y="840" />
+              <mxPoint x="450" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="terraformToSmWIF" value="WIF" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="terraformNode" target="smNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="850" as="sourcePoint" />
+            <mxPoint x="350" y="850" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="450" y="850" />
+              <mxPoint x="450" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="terraformToDashboardCRWIF" value="WIF" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="terraformNode" target="dashboardCRNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="860" as="sourcePoint" />
+            <mxPoint x="600" y="860" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="450" y="860" />
+              <mxPoint x="450" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="terraformToGalleryCRWIF" value="WIF" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="terraformNode" target="galleryCRNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="870" as="sourcePoint" />
+            <mxPoint x="600" y="870" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="450" y="870" />
+              <mxPoint x="450" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="terraformToCsWIF" value="WIF" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="terraformNode" target="csNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="300" y="880" as="sourcePoint" />
+            <mxPoint x="350" y="880" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="450" y="880" />
+              <mxPoint x="450" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Build & Deploy Flows -->
+        <mxCell id="cbToAr" value="Build &amp; Push Docker Image" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="cbNode" target="arNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="550" as="sourcePoint" />
+            <mxPoint x="530" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arToDashboardCR" value="Deploy Image" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="arNode" target="dashboardCRNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="530" y="480" as="sourcePoint" />
+            <mxPoint x="600" y="480" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="560" y="480" />
+              <mxPoint x="560" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arToGalleryCR" value="Deploy Image" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E293B;fontColor=#1E293B;" edge="1" parent="1" source="arNode" target="galleryCRNode">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="530" y="490" as="sourcePoint" />
+            <mxPoint x="600" y="490" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="560" y="490" />
+              <mxPoint x="560" y="280" />
+            </Array>
           </mxGeometry>
         </mxCell>
 
         <!-- Footer -->
-        <mxCell id="4" value="&lt;font style=&quot;font-size: 14px;&quot; color=&quot;#BFDBFE&quot;&gt;&lt;b&gt;🏗️ Created with Architect AI Pro | BlueFalconInk LLC&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="0" y="760" width="1100" height="40" as="geometry" />
+        <mxCell id="footer" value="🏗️ Created with Architect AI Pro | BlueFalconInk LLC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;strokeWidth=2;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="850" width="1000" height="40" as="geometry" />
         </mxCell>
-
       </root>
     </mxGraphModel>
   </diagram>
