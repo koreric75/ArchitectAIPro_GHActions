@@ -14,10 +14,19 @@ This repository defines the automated architectural standards for all **BlueFalc
 Every project in the BlueFalconInk LLC ecosystem follows an autonomous lifecycle:
 
 1. **Standardized Genesis**: New repositories are created from the `bluefalconink-template`, inheriting the core CI/CD pipeline and `ARCHITECT_CONFIG.json`.
-2. **AI Synthesis**: Upon every push to `main`, **Architect AI Pro** analyzes the codebase and generates a Mermaid.js architecture diagram.
+2. **AI Synthesis**: Upon every push to `main`, **Architect AI Pro** scans the repo source code and calls the **Google Gemini API** directly to generate a Mermaid.js architecture diagram.
 3. **The Foreman Audit**: Our "Foreman AI" script audits the diagram against our global building codes (Cloud provider alignment, security subgraphs, and brand identity).
-4. **Self-Healing**: If a violation is detected, a remediation loop triggers to automatically correct the diagram and re-submit it for approval.
+4. **Self-Healing**: If a violation is detected, a remediation loop calls Gemini again with the violation report to automatically correct the diagram.
 5. **Global Visibility**: Validated diagrams are instantly published to our [Architecture Gallery](https://arch.bluefalconink.com).
+
+### Powered By
+
+| Component | Technology |
+|-----------|------------|
+| AI Engine | Google Gemini (`gemini-2.5-flash`) via direct API |
+| Live App | [Architect AI Pro](https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/) on Cloud Run |
+| Diagram Format | Mermaid.js (native GitHub rendering) |
+| Audit Engine | Foreman AI (Python) |
 
 ---
 
@@ -54,9 +63,11 @@ To maintain consistency across our portfolio, all AI-generated diagrams must adh
 .
 ├── .github/
 │   ├── workflows/
-│   │   ├── arch-sync.yml          # Architecture diagram automation
-│   │   └── deploy-infra.yml       # Infrastructure GitOps pipeline
+│   │   ├── arch-sync.yml              # Main workflow (standalone + reusable)
+│   │   ├── architecture-caller.yml    # Template: copy to your repo
+│   │   └── deploy-infra.yml           # Infrastructure GitOps pipeline
 │   └── scripts/
+│       ├── generate_diagram.py    # Gemini API diagram generator
 │       ├── foreman_audit.py       # The Foreman - compliance audit engine
 │       ├── safety_check.py        # Quick safety check script
 │       └── production_readiness.py # Production launch checklist
@@ -117,30 +128,42 @@ The Foreman AI performs the following checks on every architecture diagram:
 
 ## 🚀 Quick Start
 
-### For New Repositories
+### Add to Any BlueFalconInk Repo (Recommended)
 
-1. Create from the `bluefalconink-template`
-2. Push code to `main`
-3. The workflow auto-generates `docs/architecture.md`
-4. The Foreman audits compliance
-5. Diagram appears in the [Gallery](https://arch.bluefalconink.com)
+1. Copy `.github/workflows/architecture-caller.yml` into your repo
+2. Add `GEMINI_API_KEY` to your repo's **Settings → Secrets → Actions**
+3. Optionally add `ARCHITECT_CONFIG.json` to customize building codes
+4. Push code to `main` — the diagram auto-generates at `docs/architecture.md`
+5. On PRs, a bot comment previews the diagram before merge
 
-### For Local Development
+### Run the Generator Locally
 
 ```bash
-# Run the Foreman audit locally
+# Set your Gemini API key
+export GEMINI_API_KEY="your-key-here"
+
+# Generate a diagram for the current repo
+pip install requests
+python .github/scripts/generate_diagram.py \
+  --config ARCHITECT_CONFIG.json \
+  --output docs/architecture.md \
+  --scan-dir .
+```
+
+### Run Audits Locally
+
+```bash
+# Foreman compliance audit
 python .github/scripts/foreman_audit.py --file docs/architecture.md --config ARCHITECT_CONFIG.json
 
-# Run the safety check
+# Quick safety check
 python .github/scripts/safety_check.py --file docs/architecture.md
 
-# Run production readiness audit
+# Production readiness audit
 python .github/scripts/production_readiness.py --config ARCHITECT_CONFIG.json
 
 # Start the Gallery locally
-cd gallery
-pip install -r requirements.txt
-uvicorn main:app --reload --port 8080
+cd gallery && pip install -r requirements.txt && uvicorn main:app --reload --port 8080
 ```
 
 ### Infrastructure Deployment

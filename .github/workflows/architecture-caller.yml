@@ -1,0 +1,42 @@
+# ──────────────────────────────────────────────────────────────────────
+# 🏗️ Architecture Diagram Generator — Caller Workflow
+#
+# Copy this file into any BlueFalconInk repo at:
+#   .github/workflows/architecture.yml
+#
+# Required secrets:
+#   GEMINI_API_KEY — Set in repo Settings → Secrets → Actions
+#
+# This calls the reusable workflow from ArchitectAIPro_GHActions.
+# ──────────────────────────────────────────────────────────────────────
+
+name: "🏗️ Architecture Diagram"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "server/**"
+      - "services/**"
+      - "components/**"
+      - "**/*.ts"
+      - "**/*.tsx"
+      - "**/*.py"
+      - "**/*.js"
+      - "Dockerfile"
+      - "docker-compose*.yml"
+      - "terraform/**"
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  architecture:
+    uses: koreric75/ArchitectAIPro_GHActions/.github/workflows/arch-sync.yml@main
+    with:
+      config_path: "ARCHITECT_CONFIG.json"     # Path to your config (or omit for default)
+      output_path: "docs/architecture.md"       # Where the diagram goes
+      scan_dir: "."                             # Root directory to scan
+    secrets:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
