@@ -2,90 +2,89 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        Internet[Internet User]
-
-        subgraph "Security"
-            CloudArmor[Cloud Armor]
-            CloudCDN[Cloud CDN]
-            GCPWIF[GCP Workload Identity Federation]
-            ForemanSA[Foreman Service Account]
-            SecretManager[Google Secret Manager]
+        subgraph "External Integrations"
+            User[Public User]
+            GitHub[GitHub.com]
+            Gemini[Google Gemini API]
+            MermaidInk[mermaid.ink · Fallback Renderer]
+            DrawioCLI[drawio-desktop CLI · Local Renderer]
         end
 
-        subgraph "CI/CD & Automation"
-            UserDev[Developer]
-            GitHubRepo[GitHub Repository]
-            GHActions[GitHub Actions Workflow]
-            ArchitectAIGen[Architect AI Pro Generator]
-            ForemanAudit[Foreman AI Audit Engine]
-            ProdReadiness[Production Readiness Check]
-            Terraform[Terraform IaC]
+        subgraph "GitHub Automation"
+            GHActions[GitHub Actions Runner]
+            ArchitectAIWorkflow[Architect AI Pro Workflow]
+            InfraDeployWorkflow[Terraform Deploy Workflow]
         end
 
-        subgraph "Application"
-            CloudRunLB[Cloud Run Load Balancer]
-            CloudRunGallery[Architecture Gallery Service]
+        subgraph "Application Layer"
+            CloudLB[Cloud Load Balancer]
+            CloudRun[Cloud Run Service · Architecture Gallery]
+            GalleryApp[FastAPI Gallery App]
         end
 
-        subgraph "Data & Artifacts"
+        subgraph "Data Layer"
+            SecretManager[Cloud Secret Manager]
+            GCSBackend[Cloud Storage · Terraform State]
             ArtifactRegistry[Artifact Registry]
             GCSBackend[GCS Terraform Backend]
         end
 
-        subgraph "AI Services"
-            GeminiAPI[Google Gemini API]
+        subgraph "Security"
+            CloudArmor[Cloud Armor]
+            WIFPool[Workload Identity Pool]
+            WIFProvider[WIF OIDC Provider]
+            ForemanSA[Service Account · architect-ai-foreman]
         end
 
-        subgraph "External Integrations"
-            GitHubAPI[GitHub API]
-            Stripe[Stripe Payment Gateway]
-            DrawioCLI[Draw.io CLI]
-            MermaidInk[mermaid.ink API]
+        subgraph "Repository Assets"
+            Docs[docs/architecture.md]
+            MermaidFile[docs/architecture.mermaid]
+            DrawioFile[docs/architecture.drawio]
+            PNGFile[docs/architecture.png]
+            Plugins[Mermaid Conversion Plugins]
         end
-
-        %% Flow for Architecture Gallery
-        Internet -->|HTTPS Request| CloudCDN
-        CloudCDN -->|Cached Content/Forward Request| CloudArmor
-        CloudArmor -->|Filtered Traffic| CloudRunLB
-        CloudRunLB -->|Route Request| CloudRunGallery
-        CloudRunGallery -->|Fetch Repo Data| GitHubAPI
-        CloudRunGallery -->|Get GITHUB_TOKEN| SecretManager
-
-        %% Flow for CI/CD Pipeline
-        UserDev -->|Push Code/PR| GitHubRepo
-        GitHubRepo -->|Trigger Workflow| GHActions
-        GHActions -->|OIDC Auth| GCPWIF
-        GCPWIF -->|Impersonate| ForemanSA
-        ForemanSA -->|Access API Keys| SecretManager
-        GHActions -->|Run Script| ArchitectAIGen
-        ArchitectAIGen -->|Scan Files| GitHubRepo
-        ArchitectAIGen -->|Generate Diagram| GeminiAPI
-        ArchitectAIGen -->|Render PNG| DrawioCLI
-        ArchitectAIGen -->|Render PNG Fallback| MermaidInk
-        ArchitectAIGen -->|Audit Diagram| ForemanAudit
-        ForemanAudit -->|Read ARCHITECT_CONFIG.json| GitHubRepo
-        ForemanAudit -->|Remediation Request| ArchitectAIGen
-        GHActions -->|Commit Docs Mermaid, Draw.io, PNG| GitHubRepo
-        GHActions -->|Run Check| ProdReadiness
-        GHActions -->|Deploy/Manage Infra| Terraform
-        Terraform -->|Store State| GCSBackend
-        Terraform -->|Manage Resources| ForemanSA
-        Terraform -->|Manage Resources| SecretManager
-        Terraform -->|Manage Resources| GCPWIF
-        Terraform -->|Manage Resources| ArtifactRegistry
-        Terraform -->|Deploy/Update Service| CloudRunGallery
-        GHActions -->|Push Container Image| ArtifactRegistry
-
-        %% Secret Management
-        SecretManager -->|Stores Keys for| Stripe
     end
 
-    FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
+    User -->|HTTPS Requests| CloudLB
+    CloudLB -->|Protects| CloudRun
+    CloudLB -->|Routes HTTPS| CloudRun
+    CloudRun -->|HTTP| GalleryApp
+    GalleryApp -->|Reads GITHUB_TOKEN| SecretManager
+    GalleryApp -->|Fetches Repo/File Content| GitHub
 
+    GitHub -->|Code Push / PR Trigger| GHActions
+    GHActions -->|Executes arch-sync.yml| ArchitectAIWorkflow
+    GHActions -->|Executes deploy-infra.yml| InfraDeployWorkflow
+
+    ArchitectAIWorkflow -->|Calls for Diagram Generation| Gemini
+    ArchitectAIWorkflow -->|Renders PNG from XML| DrawioCLI
+    ArchitectAIWorkflow -->|Renders PNG Fallback| MermaidInk
+    ArchitectAIWorkflow -->|Writes Mermaid Source| MermaidFile
+    ArchitectAIWorkflow -->|Writes Draw.io XML| DrawioFile
+    ArchitectAIWorkflow -->|Writes PNG Image| PNGFile
+    MermaidFile -->|Included in| Docs
+    DrawioFile -->|Included in| Docs
+    PNGFile -->|Included in| Docs
+    ArchitectAIWorkflow -->|Reads for Audit/Remediation| Docs
+    ArchitectAIWorkflow -->|Commits Changes| GitHub
+    ArchitectAIWorkflow -->|Posts PR Comment| GitHub
+    ArchitectAIWorkflow -->|Uploads Artifacts| GHActions
+
+    InfraDeployWorkflow -->|OIDC Token Exchange| WIFPool
+    WIFPool -->|Provides Identity| WIFProvider
+    WIFProvider -->|Assumes Role| ForemanSA
+    ForemanSA -->|Manages Cloud Run| CloudRun
+    ForemanSA -->|Accesses Secrets| SecretManager
+    ForemanSA -->|Pushes Container Images| ArtifactRegistry
+    InfraDeployWorkflow -->|Provisions/Updates| CloudRun
+    InfraDeployWorkflow -->|Provisions/Updates| SecretManager
+    InfraDeployWorkflow -->|Provisions/Updates| WIFPool
+    InfraDeployWorkflow -->|Provisions/Updates| WIFProvider
+    InfraDeployWorkflow -->|Provisions/Updates| ForemanSA
+    InfraDeployWorkflow -->|Stores State| GCSBackend
+
+    style Application Layer fill:#1E3A5F,color:#BFDBFE
+    style Data Layer fill:#0F172A,color:#BFDBFE
     style Security fill:#1E40AF,color:#BFDBFE
-    style CI/CD & Automation fill:#1E3A5F,color:#BFDBFE
-    style Application fill:#1E3A5F,color:#BFDBFE
-    style Data & Artifacts fill:#0F172A,color:#BFDBFE
-    style AI Services fill:#1E3A5F,color:#BFDBFE
-    style External Integrations fill:#0F172A,color:#BFDBFE
+    FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
