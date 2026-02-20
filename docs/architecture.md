@@ -19,116 +19,97 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-
-        subgraph "External Users"
-            User[Developer Browser]
-        end
-
-        subgraph "Security"
-            LB[Cloud Load Balancer]
-            CA[Cloud Armor]
-            WIF[Workload Identity Federation]
-        end
-        style Security fill:#1E40AF,color:#BFDBFE
-
-        subgraph "GitHub Platform"
-            GHRepo[GitHub Repository]
-            GHA[GitHub Actions Workflows]
-        end
-
-        subgraph "Application Layer"
-            style Application fill:#1E3A5F,color:#BFDBFE
-
-            subgraph "CHAD Dashboard Service"
-                DashboardCR[Cloud Run: CHAD Dashboard]
-                DashboardApp[Flask App: dashboard-server.py]
-            end
-
-            subgraph "Architecture Gallery Service"
-                GalleryCR[Cloud Run: Architecture Gallery]
-                GalleryApp[FastAPI App: gallery/main.py]
-            end
-        end
-
-        subgraph "Data & Artifacts"
-            style Data fill:#0F172A,color:#BFDBFE
-            CS[Cloud Storage: Diagrams · Reports]
-            SM[Secret Manager]
-            AR[Artifact Registry]
-        end
-
-        subgraph "GCP Shared Services"
-            CB[Cloud Build]
-        end
-
-        subgraph "External Services"
+        subgraph "External"
+            User[External User/Developer]
+            GitHub[GitHub Repository]
             GeminiAPI[Google Gemini API]
             GitHubAPI[GitHub API]
         end
 
-        subgraph "Internal Scripts & Tools"
-            DiagGen[Script: generate_diagram.py]
-            Foreman[Script: foreman_audit.py]
-            RepoAudit[Script: repo_auditor.py]
-            DashGen[Script: dashboard_generator.py]
-            Cleanup[Script: cleanup_agent.py]
-            Terraform[Terraform IaC]
+        subgraph "Security"
+            CloudArmor[Cloud Armor]
+            LoadBalancer[Cloud Load Balancer]
+            SecretManager[Secret Manager]
+            WIF[Workload Identity Federation]
         end
 
-        %% Data Flows
-        User -->|HTTPS Request| LB
-        LB -->|Protected Traffic| CA
-        CA -->|Route Traffic| DashboardCR
-        CA -->|Route Traffic| GalleryCR
+        subgraph "Application"
+            GH_Actions[GitHub Actions · Orchestrator]
+            ArchitectAIGen[Architect AI Pro · Diagram Generator]
+            ForemanAudit[Foreman AI · Auditor]
+            RepoAuditorGH[Repo Auditor · GHA Script]
+            DashboardGenGH[Dashboard Generator · GHA Script]
+            CleanupAgent[Cleanup Agent · GHA Script]
+            CHADDashboard[CHAD Dashboard · Cloud Run]
+            RepoAuditorCR[Repo Auditor · CR Subprocess]
+            DashboardGenCR[Dashboard Generator · CR Subprocess]
+            ArchGallery[Architecture Gallery · Cloud Run]
+        end
 
-        GHA -->|Trigger Workflow| DiagGen
-        GHA -->|Trigger Workflow| Foreman
-        GHA -->|Trigger Workflow| RepoAudit
-        GHA -->|Trigger Workflow| DashGen
-        GHA -->|Trigger Workflow| Cleanup
-        GHA -->|Trigger Workflow| Terraform
+        subgraph "Data"
+            CloudStorage[Cloud Storage · Diagrams]
+            ArtifactRegistry[Artifact Registry]
+            AuditReport[audit_report.json]
+            ForemanReport[foreman_report.txt]
+            ARCHITECT_CONFIG[ARCHITECT_CONFIG.json]
+        end
 
-        DiagGen -->|Prompt & Context| GeminiAPI
-        GeminiAPI -->|Mermaid Diagram| DiagGen
-        DiagGen -->|Generated Diagram| Foreman
-        Foreman -->|Audit Report| GHA
-        GHA -->|Store Diagram & Report| CS
+        subgraph "Infrastructure"
+            Terraform[Terraform · IaC]
+            CloudBuild[Cloud Build]
+        end
 
-        RepoAudit -->|Scan Repos| GitHubAPI
-        GitHubAPI -->|Repo Metadata| RepoAudit
-        RepoAudit -->|Audit Data JSON| CS
+        subgraph "Generated Artifacts"
+            MermaidDiagram[Mermaid.js Diagram]
+            DrawIOXML[Draw.io XML]
+            PNGDiagram[PNG Diagram]
+        end
 
-        DashGen -->|Read Audit Data| CS
-        DashGen -->|Generate HTML| CS
+        CloudCDN[Cloud CDN]
 
-        Cleanup -->|Modify Repos| GitHubAPI
+        %% Flows
+        User -->|Code Changes/PR| GitHub
+        GitHub -->|Push/PR Event| GH_Actions
+        GH_Actions -->|Authenticates via| WIF
+        WIF -->|Grants Access| SecretManager
+        GH_Actions -->|Reads Config| ARCHITECT_CONFIG
+        GH_Actions -->|Executes| ArchitectAIGen
+        ArchitectAIGen -->|Scans Repo Files| GitHub
+        ArchitectAIGen -->|Calls API| GeminiAPI
+        GeminiAPI -->|Generates Mermaid| ArchitectAIGen
+        ArchitectAIGen -->|Outputs| MermaidDiagram
+        MermaidDiagram -->|Audited by| ForemanAudit
+        ForemanAudit -->|Reads Config| ARCHITECT_CONFIG
+        ForemanAudit -->|Outputs| ForemanReport
+        ArchitectAIGen -->|Converts to| DrawIOXML
+        ArchitectAIGen -->|Converts to| PNGDiagram
 
-        DashboardCR -->|API Refresh Request| DashboardApp
-        DashboardApp -->|Execute Repo Audit| RepoAudit
-        DashboardApp -->|Execute Dashboard Gen| DashGen
-        DashboardApp -->|Read Audit Report| CS
-        DashboardApp -->|Serve Dashboard HTML| User
+        GH_Actions -->|Executes| RepoAuditorGH
+        RepoAuditorGH -->|Calls API| GitHubAPI
+        GitHubAPI -->|Repo Data| RepoAuditorGH
+        RepoAuditorGH -->|Outputs| AuditReport
 
-        GalleryCR -->|Serve Diagrams| CS
-        GalleryCR -->|Display to User| User
+        GH_Actions -->|Executes| DashboardGenGH
+        DashboardGenGH -->|Reads| AuditReport
+        DashboardGenGH -->|Deploys Static Assets| CHADDashboard
 
-        GHA -- WIF --> SM
-        GHA -- WIF --> CB
-        GHA -- WIF --> AR
-        GHA -- WIF --> CS
-        Terraform -- WIF --> CB
-        Terraform -- WIF --> AR
-        Terraform -- WIF --> SM
-        Terraform -- WIF --> DashboardCR
-        Terraform -- WIF --> GalleryCR
-        Terraform -- WIF --> CS
+        GH_Actions -->|Executes| CleanupAgent
+        CleanupAgent -->|Calls API| GitHubAPI
+        GitHubAPI -->|Modifies Repos| CleanupAgent
 
-        CB -->|Build & Push Docker Image| AR
-        AR -->|Deploy Image| DashboardCR
-        AR -->|Deploy Image| GalleryCR
+        GH_Actions -->|Deploys Infra via| Terraform
+        Terraform -->|Manages| CHADDashboard
+        Terraform -->|Manages| ArchGallery
+        Terraform -->|Manages| SecretManager
+        Terraform -->|Manages| ArtifactRegistry
+        Terraform -->|Manages| CloudStorage
 
-    end
+        GH_Actions -->|Triggers Build| CloudBuild
+        CloudBuild -->|Builds Docker Images| ArtifactRegistry
+        ArtifactRegistry -->|Deploys to| CHADDashboard
+        ArtifactRegistry -->|Deploys to| ArchGallery
 
+        User -->|Accesses via HTTPS| Load
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
