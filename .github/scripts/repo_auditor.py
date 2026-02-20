@@ -310,28 +310,42 @@ def run_audit(owner: str, token: str) -> dict:
     print(f"🔍 CHAD Repo Auditor — scanning {owner}...")
     print(f"   Budget: {MAX_API_CALLS} API calls max")
 
-    # Fetch all repos (use /user/repos for authenticated access to private repos,
-    # fall back to /users/{owner}/repos for public-only)
-    repos = []
+    # Fetch all repos from BOTH endpoints and merge (dedup by name).
+    # /user/repos?affiliation=owner gets private repos but may miss forks.
+    # /users/{owner}/repos gets all public repos including forks.
+    seen = {}
+
+    # 1) Authenticated endpoint — private + owned repos
     page = 1
     while True:
-        # Try authenticated endpoint first (includes private repos)
         url = f"{GITHUB_API}/user/repos"
         params = {"per_page": 100, "page": page, "affiliation": "owner", "sort": "pushed"}
         batch = api_get(url, token, params)
         if not batch:
-            # Fallback to public endpoint
-            url = f"{GITHUB_API}/users/{owner}/repos"
-            params = {"per_page": 100, "page": page, "type": "all"}
-            batch = api_get(url, token, params)
-        if not batch:
             break
-        # Filter to only repos owned by the target owner
-        batch = [r for r in batch if r.get("owner", {}).get("login", "").lower() == owner.lower()]
-        repos.extend(batch)
+        for r in batch:
+            if r.get("owner", {}).get("login", "").lower() == owner.lower():
+                seen[r["name"]] = r
         if len(batch) < 100:
             break
         page += 1
+
+    # 2) Public endpoint — catches forks and any repos the PAT can't see via /user
+    page = 1
+    while True:
+        url = f"{GITHUB_API}/users/{owner}/repos"
+        params = {"per_page": 100, "page": page, "type": "all"}
+        batch = api_get(url, token, params)
+        if not batch:
+            break
+        for r in batch:
+            if r["name"] not in seen:
+                seen[r["name"]] = r
+        if len(batch) < 100:
+            break
+        page += 1
+
+    repos = list(seen.values())
 
     print(f"   Found {len(repos)} repos")
 

@@ -1,30 +1,18 @@
 {
-<<<<<<< Updated upstream
-  "audit_timestamp": "2026-02-20T16:50:03.935650+00:00",
-=======
-  "audit_timestamp": "2026-02-20T16:53:51.674659+00:00",
->>>>>>> Stashed changes
+  "audit_timestamp": "2026-02-20T17:17:03.174499+00:00",
   "owner": "koreric75",
   "org_name": "BlueFalconInk LLC",
-  "api_calls_used": 183,
+  "api_calls_used": 184,
   "summary": {
-    "total_repos": 21,
+    "total_repos": 14,
     "core": 8,
     "active": 6,
-    "stale": 1,
-    "dead": 6,
-    "forks": 5,
-    "archived": 0,
+    "stale": 0,
+    "dead": 0,
+    "forks": 0,
+    "archived": 7,
     "delete_candidates": [],
-    "archive_candidates": [
-      "Laser_control",
-      "aws-elastic-beanstalk-express-js-sample",
-      "devops-essentials-sample-app",
-      "RPI-Backup",
-      "HandBrake",
-      "owncloudpi-deb-jessie8",
-      "rpi-clone"
-    ],
+    "archive_candidates": [],
     "branding_issues": [],
     "total_disk_mb": 0.0,
     "total_monthly_burn": 480
@@ -36,7 +24,7 @@
       "url": "https://github.com/koreric75/Afterword",
       "is_private": true,
       "is_fork": false,
-      "is_archived": false,
+      "is_archived": true,
       "language": "Python",
       "default_branch": "main",
       "disk_usage_kb": 451,
@@ -129,7 +117,7 @@
       "is_archived": false,
       "language": "TypeScript",
       "default_branch": "main",
-      "disk_usage_kb": 205,
+      "disk_usage_kb": 542,
       "staleness": {
         "last_push": "2026-02-20T16:16:07Z",
         "days_since_push": 0,
@@ -213,13 +201,9 @@
       "is_archived": false,
       "language": "Python",
       "default_branch": "main",
-      "disk_usage_kb": 591,
+      "disk_usage_kb": 1425,
       "staleness": {
-<<<<<<< Updated upstream
-        "last_push": "2026-02-20T16:49:12Z",
-=======
-        "last_push": "2026-02-20T16:50:19Z",
->>>>>>> Stashed changes
+        "last_push": "2026-02-20T17:15:30Z",
         "days_since_push": 0,
         "status": "ACTIVE",
         "recommendation": "KEEP"
@@ -256,17 +240,30 @@
         "has_gcp_creds": false
       },
       "workflows": {
-        "total_runs": 61,
+        "total_runs": 64,
         "recent_runs": [
           {
-            "name": "CHAD Ops \u2014 Agent Orchestration",
-<<<<<<< Updated upstream
-            "status": "in_progress",
-            "conclusion": null,
-=======
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "startup_failure",
+            "created_at": "2026-02-20T17:13:38Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
             "status": "completed",
             "conclusion": "success",
->>>>>>> Stashed changes
+            "created_at": "2026-02-20T17:13:38Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f BlueFalconInk LLC Architecture Sync",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T17:13:38Z"
+          },
+          {
+            "name": "CHAD Ops \u2014 Agent Orchestration",
+            "status": "completed",
+            "conclusion": "success",
             "created_at": "2026-02-20T16:49:19Z"
           },
           {
@@ -274,24 +271,6 @@
             "status": "completed",
             "conclusion": "success",
             "created_at": "2026-02-20T16:41:50Z"
-          },
-          {
-            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
-            "status": "completed",
-            "conclusion": "startup_failure",
-            "created_at": "2026-02-20T16:41:22Z"
-          },
-          {
-            "name": "\ud83c\udfd7\ufe0f BlueFalconInk LLC Architecture Sync",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-02-20T16:41:22Z"
-          },
-          {
-            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-02-20T16:41:22Z"
           }
         ],
         "recent_failures": 0,
@@ -307,7 +286,7 @@
       "is_archived": false,
       "language": "TypeScript",
       "default_branch": "main",
-      "disk_usage_kb": 282,
+      "disk_usage_kb": 517,
       "staleness": {
         "last_push": "2026-02-20T16:16:16Z",
         "days_since_push": 0,
@@ -391,7 +370,7 @@
       "is_archived": false,
       "language": "TypeScript",
       "default_branch": "main",
-      "disk_usage_kb": 222,
+      "disk_usage_kb": 486,
       "staleness": {
         "last_push": "2026-02-20T16:16:07Z",
         "days_since_push": 0,
@@ -475,7 +454,7 @@
       "is_archived": false,
       "language": "Python",
       "default_branch": "main",
-      "disk_usage_kb": 23210,
+      "disk_usage_kb": 23422,
       "staleness": {
         "last_push": "2026-02-20T16:15:56Z",
         "days_since_push": 0,
@@ -559,7 +538,7 @@
       "is_archived": false,
       "language": "TypeScript",
       "default_branch": "master",
-      "disk_usage_kb": 310,
+      "disk_usage_kb": 324,
       "staleness": {
         "last_push": "2026-02-20T16:16:08Z",
         "days_since_push": 0,
@@ -644,7 +623,7 @@
       "is_archived": false,
       "language": "TypeScript",
       "default_branch": "main",
-      "disk_usage_kb": 337,
+      "disk_usage_kb": 839,
       "staleness": {
         "last_push": "2026-02-20T16:17:30Z",
         "days_since_push": 0,
@@ -725,7 +704,7 @@
       "url": "https://github.com/koreric75/AnimorphStudios",
       "is_private": false,
       "is_fork": false,
-      "is_archived": false,
+      "is_archived": true,
       "language": "TypeScript",
       "default_branch": "main",
       "disk_usage_kb": 19,
@@ -776,7 +755,7 @@
       "url": "https://github.com/koreric75/LinkedInStrategyAsst",
       "is_private": false,
       "is_fork": false,
-      "is_archived": false,
+      "is_archived": true,
       "language": "Python",
       "default_branch": "master",
       "disk_usage_kb": 809,
@@ -858,7 +837,7 @@
       "url": "https://github.com/koreric75/MCquotemaker",
       "is_private": false,
       "is_fork": false,
-      "is_archived": false,
+      "is_archived": true,
       "language": "TypeScript",
       "default_branch": "master",
       "disk_usage_kb": 140,
@@ -940,7 +919,7 @@
       "url": "https://github.com/koreric75/duplicate-cleaner",
       "is_private": false,
       "is_fork": false,
-      "is_archived": false,
+      "is_archived": true,
       "language": "Python",
       "default_branch": "main",
       "disk_usage_kb": 38,
@@ -1022,7 +1001,7 @@
       "url": "https://github.com/koreric75/socialauditai",
       "is_private": true,
       "is_fork": false,
-      "is_archived": false,
+      "is_archived": true,
       "language": "HTML",
       "default_branch": "main",
       "disk_usage_kb": 26,
@@ -1073,7 +1052,7 @@
       "url": "https://github.com/koreric75/sunopipeline",
       "is_private": false,
       "is_fork": false,
-      "is_archived": false,
+      "is_archived": true,
       "language": "Python",
       "default_branch": "main",
       "disk_usage_kb": 7,
@@ -1116,286 +1095,6 @@
         "recent_runs": [],
         "recent_failures": 0,
         "health": "HEALTHY"
-      }
-    },
-    {
-      "name": "Laser_control",
-      "description": "Laser for control mosquito, weed, and pest",
-      "url": "https://github.com/koreric75/Laser_control",
-      "is_private": false,
-      "is_fork": true,
-      "is_archived": false,
-      "language": "None",
-      "default_branch": "master",
-      "disk_usage_kb": 59077,
-      "staleness": {
-        "last_push": "2024-04-22T21:44:00Z",
-        "days_since_push": 668,
-        "status": "STALE",
-        "recommendation": "ARCHIVE"
-      },
-      "classification": {
-        "tier": "STALE",
-        "action": "ARCHIVE",
-        "monthly_burn_estimate": 0,
-        "disk_mb": 0.0
-      },
-      "branding": {
-        "compliant": true,
-        "issues": [],
-        "files_checked": 0
-      },
-      "architecture": {
-        "fully_configured": false,
-        "has_workflow": false,
-        "files": {}
-      },
-      "secrets": {
-        "has_gemini_key": false
-      },
-      "workflows": {
-        "health": "UNKNOWN",
-        "recent_runs": []
-      }
-    },
-    {
-      "name": "HandBrake",
-      "description": "HandBrake's main development repository ",
-      "url": "https://github.com/koreric75/HandBrake",
-      "is_private": false,
-      "is_fork": true,
-      "is_archived": false,
-      "language": "C",
-      "default_branch": "master",
-      "disk_usage_kb": 76132,
-      "staleness": {
-        "last_push": "2016-09-29T18:27:28Z",
-        "days_since_push": 3430,
-        "status": "DEAD",
-        "recommendation": "DELETE or ARCHIVE"
-      },
-      "classification": {
-        "tier": "DEAD",
-        "action": "ARCHIVE_OR_DELETE",
-        "monthly_burn_estimate": 0,
-        "disk_mb": 0.0
-      },
-      "branding": {
-        "compliant": true,
-        "issues": [],
-        "files_checked": 0
-      },
-      "architecture": {
-        "fully_configured": false,
-        "has_workflow": false,
-        "files": {}
-      },
-      "secrets": {
-        "has_gemini_key": false
-      },
-      "workflows": {
-        "health": "UNKNOWN",
-        "recent_runs": []
-      }
-    },
-    {
-      "name": "RPI-Backup",
-      "description": "script to back-up raspberry pi",
-      "url": "https://github.com/koreric75/RPI-Backup",
-      "is_private": false,
-      "is_fork": false,
-      "is_archived": false,
-      "language": "Shell",
-      "default_branch": "master",
-      "disk_usage_kb": 4,
-      "staleness": {
-        "last_push": "2016-10-25T03:20:13Z",
-        "days_since_push": 3405,
-        "status": "DEAD",
-        "recommendation": "DELETE or ARCHIVE"
-      },
-      "classification": {
-        "tier": "DEAD",
-        "action": "ARCHIVE_OR_DELETE",
-        "monthly_burn_estimate": 0,
-        "disk_mb": 0.0
-      },
-      "branding": {
-        "compliant": true,
-        "issues": [],
-        "files_checked": 0
-      },
-      "architecture": {
-        "fully_configured": false,
-        "has_workflow": false,
-        "files": {}
-      },
-      "secrets": {
-        "has_gemini_key": false
-      },
-      "workflows": {
-        "health": "UNKNOWN",
-        "recent_runs": []
-      }
-    },
-    {
-      "name": "aws-elastic-beanstalk-express-js-sample",
-      "description": "Sample web application for the AWS DevOps Engineer Learning Path.",
-      "url": "https://github.com/koreric75/aws-elastic-beanstalk-express-js-sample",
-      "is_private": false,
-      "is_fork": true,
-      "is_archived": false,
-      "language": "JavaScript",
-      "default_branch": "main",
-      "disk_usage_kb": 10,
-      "staleness": {
-        "last_push": "2021-01-07T13:52:31Z",
-        "days_since_push": 1870,
-        "status": "DEAD",
-        "recommendation": "DELETE or ARCHIVE"
-      },
-      "classification": {
-        "tier": "DEAD",
-        "action": "ARCHIVE_OR_DELETE",
-        "monthly_burn_estimate": 0,
-        "disk_mb": 0.0
-      },
-      "branding": {
-        "compliant": true,
-        "issues": [],
-        "files_checked": 0
-      },
-      "architecture": {
-        "fully_configured": false,
-        "has_workflow": false,
-        "files": {}
-      },
-      "secrets": {
-        "has_gemini_key": false
-      },
-      "workflows": {
-        "health": "UNKNOWN",
-        "recent_runs": []
-      }
-    },
-    {
-      "name": "devops-essentials-sample-app",
-      "description": "",
-      "url": "https://github.com/koreric75/devops-essentials-sample-app",
-      "is_private": false,
-      "is_fork": true,
-      "is_archived": false,
-      "language": "HTML",
-      "default_branch": "master",
-      "disk_usage_kb": 55,
-      "staleness": {
-        "last_push": "2019-03-10T15:06:01Z",
-        "days_since_push": 2539,
-        "status": "DEAD",
-        "recommendation": "DELETE or ARCHIVE"
-      },
-      "classification": {
-        "tier": "DEAD",
-        "action": "ARCHIVE_OR_DELETE",
-        "monthly_burn_estimate": 0,
-        "disk_mb": 0.0
-      },
-      "branding": {
-        "compliant": true,
-        "issues": [],
-        "files_checked": 0
-      },
-      "architecture": {
-        "fully_configured": false,
-        "has_workflow": false,
-        "files": {}
-      },
-      "secrets": {
-        "has_gemini_key": false
-      },
-      "workflows": {
-        "health": "UNKNOWN",
-        "recent_runs": []
-      }
-    },
-    {
-      "name": "owncloudpi-deb-jessie8",
-      "description": "Fixes and log",
-      "url": "https://github.com/koreric75/owncloudpi-deb-jessie8",
-      "is_private": false,
-      "is_fork": false,
-      "is_archived": false,
-      "language": "None",
-      "default_branch": "master",
-      "disk_usage_kb": 1,
-      "staleness": {
-        "last_push": "2016-09-17T04:29:22Z",
-        "days_since_push": 3443,
-        "status": "DEAD",
-        "recommendation": "DELETE or ARCHIVE"
-      },
-      "classification": {
-        "tier": "DEAD",
-        "action": "ARCHIVE_OR_DELETE",
-        "monthly_burn_estimate": 0,
-        "disk_mb": 0.0
-      },
-      "branding": {
-        "compliant": true,
-        "issues": [],
-        "files_checked": 0
-      },
-      "architecture": {
-        "fully_configured": false,
-        "has_workflow": false,
-        "files": {}
-      },
-      "secrets": {
-        "has_gemini_key": false
-      },
-      "workflows": {
-        "health": "UNKNOWN",
-        "recent_runs": []
-      }
-    },
-    {
-      "name": "rpi-clone",
-      "description": "A shell script to clone a running Raspberry Pi SD card to a USB mounted SD card.",
-      "url": "https://github.com/koreric75/rpi-clone",
-      "is_private": false,
-      "is_fork": true,
-      "is_archived": false,
-      "language": "Shell",
-      "default_branch": "master",
-      "disk_usage_kb": 37,
-      "staleness": {
-        "last_push": "2016-09-09T15:42:33Z",
-        "days_since_push": 3451,
-        "status": "DEAD",
-        "recommendation": "DELETE or ARCHIVE"
-      },
-      "classification": {
-        "tier": "DEAD",
-        "action": "ARCHIVE_OR_DELETE",
-        "monthly_burn_estimate": 0,
-        "disk_mb": 0.0
-      },
-      "branding": {
-        "compliant": true,
-        "issues": [],
-        "files_checked": 0
-      },
-      "architecture": {
-        "fully_configured": false,
-        "has_workflow": false,
-        "files": {}
-      },
-      "secrets": {
-        "has_gemini_key": false
-      },
-      "workflows": {
-        "health": "UNKNOWN",
-        "recent_runs": []
       }
     }
   ]
