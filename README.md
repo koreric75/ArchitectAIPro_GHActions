@@ -1,17 +1,17 @@
-# 🏗️ The BlueFalconInk Architecture Standard
+# 🏗️ The BlueFalconInk LLC Architecture Standard
 
 ## "Documentation as Code, Governance as Service"
 
-![Arch-Status](https://img.shields.io/badge/BlueFalconInk-Standard-1E40AF)
+![Arch-Status](https://img.shields.io/badge/BlueFalconInk%20LLC-Standard-1E40AF)
 ![License](https://img.shields.io/badge/license-Proprietary-blue)
 
-This repository defines the automated architectural standards for all **BlueFalconInk** projects. We leverage **Architect AI Pro** to ensure that every repository is born with professional, compliant, and synchronized technical blueprints.
+This repository defines the automated architectural standards for all **BlueFalconInk LLC** projects. We leverage **Architect AI Pro** to ensure that every repository is born with professional, compliant, and synchronized technical blueprints.
 
 ---
 
 ## 🚀 The Workflow: "The Foreman"
 
-Every project in the BlueFalconInk ecosystem follows an autonomous lifecycle:
+Every project in the BlueFalconInk LLC ecosystem follows an autonomous lifecycle:
 
 1. **Standardized Genesis**: New repositories are created from the `bluefalconink-template`, inheriting the core CI/CD pipeline and `ARCHITECT_CONFIG.json`.
 2. **AI Synthesis**: Upon every push to `main`, **Architect AI Pro** analyzes the codebase and generates a Mermaid.js architecture diagram.
@@ -37,11 +37,11 @@ To maintain consistency across our portfolio, all AI-generated diagrams must adh
 
 ---
 
-## 🏢 The BlueFalconInk Flagships
+## 🏢 The BlueFalconInk LLC Flagships
 
 | Project | Domain | Description |
 |---------|--------|-------------|
-| **ArchitectAI Pro** | Architecture/AI | The engine behind the BlueFalconInk Standard |
+| **ArchitectAI Pro** | Architecture/AI | The engine behind the BlueFalconInk LLC Standard |
 | **ProposalBuddyAI** | Automation/Bids | Ruthless Automation — 80% reduction in technical assessment drag |
 | **Clipstream** | Media/RC Hobby | Media engine for @BlueFalconRCandMedia |
 | **Instructional Video Site** | Education/SaaS | Subscription-based how-to videos: IT, Cooking, Music |
@@ -81,7 +81,7 @@ To maintain consistency across our portfolio, all AI-generated diagrams must adh
 │   └── mermaid_to_excalidraw.py   # Export to Excalidraw JSON
 ├── docs/
 │   └── architecture.md            # Auto-generated architecture diagram
-├── ARCHITECT_CONFIG.json          # BlueFalconInk building codes
+├── ARCHITECT_CONFIG.json          # BlueFalconInk LLC building codes
 ├── REMEDIATION_PROMPT.md          # Self-healing prompt template
 ├── SECURITY.md                    # Security & code context policy
 └── README.md                      # This file
@@ -108,7 +108,7 @@ The Foreman AI performs the following checks on every architecture diagram:
 | Cloud Provider Alignment | 🔴 Critical | Flags non-standard cloud providers |
 | Security Layer | 🔴 Critical | Requires WAF/ALB/Security subgraph |
 | Mermaid Syntax | 🔴 Critical | Validates output is renderable |
-| Branding | 📝 Note | Ensures BlueFalconInk identity |
+| Branding | 📝 Note | Ensures BlueFalconInk LLC identity |
 | Data Flow | ⚠️ Warning | Verifies directional arrows exist |
 | CDN Presence | ⚠️ Warning | Required for content delivery |
 | PCI Compliance | ⚠️ Warning | Payment boundary separation |
@@ -178,4 +178,4 @@ terraform apply
 
 ---
 
-**© 2026 BlueFalconInk. All Rights Reserved.**
+**© 2026 BlueFalconInk LLC. All Rights Reserved.**

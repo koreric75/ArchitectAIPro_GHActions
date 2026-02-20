@@ -17,6 +17,6 @@ Generate a Mermaid.js architecture diagram for an IoT data platform
 
 - Include a `subgraph Security` boundary with device authentication
 - Show real-time data flow from device to dashboard
-- Use the BlueFalconInk primary color `#1E40AF`
+- Use the BlueFalconInk LLC primary color `#1E40AF`
 - Include edge computing layer if applicable
 - Output valid Mermaid.js syntax

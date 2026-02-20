@@ -1,7 +1,7 @@
 # =====================================================
 # Cloud Run Service - Architecture Gallery
 # =====================================================
-# Hosts the BlueFalconInk Architecture Gallery
+# Hosts the BlueFalconInk LLC Architecture Gallery
 # at arch.bluefalconink.com
 # =====================================================
 

@@ -16,6 +16,6 @@ Generate a Mermaid.js architecture diagram for an AI/ML-powered application.
 
 - Include a `subgraph Security` boundary with WAF and IAM roles
 - Show the training vs. inference paths clearly
-- Use the BlueFalconInk primary color `#1E40AF`
+- Use the BlueFalconInk LLC primary color `#1E40AF`
 - Include data flow arrows for the full ML lifecycle
 - Output valid Mermaid.js syntax

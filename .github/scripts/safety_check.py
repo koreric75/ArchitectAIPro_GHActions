@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BlueFalconInk Safety Check - Legacy Audit Script
+BlueFalconInk LLC Safety Check - Legacy Audit Script
 
 Simplified version of the Foreman audit for quick CLI checks.
 
@@ -16,7 +16,7 @@ from pathlib import Path
 
 
 def audit_diagram(diagram_text: str, config_path: str) -> list:
-    """Audit a diagram against the BlueFalconInk building codes."""
+    """Audit a diagram against the BlueFalconInk LLC building codes."""
     with open(config_path, "r") as f:
         config = json.load(f)
 
@@ -44,7 +44,7 @@ def audit_diagram(diagram_text: str, config_path: str) -> list:
             )
 
     # Check 3: Naming Conventions / Branding
-    org_name = config.get("org_name", "BlueFalconInk")
+    org_name = config.get("org_name", "BlueFalconInk LLC")
     if org_name not in diagram_text and "BlueFalcon" not in diagram_text:
         violations.append(
             f"📝 Note: Diagram is missing {org_name} branding elements."
@@ -63,7 +63,7 @@ def audit_diagram(diagram_text: str, config_path: str) -> list:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="BlueFalconInk Safety Check")
+    parser = argparse.ArgumentParser(description="BlueFalconInk LLC Safety Check")
     parser.add_argument("--file", required=True, help="Path to architecture diagram")
     parser.add_argument(
         "--config",
@@ -92,7 +92,7 @@ def main():
             print(f"🟡 PASSED with {len(violations)} warning(s)/note(s).")
             sys.exit(0)
     else:
-        print("✅ All BlueFalconInk standards met.")
+        print("✅ All BlueFalconInk LLC standards met.")
         sys.exit(0)
 
 

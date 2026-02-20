@@ -18,6 +18,6 @@ and document automation platform (ProposalBuddyAI).
 
 - Include a `subgraph Security` boundary with WAF and ALB
 - Show the full proposal lifecycle: Ingest → Analyze → Generate → Review → Export
-- Use the BlueFalconInk primary color `#1E40AF`
+- Use the BlueFalconInk LLC primary color `#1E40AF`
 - Include audit trail / compliance logging
 - Output valid Mermaid.js syntax

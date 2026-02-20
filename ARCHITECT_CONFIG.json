@@ -1,5 +1,5 @@
 {
-  "org_name": "BlueFalconInk",
+  "org_name": "BlueFalconInk LLC",
   "version": "1.0.0",
   "styling": {
     "theme": "dark",
@@ -26,7 +26,7 @@
   "flagships": {
     "ArchitectAI": {
       "domain": "Architecture/AI",
-      "description": "The engine behind the BlueFalconInk Standard - turning technical intent into blueprints"
+      "description": "The engine behind the BlueFalconInk LLC Standard - turning technical intent into blueprints"
     },
     "ProposalBuddyAI": {
       "domain": "Automation/Bids",

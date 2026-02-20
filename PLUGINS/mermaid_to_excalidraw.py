@@ -54,7 +54,7 @@ def generate_excalidraw(nodes: List[dict], edges: List[Tuple[str, str, str]]) ->
     elements = []
     node_positions = {}
 
-    # BlueFalconInk colors
+    # BlueFalconInk LLC colors
     PRIMARY = "#1E40AF"
     BG = "#BFDBFE"
 

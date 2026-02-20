@@ -15,6 +15,6 @@ Generate a Mermaid.js C4 Context diagram for a SaaS platform with these componen
 - Include a `subgraph Security` boundary with WAF and ALB
 - Separate the `subgraph Payment` boundary for Stripe logic
 - Show data flow arrows between all components
-- Use the BlueFalconInk primary color `#1E40AF`
+- Use the BlueFalconInk LLC primary color `#1E40AF`
 - Include CDN in the content delivery path
 - Output valid Mermaid.js syntax

@@ -1,7 +1,7 @@
 ### 🔧 ARCHITECT AI PRO: REMEDIATION TASK
 
 **Role:** Senior Principal Solutions Architect (Foreman Mode)
-**Context:** The previous architecture diagram failed the BlueFalconInk Safety Check.
+**Context:** The previous architecture diagram failed the BlueFalconInk LLC Safety Check.
 
 ---
 
@@ -26,12 +26,12 @@
 
 Rewrite the Mermaid.js code to resolve **all** violations listed above. Follow these rules:
 
-1. Do **not** remove existing logic unless it directly conflicts with the BlueFalconInk standards.
+1. Do **not** remove existing logic unless it directly conflicts with the BlueFalconInk LLC standards.
 2. Ensure the updated diagram is **valid Mermaid syntax** that renders correctly on GitHub.
 3. Add a `subgraph Security` block if one is missing.
 4. Replace any non-standard cloud provider references with the mandated provider's equivalents.
 5. Ensure all public-facing endpoints pass through a WAF/ALB/API Gateway before reaching application services.
-6. Include BlueFalconInk branding in the diagram title.
+6. Include BlueFalconInk LLC branding in the diagram title.
 7. For subscription services, ensure a clear `subgraph Payment` boundary separates Stripe logic from core application logic.
 8. Ensure a CDN (CloudFront) is present for any content delivery paths.
 
@@ -49,7 +49,7 @@ Rewrite the Mermaid.js code to resolve **all** violations listed above. Follow t
 
 ```mermaid
 %% Remediated by Architect AI Pro Foreman
-%% BlueFalconInk Architecture Standard v1.0
+%% BlueFalconInk LLC Architecture Standard v1.0
 
 graph TB
     subgraph Security["🛡️ Security Boundary"]
@@ -57,7 +57,7 @@ graph TB
         ALB[Application Load Balancer]
     end
 
-    subgraph Application["BlueFalconInk Service"]
+    subgraph Application["BlueFalconInk LLC Service"]
         API[FastAPI Backend]
         DB[(PostgreSQL)]
     end

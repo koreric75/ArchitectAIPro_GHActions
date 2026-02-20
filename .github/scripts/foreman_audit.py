@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-BlueFalconInk Foreman AI - Architecture Audit Script
+BlueFalconInk LLC Foreman AI - Architecture Audit Script
 
 The "Foreman" ensures every generated architecture diagram complies with
-the BlueFalconInk Building Code defined in ARCHITECT_CONFIG.json.
+the BlueFalconInk LLC Building Code defined in ARCHITECT_CONFIG.json.
 
 Usage:
     python foreman_audit.py --file docs/architecture.md --config ARCHITECT_CONFIG.json
@@ -116,10 +116,10 @@ def check_security_layer(diagram: str, config: dict) -> List[Violation]:
 
 
 def check_branding(diagram: str, config: dict) -> List[Violation]:
-    """Check 3: Ensure BlueFalconInk branding elements are present."""
+    """Check 3: Ensure BlueFalconInk LLC branding elements are present."""
     violations = []
     compliance = config.get("compliance", {})
-    org_name = config.get("org_name", "BlueFalconInk")
+    org_name = config.get("org_name", "BlueFalconInk LLC")
 
     if compliance.get("require_branding"):
         if org_name not in diagram and "BlueFalcon" not in diagram:
@@ -240,7 +240,7 @@ def generate_report(violations: List[Violation], repo_name: str = "") -> str:
                 report += f"  - *Remediation:* {v.remediation}\n"
         report += "\n"
     else:
-        report += "✅ All BlueFalconInk standards met. Architecture is compliant.\n"
+        report += "✅ All BlueFalconInk LLC standards met. Architecture is compliant.\n"
 
     return report
 
@@ -281,7 +281,7 @@ def run_audit(file_path: str, config_path: str) -> int:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="BlueFalconInk Foreman AI - Architecture Compliance Audit"
+        description="BlueFalconInk LLC Foreman AI - Architecture Compliance Audit"
     )
     parser.add_argument(
         "--file",

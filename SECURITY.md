@@ -96,6 +96,6 @@ If you discover a security vulnerability, please report it responsibly:
 
 ## 📄 License
 
-This security policy applies to all BlueFalconInk repositories using the Architect AI Pro Standard.
+This security policy applies to all BlueFalconInk LLC repositories using the Architect AI Pro Standard.
 
-**© 2026 BlueFalconInk. All Rights Reserved.**
+**© 2026 BlueFalconInk LLC. All Rights Reserved.**

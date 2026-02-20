@@ -12,7 +12,7 @@
 
 resource "google_iam_workload_identity_pool" "github_pool" {
   workload_identity_pool_id = "bluefalcon-github-pool"
-  display_name              = "BlueFalconInk GitHub Pool"
+  display_name              = "BlueFalconInk LLC GitHub Pool"
   description               = "WIF pool for GitHub Actions OIDC authentication"
 }
 

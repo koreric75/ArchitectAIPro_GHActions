@@ -1,4 +1,4 @@
-name: "\U0001F3D7\uFE0F BlueFalconInk Architecture Sync"
+name: "\U0001F3D7\uFE0F BlueFalconInk LLC Architecture Sync"
 
 on:
   push:
@@ -121,4 +121,4 @@ jobs:
 
       - name: Final Sign-off
         if: always()
-        run: echo "✅ Architecture verified and synchronized with BlueFalconInk standards."
+        run: echo "✅ Architecture verified and synchronized with BlueFalconInk LLC standards."

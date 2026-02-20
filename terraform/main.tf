@@ -1,5 +1,5 @@
 # =====================================================
-# BlueFalconInk Infrastructure - Core Configuration
+# BlueFalconInk LLC Infrastructure - Core Configuration
 # =====================================================
 # Provisions service accounts, secrets, and IAM roles
 # for the Architect AI Pro automation pipeline.

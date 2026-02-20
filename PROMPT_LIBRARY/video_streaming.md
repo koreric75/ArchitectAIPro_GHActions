@@ -1,7 +1,7 @@
 # Video Streaming / Instructional Site Prompt
 
 Generate a Mermaid.js C4 Context diagram for a subscription-based instructional
-video platform (BlueFalconInk). The system serves IT, Cooking, and Music/Instrument lessons.
+video platform (BlueFalconInk LLC). The system serves IT, Cooking, and Music/Instrument lessons.
 
 ## Key Components
 
@@ -16,7 +16,7 @@ video platform (BlueFalconInk). The system serves IT, Cooking, and Music/Instrum
 
 ## Requirements
 
-- Ensure the diagram uses the BlueFalconInk primary color `#1E40AF`
+- Ensure the diagram uses the BlueFalconInk LLC primary color `#1E40AF`
 - Highlight the secure path for paid subscribers (Signed URLs from CloudFront)
 - Include DRM/Access Control boundary between public internet and S3 video buckets
 - Separate Stripe payment logic in its own `subgraph Payment` for PCI compliance

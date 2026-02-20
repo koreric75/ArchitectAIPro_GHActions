@@ -1,8 +1,8 @@
 """
-BlueFalconInk Architecture Gallery
+BlueFalconInk LLC Architecture Gallery
 
 A FastAPI application that fetches and renders Mermaid.js architecture
-diagrams from across all BlueFalconInk GitHub repositories.
+diagrams from across all BlueFalconInk LLC GitHub repositories.
 
 Deployed on Google Cloud Run at https://arch.bluefalconink.com
 """
@@ -19,8 +19,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 app = FastAPI(
-    title="BlueFalconInk Architecture Gallery",
-    description="Centralized architecture diagram viewer for all BlueFalconInk flagships",
+    title="BlueFalconInk LLC Architecture Gallery",
+    description="Centralized architecture diagram viewer for all BlueFalconInk LLC flagships",
     version="1.0.0",
 )
 
