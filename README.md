@@ -52,7 +52,7 @@ To maintain consistency across our portfolio, all AI-generated diagrams must adh
 |---------|--------|-------------|
 | **ArchitectAI Pro** | Architecture/AI | The engine behind the BlueFalconInk LLC Standard |
 | **ProposalBuddyAI** | Automation/Bids | Ruthless Automation — 80% reduction in technical assessment drag |
-| **Clipstream** | Media/RC Hobby | Media engine for @BlueFalconRCandMedia |
+| **Clipstream** | Media/Video | Media engine for BlueFalconInk LLC |
 | **Instructional Video Site** | Education/SaaS | Subscription-based how-to videos: IT, Cooking, Music |
 
 ---

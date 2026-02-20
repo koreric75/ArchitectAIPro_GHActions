@@ -1,0 +1,227 @@
+############################################################
+# CHAD Ops — BlueFalconInk LLC Agent Orchestration
+#
+# Runs on schedule (weekly) or manual dispatch.
+# 1. Audits all repos → produces audit_report.json
+# 2. Generates CHAD advisory dashboard → dashboard.html
+# 3. Optionally runs cleanup agent (dry-run by default)
+# 4. Commits reports + dashboard back to this repo
+#
+# Secrets required:
+#   GITHUB_TOKEN (automatic)
+#   GEMINI_API_KEY (for AI-assisted analysis)
+############################################################
+name: "CHAD Ops — Agent Orchestration"
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"       # Every Monday at 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      run_cleanup:
+        description: "Run cleanup agent (archive stale repos, fix branding)"
+        required: false
+        default: "dry-run"
+        type: choice
+        options:
+          - "dry-run"
+          - "execute"
+          - "skip"
+      cleanup_actions:
+        description: "Cleanup actions to perform"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - "all"
+          - "archive"
+          - "brand"
+          - "deploy"
+
+permissions:
+  contents: write
+  actions: read
+  pull-requests: read
+
+env:
+  GITHUB_OWNER: "koreric75"
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  # ──────────────────────────────────────────
+  # Job 1: Audit all repos
+  # ──────────────────────────────────────────
+  audit:
+    name: "🔍 Repo Audit"
+    runs-on: ubuntu-latest
+    outputs:
+      api_calls: ${{ steps.audit.outputs.api_calls }}
+      total_repos: ${{ steps.audit.outputs.total_repos }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run Repo Auditor
+        id: audit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python .github/scripts/repo_auditor.py \
+            --owner "${{ env.GITHUB_OWNER }}" \
+            --output docs/audit_report.json
+          
+          # Extract summary for job output
+          echo "api_calls=$(python -c "import json; d=json.load(open('docs/audit_report.json')); print(d.get('api_calls_used',0))")" >> $GITHUB_OUTPUT
+          echo "total_repos=$(python -c "import json; d=json.load(open('docs/audit_report.json')); print(d.get('summary',{}).get('total_repos',0))")" >> $GITHUB_OUTPUT
+
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-report
+          path: docs/audit_report.json
+          retention-days: 90
+
+  # ──────────────────────────────────────────
+  # Job 2: Generate CHAD Dashboard
+  # ──────────────────────────────────────────
+  dashboard:
+    name: "📊 CHAD Dashboard"
+    needs: audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Download audit report
+        uses: actions/download-artifact@v4
+        with:
+          name: audit-report
+          path: docs/
+
+      - name: Generate Dashboard
+        run: |
+          python .github/scripts/dashboard_generator.py \
+            --input docs/audit_report.json \
+            --output docs/dashboard.html
+
+      - name: Upload dashboard
+        uses: actions/upload-artifact@v4
+        with:
+          name: chad-dashboard
+          path: |
+            docs/dashboard.html
+            docs/audit_report.json
+          retention-days: 90
+
+  # ──────────────────────────────────────────
+  # Job 3: Cleanup Agent (optional)
+  # ──────────────────────────────────────────
+  cleanup:
+    name: "🧹 Cleanup Agent"
+    needs: [audit, dashboard]
+    if: ${{ github.event.inputs.run_cleanup != 'skip' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Download audit report
+        uses: actions/download-artifact@v4
+        with:
+          name: audit-report
+          path: docs/
+
+      - name: Run Cleanup Agent
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MODE="${{ github.event.inputs.run_cleanup || 'dry-run' }}"
+          ACTIONS="${{ github.event.inputs.cleanup_actions || 'all' }}"
+          
+          if [ "$MODE" = "execute" ]; then
+            python .github/scripts/cleanup_agent.py \
+              --owner "${{ env.GITHUB_OWNER }}" \
+              --report docs/audit_report.json \
+              --execute \
+              --action $ACTIONS
+          else
+            python .github/scripts/cleanup_agent.py \
+              --owner "${{ env.GITHUB_OWNER }}" \
+              --report docs/audit_report.json \
+              --dry-run \
+              --action $ACTIONS
+          fi
+
+      - name: Upload cleanup log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cleanup-log
+          path: docs/cleanup_log.json
+          retention-days: 90
+
+  # ──────────────────────────────────────────
+  # Job 4: Commit reports back to repo
+  # ──────────────────────────────────────────
+  commit:
+    name: "💾 Commit Reports"
+    needs: [audit, dashboard]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: Commit reports and dashboard
+        run: |
+          mkdir -p docs
+          
+          # Copy artifacts
+          cp -f artifacts/audit-report/audit_report.json docs/ 2>/dev/null || true
+          cp -f artifacts/chad-dashboard/dashboard.html docs/ 2>/dev/null || true
+          
+          git config user.name "CHAD-Agent"
+          git config user.email "chad@bluefalconink.com"
+          git add docs/audit_report.json docs/dashboard.html
+          
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: Update CHAD audit report and dashboard [skip ci]
+
+Repos audited: ${{ needs.audit.outputs.total_repos }}
+API calls used: ${{ needs.audit.outputs.api_calls }}
+Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            
+            git pull --rebase origin main || true
+            git push origin main
+            echo "✅ Reports committed"
+          fi

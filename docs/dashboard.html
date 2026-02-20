@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHAD — BlueFalconInk Ops Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg-primary: #020617;
+    --bg-secondary: #0f172a;
+    --bg-card: #1e293b;
+    --bg-card-hover: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-blue: #3b82f6;
+    --accent-green: #22c55e;
+    --accent-amber: #f59e0b;
+    --accent-red: #ef4444;
+    --accent-purple: #8b5cf6;
+    --border: #1e293b;
+    --font-main: 'Space Grotesk', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Cascadia Code', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+.container { max-width: 1600px; margin: 0 auto; padding: 24px; }
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 32px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+}
+.header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.header .subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: 4px;
+}
+.header .meta {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+}
+.header .meta .timestamp { color: var(--accent-blue); }
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+.stat-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-blue);
+}
+.stat-card .label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.stat-card .value { font-size: 32px; font-weight: 700; margin: 8px 0 4px; font-family: var(--font-mono); }
+.stat-card .detail { font-size: 12px; color: var(--text-secondary); }
+.stat-green .value { color: var(--accent-green); }
+.stat-blue .value { color: var(--accent-blue); }
+.stat-amber .value { color: var(--accent-amber); }
+.stat-red .value { color: var(--accent-red); }
+.stat-purple .value { color: var(--accent-purple); }
+
+/* Sections */
+.section { margin-bottom: 40px; }
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+.section-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+}
+.section-header .filter-btns { display: flex; gap: 8px; }
+.filter-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-size: 12px;
+    transition: all 0.2s;
+}
+.filter-btn:hover, .filter-btn.active {
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
+}
+
+/* Table */
+.table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+th {
+    background: var(--bg-secondary);
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 2px solid var(--accent-blue);
+}
+td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+tr:hover { background: var(--bg-card); }
+.num { text-align: right; font-family: var(--font-mono); font-size: 12px; }
+.repo-link {
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+}
+.repo-link:hover { text-decoration: underline; }
+.repo-desc { color: var(--text-muted); font-size: 11px; margin-top: 2px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tier-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+.badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.fork-tag {
+    background: var(--accent-purple);
+    color: white;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+.bad-brand { color: var(--accent-red); font-family: var(--font-mono); font-size: 12px; }
+
+/* Action Cards */
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+}
+.action-card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 4px solid;
+}
+.action-card h3 { font-size: 16px; margin-bottom: 12px; }
+.action-card ul { padding-left: 20px; margin-bottom: 8px; }
+.action-card li { color: var(--text-secondary); font-size: 13px; margin-bottom: 4px; }
+.action-card p { color: var(--text-muted); font-size: 12px; }
+.action-delete { border-left-color: var(--accent-red); }
+.action-archive { border-left-color: var(--accent-amber); }
+.action-brand { border-left-color: var(--accent-purple); }
+.action-arch { border-left-color: var(--accent-blue); }
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 32px 0;
+    color: var(--text-muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+}
+.footer a { color: var(--accent-blue); text-decoration: none; }
+
+/* Burn Rate Bar */
+.burn-bar {
+    background: var(--bg-secondary);
+    border-radius: 6px;
+    height: 24px;
+    display: flex;
+    overflow: hidden;
+    margin-top: 8px;
+}
+.burn-segment {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: white;
+    min-width: 40px;
+    transition: width 0.5s;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container { padding: 12px; }
+    .header { flex-direction: column; text-align: center; gap: 12px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .section-header { flex-direction: column; gap: 12px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+    <div>
+        <h1>🦅 CHAD — BlueFalconInk Ops</h1>
+        <div class="subtitle">Centralized Hub for Architectural Decision-making</div>
+    </div>
+    <div class="meta">
+        <div>Owner: <span class="timestamp">koreric75</span></div>
+        <div>Audit: <span class="timestamp">2026-02-20T16:40:43Z</span></div>
+        <div>API calls: 183/300</div>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid">
+    <div class="stat-card stat-blue">
+        <div class="label">Total Repos</div>
+        <div class="value">21</div>
+        <div class="detail">5 forks</div>
+    </div>
+    <div class="stat-card stat-green">
+        <div class="label">Core Products</div>
+        <div class="value">8</div>
+        <div class="detail">Revenue-generating</div>
+    </div>
+    <div class="stat-card stat-blue">
+        <div class="label">Active</div>
+        <div class="value">6</div>
+        <div class="detail">Updated &lt; 90 days</div>
+    </div>
+    <div class="stat-card stat-amber">
+        <div class="label">Stale / Dormant</div>
+        <div class="value">1</div>
+        <div class="detail">Archive candidates</div>
+    </div>
+    <div class="stat-card stat-red">
+        <div class="label">Dead / Legacy</div>
+        <div class="value">6</div>
+        <div class="detail">Delete candidates</div>
+    </div>
+    <div class="stat-card stat-purple">
+        <div class="label">Disk Usage</div>
+        <div class="value">0</div>
+        <div class="detail">MB total</div>
+    </div>
+    <div class="stat-card stat-amber">
+        <div class="label">Est. Monthly Burn</div>
+        <div class="value">$480</div>
+        <div class="detail">GCP + CI/CD</div>
+    </div>
+    <div class="stat-card stat-red">
+        <div class="label">Branding Issues</div>
+        <div class="value">1</div>
+        <div class="detail">repos need fixes</div>
+    </div>
+</div>
+
+<!-- Active Infrastructure Matrix -->
+<div class="section">
+    <div class="section-header">
+        <h2>📡 Active Infrastructure Matrix</h2>
+        <div class="filter-btns">
+            <button class="filter-btn active" onclick="filterRepos('ALL')">All</button>
+            <button class="filter-btn" onclick="filterRepos('CORE')">Core</button>
+            <button class="filter-btn" onclick="filterRepos('ACTIVE')">Active</button>
+            <button class="filter-btn" onclick="filterRepos('STALE')">Stale</button>
+            <button class="filter-btn" onclick="filterRepos('DEAD')">Dead</button>
+            <button class="filter-btn" onclick="filterRepos('FORK')">Forks</button>
+        </div>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Repository</th>
+                    <th>Tier</th>
+                    <th>Action</th>
+                    <th>Language</th>
+                    <th>Size</th>
+                    <th>Last Push</th>
+                    <th>Burn/mo</th>
+                    <th>Brand</th>
+                    <th>Arch</th>
+                    <th>Key</th>
+                    <th>CI Health</th>
+                </tr>
+            </thead>
+            <tbody id="repoTable">
+                
+        <tr class="repo-row" data-tier="CORE">
+            <td>
+                <a href="https://github.com/koreric75/Afterword" target="_blank" class="repo-link">
+                    🔒 Afterword
+                </a>
+                <div class="repo-desc">Digital Legacy application</div>
+            </td>
+            <td><span class="tier-dot" style="background:#22c55e"></span>CORE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>Python</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">2d</td>
+            <td class="num">$10</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#f59e0b">⚠️ DEGRADED</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="CORE">
+            <td>
+                <a href="https://github.com/koreric75/ArchitectAIPro" target="_blank" class="repo-link">
+                    🔒 ArchitectAIPro
+                </a>
+                <div class="repo-desc"></div>
+            </td>
+            <td><span class="tier-dot" style="background:#22c55e"></span>CORE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>TypeScript</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">0d</td>
+            <td class="num">$95</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="CORE">
+            <td>
+                <a href="https://github.com/koreric75/ArchitectAIPro_GHActions" target="_blank" class="repo-link">
+                    🌐 ArchitectAIPro_GHActions
+                </a>
+                <div class="repo-desc">BlueFalconInk Architecture Standard — Automated Governance, Living Blueprints, R</div>
+            </td>
+            <td><span class="tier-dot" style="background:#22c55e"></span>CORE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>Python</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">0d</td>
+            <td class="num">$10</td>
+            <td>❌</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="CORE">
+            <td>
+                <a href="https://github.com/koreric75/BlueFalconInkLanding" target="_blank" class="repo-link">
+                    🔒 BlueFalconInkLanding
+                </a>
+                <div class="repo-desc">LandingPageforBlueFalconInk</div>
+            </td>
+            <td><span class="tier-dot" style="background:#22c55e"></span>CORE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>TypeScript</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">0d</td>
+            <td class="num">$10</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="CORE">
+            <td>
+                <a href="https://github.com/koreric75/ProposalBuddyAI" target="_blank" class="repo-link">
+                    🔒 ProposalBuddyAI
+                </a>
+                <div class="repo-desc">AI-powered GovCon proposal assistant with multi-agent Gemini pipeline, opportuni</div>
+            </td>
+            <td><span class="tier-dot" style="background:#22c55e"></span>CORE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>TypeScript</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">0d</td>
+            <td class="num">$95</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="CORE">
+            <td>
+                <a href="https://github.com/koreric75/clipstream" target="_blank" class="repo-link">
+                    🌐 clipstream
+                </a>
+                <div class="repo-desc">Automate adding intro videos to YouTube content and re-uploading to your channel</div>
+            </td>
+            <td><span class="tier-dot" style="background:#22c55e"></span>CORE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>Python</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">0d</td>
+            <td class="num">$95</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="CORE">
+            <td>
+                <a href="https://github.com/koreric75/polymath-hub" target="_blank" class="repo-link">
+                    🔒 polymath-hub
+                </a>
+                <div class="repo-desc">The Polymath Hub  subscription-based learning platform by BlueFalconInk (Creativ</div>
+            </td>
+            <td><span class="tier-dot" style="background:#22c55e"></span>CORE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>TypeScript</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">0d</td>
+            <td class="num">$95</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td><span style="color:#ef4444">🔴 FAILING</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="CORE">
+            <td>
+                <a href="https://github.com/koreric75/videogamedev" target="_blank" class="repo-link">
+                    🌐 videogamedev
+                </a>
+                <div class="repo-desc">Top-down roguelite prototype (engine, inspector, tests)</div>
+            </td>
+            <td><span class="tier-dot" style="background:#22c55e"></span>CORE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>TypeScript</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">0d</td>
+            <td class="num">$10</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td><span style="color:#f59e0b">⚠️ DEGRADED</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="ACTIVE">
+            <td>
+                <a href="https://github.com/koreric75/AnimorphStudios" target="_blank" class="repo-link">
+                    🌐 AnimorphStudios
+                </a>
+                <div class="repo-desc">Convert your music videos with vivid animorphic generation</div>
+            </td>
+            <td><span class="tier-dot" style="background:#3b82f6"></span>ACTIVE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>TypeScript</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">7d</td>
+            <td class="num">$10</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="ACTIVE">
+            <td>
+                <a href="https://github.com/koreric75/LinkedInStrategyAsst" target="_blank" class="repo-link">
+                    🌐 LinkedInStrategyAsst
+                </a>
+                <div class="repo-desc">AI-powered LinkedIn career growth strategist - analyzes profiles & resumes to ge</div>
+            </td>
+            <td><span class="tier-dot" style="background:#3b82f6"></span>ACTIVE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>Python</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">15d</td>
+            <td class="num">$10</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="ACTIVE">
+            <td>
+                <a href="https://github.com/koreric75/MCquotemaker" target="_blank" class="repo-link">
+                    🌐 MCquotemaker
+                </a>
+                <div class="repo-desc"></div>
+            </td>
+            <td><span class="tier-dot" style="background:#3b82f6"></span>ACTIVE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>TypeScript</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">17d</td>
+            <td class="num">$10</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#f59e0b">⚠️ DEGRADED</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="ACTIVE">
+            <td>
+                <a href="https://github.com/koreric75/duplicate-cleaner" target="_blank" class="repo-link">
+                    🌐 duplicate-cleaner
+                </a>
+                <div class="repo-desc">Tkinter-based large media duplicate cleaner (size + partial MD5 hashing)</div>
+            </td>
+            <td><span class="tier-dot" style="background:#3b82f6"></span>ACTIVE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>Python</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">23d</td>
+            <td class="num">$10</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#ef4444">🔴 FAILING</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="ACTIVE">
+            <td>
+                <a href="https://github.com/koreric75/socialauditai" target="_blank" class="repo-link">
+                    🔒 socialauditai
+                </a>
+                <div class="repo-desc">Help align your personal brand across all platforms</div>
+            </td>
+            <td><span class="tier-dot" style="background:#3b82f6"></span>ACTIVE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>HTML</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">10d</td>
+            <td class="num">$10</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="ACTIVE">
+            <td>
+                <a href="https://github.com/koreric75/sunopipeline" target="_blank" class="repo-link">
+                    🌐 sunopipeline
+                </a>
+                <div class="repo-desc">Streamlit apps for Suno music generation: demo mode and live browser automation</div>
+            </td>
+            <td><span class="tier-dot" style="background:#3b82f6"></span>ACTIVE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>Python</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">16d</td>
+            <td class="num">$10</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="STALE">
+            <td>
+                <a href="https://github.com/koreric75/Laser_control" target="_blank" class="repo-link">
+                    🌐 Laser_control
+                </a> <span class="fork-tag">FORK</span>
+                <div class="repo-desc">Laser for control mosquito, weed, and pest</div>
+            </td>
+            <td><span class="tier-dot" style="background:#ef4444"></span>STALE</td>
+            <td><span class="badge" style="background:#450a0a;color:#ef4444;border:1px solid #ef444440">ARCHIVE</span></td>
+            <td>None</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">668d</td>
+            <td class="num">$0</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#6b7280">➖ UNKNOWN</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="DEAD">
+            <td>
+                <a href="https://github.com/koreric75/HandBrake" target="_blank" class="repo-link">
+                    🌐 HandBrake
+                </a> <span class="fork-tag">FORK</span>
+                <div class="repo-desc">HandBrake's main development repository </div>
+            </td>
+            <td><span class="tier-dot" style="background:#6b7280"></span>DEAD</td>
+            <td><span class="badge" style="background:#450a0a;color:#dc2626;border:1px solid #dc262640">ARCHIVE_OR_DELETE</span></td>
+            <td>C</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">3430d</td>
+            <td class="num">$0</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#6b7280">➖ UNKNOWN</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="DEAD">
+            <td>
+                <a href="https://github.com/koreric75/RPI-Backup" target="_blank" class="repo-link">
+                    🌐 RPI-Backup
+                </a>
+                <div class="repo-desc">script to back-up raspberry pi</div>
+            </td>
+            <td><span class="tier-dot" style="background:#6b7280"></span>DEAD</td>
+            <td><span class="badge" style="background:#450a0a;color:#dc2626;border:1px solid #dc262640">ARCHIVE_OR_DELETE</span></td>
+            <td>Shell</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">3405d</td>
+            <td class="num">$0</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#6b7280">➖ UNKNOWN</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="DEAD">
+            <td>
+                <a href="https://github.com/koreric75/aws-elastic-beanstalk-express-js-sample" target="_blank" class="repo-link">
+                    🌐 aws-elastic-beanstalk-express-js-sample
+                </a> <span class="fork-tag">FORK</span>
+                <div class="repo-desc">Sample web application for the AWS DevOps Engineer Learning Path.</div>
+            </td>
+            <td><span class="tier-dot" style="background:#6b7280"></span>DEAD</td>
+            <td><span class="badge" style="background:#450a0a;color:#dc2626;border:1px solid #dc262640">ARCHIVE_OR_DELETE</span></td>
+            <td>JavaScript</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">1870d</td>
+            <td class="num">$0</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#6b7280">➖ UNKNOWN</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="DEAD">
+            <td>
+                <a href="https://github.com/koreric75/devops-essentials-sample-app" target="_blank" class="repo-link">
+                    🌐 devops-essentials-sample-app
+                </a> <span class="fork-tag">FORK</span>
+                <div class="repo-desc"></div>
+            </td>
+            <td><span class="tier-dot" style="background:#6b7280"></span>DEAD</td>
+            <td><span class="badge" style="background:#450a0a;color:#dc2626;border:1px solid #dc262640">ARCHIVE_OR_DELETE</span></td>
+            <td>HTML</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">2539d</td>
+            <td class="num">$0</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#6b7280">➖ UNKNOWN</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="DEAD">
+            <td>
+                <a href="https://github.com/koreric75/owncloudpi-deb-jessie8" target="_blank" class="repo-link">
+                    🌐 owncloudpi-deb-jessie8
+                </a>
+                <div class="repo-desc">Fixes and log</div>
+            </td>
+            <td><span class="tier-dot" style="background:#6b7280"></span>DEAD</td>
+            <td><span class="badge" style="background:#450a0a;color:#dc2626;border:1px solid #dc262640">ARCHIVE_OR_DELETE</span></td>
+            <td>None</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">3443d</td>
+            <td class="num">$0</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#6b7280">➖ UNKNOWN</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="DEAD">
+            <td>
+                <a href="https://github.com/koreric75/rpi-clone" target="_blank" class="repo-link">
+                    🌐 rpi-clone
+                </a> <span class="fork-tag">FORK</span>
+                <div class="repo-desc">A shell script to clone a running Raspberry Pi SD card to a USB mounted SD card.</div>
+            </td>
+            <td><span class="tier-dot" style="background:#6b7280"></span>DEAD</td>
+            <td><span class="badge" style="background:#450a0a;color:#dc2626;border:1px solid #dc262640">ARCHIVE_OR_DELETE</span></td>
+            <td>Shell</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">3451d</td>
+            <td class="num">$0</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#6b7280">➖ UNKNOWN</span></td>
+        </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Recommended Actions -->
+<div class="section">
+    <div class="section-header">
+        <h2>⚡ Recommended Actions</h2>
+    </div>
+    <div class="actions-grid">
+        <div class="action-card action-archive"><h3>📦 Archive Candidates</h3><ul><li>Laser_control</li><li>aws-elastic-beanstalk-express-js-sample</li><li>devops-essentials-sample-app</li><li>RPI-Backup</li><li>HandBrake</li><li>owncloudpi-deb-jessie8</li><li>rpi-clone</li></ul><p>Repos with no recent activity. Archive to clean up.</p></div><div class="action-card action-brand"><h3>🏷️ Branding Fixes Needed</h3><ul><li>ArchitectAIPro_GHActions — 1 issue(s)</li></ul></div><div class="action-card action-arch"><h3>🏗️ Architecture Diagrams Missing</h3><ul><li>Afterword</li><li>AnimorphStudios</li><li>LinkedInStrategyAsst</li><li>MCquotemaker</li><li>duplicate-cleaner</li><li>socialauditai</li><li>sunopipeline</li></ul><p>Deploy the architecture workflow to these repos.</p></div>
+    </div>
+</div>
+
+<!-- Branding Issues Detail -->
+
+<div class="section">
+    <div class="section-header">
+        <h2>🏷️ Branding Compliance Report</h2>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Repo</th><th>File</th><th>Found (Incorrect)</th><th>Fix</th></tr>
+            </thead>
+            <tbody>
+                
+            <tr>
+                <td>ArchitectAIPro_GHActions</td>
+                <td>README.md</td>
+                <td class="bad-brand">@BlueFalconRCandMedia</td>
+                <td>Replace '@BlueFalconRCandMedia' with 'BlueFalconInk LLC'</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- Footer -->
+<div class="footer">
+    <p>CHAD Dashboard — BlueFalconInk LLC © 2026</p>
+    <p>Generated by <a href="https://github.com/koreric75/ArchitectAIPro_GHActions">ArchitectAIPro_GHActions</a> Agent Orchestration</p>
+</div>
+
+</div>
+
+<script>
+const MAX_API_CALLS = 300;
+function filterRepos(tier) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    document.querySelectorAll('.repo-row').forEach(row => {
+        if (tier === 'ALL') {
+            row.style.display = '';
+        } else if (tier === 'FORK') {
+            row.style.display = (row.dataset.tier === 'LEGACY_FORK' || row.dataset.tier === 'FORK') ? '' : 'none';
+        } else if (tier === 'STALE') {
+            row.style.display = (row.dataset.tier === 'STALE' || row.dataset.tier === 'DORMANT') ? '' : 'none';
+        } else if (tier === 'DEAD') {
+            row.style.display = (row.dataset.tier === 'DEAD' || row.dataset.tier === 'LEGACY_FORK') ? '' : 'none';
+        } else {
+            row.style.display = row.dataset.tier === tier ? '' : 'none';
+        }
+    });
+}
+</script>
+</body>
+</html>
