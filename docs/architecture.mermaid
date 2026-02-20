@@ -2,89 +2,73 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        subgraph "External Integrations"
-            User[Public User]
-            GitHub[GitHub.com]
-            Gemini[Google Gemini API]
-            MermaidInk[mermaid.ink · Fallback Renderer]
-            DrawioCLI[drawio-desktop CLI · Local Renderer]
+        subgraph "External Users"
+            User[End User]
         end
 
-        subgraph "GitHub Automation"
-            GHActions[GitHub Actions Runner]
-            ArchitectAIWorkflow[Architect AI Pro Workflow]
-            InfraDeployWorkflow[Terraform Deploy Workflow]
-        end
-
-        subgraph "Application Layer"
-            CloudLB[Cloud Load Balancer]
-            CloudRun[Cloud Run Service · Architecture Gallery]
-            GalleryApp[FastAPI Gallery App]
-        end
-
-        subgraph "Data Layer"
-            SecretManager[Cloud Secret Manager]
-            GCSBackend[Cloud Storage · Terraform State]
-            ArtifactRegistry[Artifact Registry]
-            GCSBackend[GCS Terraform Backend]
+        subgraph "GitHub Actions Pipeline"
+            GHRepo[GitHub Repository]
+            GHActionsRunner[GitHub Actions Runner]
+            ArchAIGen[Architect AI Pro Scripts · Generator & Audit]
+            TerraformCLI[Terraform CLI]
         end
 
         subgraph "Security"
             CloudArmor[Cloud Armor]
-            WIFPool[Workload Identity Pool]
-            WIFProvider[WIF OIDC Provider]
+            LoadBalancer[Cloud Load Balancer]
+            WIF[Workload Identity Federation]
+            SecretManager[Cloud Secret Manager]
             ForemanSA[Service Account · architect-ai-foreman]
         end
+        style Security fill:#1E40AF,color:#BFDBFE
 
-        subgraph "Repository Assets"
-            Docs[docs/architecture.md]
-            MermaidFile[docs/architecture.mermaid]
-            DrawioFile[docs/architecture.drawio]
-            PNGFile[docs/architecture.png]
-            Plugins[Mermaid Conversion Plugins]
+        subgraph "Application"
+            CloudRunGallery[Cloud Run · Architecture Gallery]
+            CloudRunDomain[Cloud Run Domain Mapping · arch.bluefalconink.com]
         end
+        style Application fill:#1E3A5F
+
+        subgraph "Data"
+            GCSState[Cloud Storage · Terraform State Backend]
+            ArtifactRegistry[Artifact Registry · Docker Images]
+        end
+        style Data fill:#0F172A
+
+        subgraph "External Integrations"
+            GoogleGemini[Google Gemini API]
+            GitHubAPI[GitHub API]
+            MermaidInk[Mermaid.ink API · PNG Fallback]
+            Stripe[Stripe API · Payment Processing]
+        end
+
+        User -->|HTTPS Request| LoadBalancer
+        LoadBalancer -->|Traffic Filtering| CloudArmor
+        CloudArmor -->|Protected Traffic| CloudRunGallery
+        CloudRunGallery -->|Serves Gallery UI| User
+        CloudRunGallery -->|Fetches Repo Data| GitHubAPI
+        CloudRunGallery -->|Accesses GITHUB_TOKEN| SecretManager
+
+        GHRepo -->|Code Push/PR| GHActionsRunner
+        GHActionsRunner -->|Executes Scripts| ArchAIGen
+        ArchAIGen -->|Calls AI| GoogleGemini
+        ArchAIGen -->|Accesses GEMINI_API_KEY| SecretManager
+        ArchAIGen -->|Commits Diagrams| GHRepo
+        ArchAIGen -->|PNG Render Fallback| MermaidInk
+
+        GHActionsRunner -->|Authenticates via OIDC| WIF
+        WIF -->|Assumes Identity| ForemanSA
+        ForemanSA -->|Authorizes GCP Operations| TerraformCLI
+        ForemanSA -->|Accesses Secrets| SecretManager
+        ForemanSA -->|Pushes Docker Images| ArtifactRegistry
+
+        TerraformCLI -->|Manages State| GCSState
+        TerraformCLI -->|Deploys Cloud Run Service| CloudRunGallery
+        TerraformCLI -->|Configures Domain Mapping| CloudRunDomain
+
+        CloudRunDomain -->|DNS Resolution| LoadBalancer
+
+        SecretManager -->|Stores API Keys for| Stripe
+
     end
-
-    User -->|HTTPS Requests| CloudLB
-    CloudLB -->|Protects| CloudRun
-    CloudLB -->|Routes HTTPS| CloudRun
-    CloudRun -->|HTTP| GalleryApp
-    GalleryApp -->|Reads GITHUB_TOKEN| SecretManager
-    GalleryApp -->|Fetches Repo/File Content| GitHub
-
-    GitHub -->|Code Push / PR Trigger| GHActions
-    GHActions -->|Executes arch-sync.yml| ArchitectAIWorkflow
-    GHActions -->|Executes deploy-infra.yml| InfraDeployWorkflow
-
-    ArchitectAIWorkflow -->|Calls for Diagram Generation| Gemini
-    ArchitectAIWorkflow -->|Renders PNG from XML| DrawioCLI
-    ArchitectAIWorkflow -->|Renders PNG Fallback| MermaidInk
-    ArchitectAIWorkflow -->|Writes Mermaid Source| MermaidFile
-    ArchitectAIWorkflow -->|Writes Draw.io XML| DrawioFile
-    ArchitectAIWorkflow -->|Writes PNG Image| PNGFile
-    MermaidFile -->|Included in| Docs
-    DrawioFile -->|Included in| Docs
-    PNGFile -->|Included in| Docs
-    ArchitectAIWorkflow -->|Reads for Audit/Remediation| Docs
-    ArchitectAIWorkflow -->|Commits Changes| GitHub
-    ArchitectAIWorkflow -->|Posts PR Comment| GitHub
-    ArchitectAIWorkflow -->|Uploads Artifacts| GHActions
-
-    InfraDeployWorkflow -->|OIDC Token Exchange| WIFPool
-    WIFPool -->|Provides Identity| WIFProvider
-    WIFProvider -->|Assumes Role| ForemanSA
-    ForemanSA -->|Manages Cloud Run| CloudRun
-    ForemanSA -->|Accesses Secrets| SecretManager
-    ForemanSA -->|Pushes Container Images| ArtifactRegistry
-    InfraDeployWorkflow -->|Provisions/Updates| CloudRun
-    InfraDeployWorkflow -->|Provisions/Updates| SecretManager
-    InfraDeployWorkflow -->|Provisions/Updates| WIFPool
-    InfraDeployWorkflow -->|Provisions/Updates| WIFProvider
-    InfraDeployWorkflow -->|Provisions/Updates| ForemanSA
-    InfraDeployWorkflow -->|Stores State| GCSBackend
-
-    style Application Layer fill:#1E3A5F,color:#BFDBFE
-    style Data Layer fill:#0F172A,color:#BFDBFE
-    style Security fill:#1E40AF,color:#BFDBFE
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
