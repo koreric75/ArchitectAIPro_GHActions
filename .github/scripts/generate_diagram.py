@@ -482,8 +482,14 @@ def render_png(mermaid_path: str, png_path: str) -> bool:
     Returns True if the PNG was created successfully.
     """
     import subprocess
+    import tempfile
 
     print(f"🖼️  Rendering PNG: {mermaid_path} → {png_path}")
+
+    # Write a puppeteer config to disable Chromium sandboxing (required on GH Actions)
+    puppeteer_cfg = Path(tempfile.gettempdir()) / "puppeteer-config.json"
+    puppeteer_cfg.write_text('{"args":["--no-sandbox","--disable-setuid-sandbox"]}')
+
     try:
         result = subprocess.run(
             [
@@ -493,6 +499,7 @@ def render_png(mermaid_path: str, png_path: str) -> bool:
                 "-b", "transparent",
                 "-t", "dark",
                 "-s", "2",          # 2x scale for crisp images
+                "-p", str(puppeteer_cfg),
             ],
             capture_output=True,
             text=True,
