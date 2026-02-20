@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlueFalconInk Architecture Gallery</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                primaryColor: '#1E40AF',
+                primaryTextColor: '#BFDBFE',
+                primaryBorderColor: '#3B82F6',
+                lineColor: '#60A5FA',
+                secondaryColor: '#1E3A5F',
+                tertiaryColor: '#0F172A'
+            }
+        });
+    </script>
+    <style>
+        :root {
+            --primary: #1E40AF;
+            --primary-light: #BFDBFE;
+            --bg-dark: #0F172A;
+            --bg-card: #1E293B;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --border: #334155;
+            --success: #22C55E;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 0;
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-light);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .stats {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .stat {
+            background: var(--bg-card);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.3);
+        }
+
+        .repo-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: border-color 0.2s;
+        }
+
+        .repo-card:hover {
+            border-color: var(--primary);
+        }
+
+        .repo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .repo-header h2 a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        .repo-header h2 a:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-synced {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .badge-missing {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .repo-meta {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .repo-meta span {
+            margin-right: 1.5rem;
+        }
+
+        .mermaid {
+            background: #0D1117;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .no-diagram {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+
+        footer a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .stats { flex-direction: column; gap: 1rem; }
+            .repo-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏗️ BlueFalconInk Architecture Gallery</h1>
+            <p>"Documentation as Code, Governance as Service"</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">{{ total }}</div>
+                    <div class="stat-label">Total Repos</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">{{ synced }}</div>
+                    <div class="stat-label">Synced Diagrams</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">{{ total - synced }}</div>
+                    <div class="stat-label">Missing</div>
+                </div>
+            </div>
+        </header>
+
+        <input type="text"
+               class="search-bar"
+               placeholder="🔍 Search projects (e.g., ArchitectAI, ProposalBuddyAI, Clipstream...)"
+               oninput="filterRepos(this.value)">
+
+        {% for repo in repos %}
+        <section class="repo-card" data-name="{{ repo.name }}">
+            <div class="repo-header">
+                <h2><a href="{{ repo.url }}" target="_blank">{{ repo.name }}</a></h2>
+                {% if repo.diagram %}
+                <span class="badge badge-synced">✅ Synced</span>
+                {% else %}
+                <span class="badge badge-missing">❌ Missing</span>
+                {% endif %}
+            </div>
+            <p>{{ repo.description }}</p>
+            <div class="repo-meta">
+                <span>📅 {{ repo.last_updated }}</span>
+                <span>💻 {{ repo.language }}</span>
+            </div>
+            {% if repo.diagram %}
+            <div class="mermaid">
+                {{ repo.diagram }}
+            </div>
+            {% else %}
+            <div class="no-diagram">
+                No architecture diagram generated yet. Push to main to trigger Architect AI Pro.
+            </div>
+            {% endif %}
+        </section>
+        {% endfor %}
+
+        <footer>
+            <p>Powered by <a href="https://bluefalconink.com">BlueFalconInk</a> &mdash; Architect AI Pro</p>
+            <p style="margin-top: 0.5rem;">
+                <img src="https://img.shields.io/badge/BlueFalconInk-Standard-1E40AF" alt="BlueFalconInk Standard">
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        function filterRepos(query) {
+            const cards = document.querySelectorAll('.repo-card');
+            const q = query.toLowerCase();
+            cards.forEach(card => {
+                const name = card.dataset.name.toLowerCase();
+                card.style.display = name.includes(q) ? 'block' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

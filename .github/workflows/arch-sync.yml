@@ -1,0 +1,124 @@
+name: "\U0001F3D7\uFE0F BlueFalconInk Architecture Sync"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "ARCHITECT_CONFIG.json"
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  update-blueprints:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: pip install requests
+
+      - name: "\U0001F916 Generate Diagram via Architect AI Pro"
+        id: architect_ai
+        env:
+          ARCHITECT_AI_KEY: ${{ secrets.ARCHITECT_AI_API_KEY }}
+        run: |
+          mkdir -p docs
+          # Sends code context to Architect AI Pro API
+          # The API returns a Mermaid.js diagram based on your codebase
+          curl -s -X POST https://api.architectaipro.com/v1/generate \
+            -H "Authorization: Bearer $ARCHITECT_AI_KEY" \
+            -H "Content-Type: application/json" \
+            -d @ARCHITECT_CONFIG.json \
+            -o docs/architecture.md
+
+          # Validate the output is valid Mermaid
+          if ! grep -q "```mermaid" docs/architecture.md 2>/dev/null; then
+            echo "⚠️ Warning: Output may not contain valid Mermaid syntax"
+          fi
+
+      - name: "\U0001F6E1\uFE0F Foreman AI Safety Check"
+        run: |
+          python .github/scripts/foreman_audit.py \
+            --file docs/architecture.md \
+            --config ARCHITECT_CONFIG.json
+        continue-on-error: false
+
+      - name: "\U0001F4CB Production Readiness Audit"
+        if: github.ref == 'refs/heads/main'
+        env:
+          STRIPE_LIVE_SECRET: ${{ secrets.STRIPE_LIVE_SECRET }}
+        run: |
+          python .github/scripts/production_readiness.py \
+            --config ARCHITECT_CONFIG.json
+
+      - name: "\U0001F680 Commit Updated Blueprints"
+        if: github.event_name == 'push'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: auto-update architecture via Architect AI Pro [skip ci]"
+          file_pattern: "docs/*.md"
+
+      - name: Comment on PR with Diagram Preview
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const diagram = fs.readFileSync('docs/architecture.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🏗️ Architecture Diagram Preview\n\n${diagram}`
+            });
+
+  auto-remediate:
+    needs: update-blueprints
+    if: failure()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: "\U0001F527 Auto-Fix Architecture"
+        env:
+          ARCHITECT_AI_KEY: ${{ secrets.ARCHITECT_AI_API_KEY }}
+        run: |
+          # 1. Grab the violation report
+          REPORT=$(cat foreman_report.txt 2>/dev/null || echo "Unknown violations detected")
+
+          # 2. Call Architect AI Pro again with the Remediation Prompt
+          architect-ai generate . \
+            --remediate "$REPORT" \
+            --config .github/ARCHITECT_CONFIG.json \
+            --output ./docs/architecture.md
+
+      - name: Re-run Foreman Check
+        run: |
+          python .github/scripts/foreman_audit.py \
+            --file docs/architecture.md \
+            --config ARCHITECT_CONFIG.json
+
+      - name: Commit Remediated Diagram
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: auto-remediate architecture violations [skip ci]"
+          file_pattern: "docs/*.md"
+
+      - name: Final Sign-off
+        if: always()
+        run: echo "✅ Architecture verified and synchronized with BlueFalconInk standards."

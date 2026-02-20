@@ -1,0 +1,39 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: architecture-gallery
+  namespace: bluefalconink-prod
+  labels:
+    cloud.googleapis.com/location: us-central1
+    app: architecture-gallery
+    org: bluefalconink
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "3"
+    spec:
+      serviceAccountName: architect-ai-foreman@bluefalconink-prod.iam.gserviceaccount.com
+      containers:
+        - image: gcr.io/bluefalconink-prod/architecture-gallery:latest
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+          env:
+            - name: GITHUB_ORG
+              value: "bluefalconink"
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: github-pat
+                  key: token
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
