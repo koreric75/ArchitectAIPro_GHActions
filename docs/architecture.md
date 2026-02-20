@@ -1,7 +1,7 @@
 # 🏗️ BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture
 
 > **Created with [Architect AI Pro](https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/)** — the flagship architecture tool by **BlueFalconInk LLC**
-> Auto-generated on 2026-02-20 08:08 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
+> Auto-generated on 2026-02-20 08:12 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
 
 ![BlueFalconInk LLC](https://img.shields.io/badge/BlueFalconInk%20LLC-Standard-1E40AF)
 ![Architect AI Pro](https://img.shields.io/badge/Created%20with-Architect%20AI%20Pro-3B82F6)
@@ -13,80 +13,88 @@
 graph TD
     subgraph "BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture"
         subgraph "External Systems"
-            User["🧑‍💻 Developer / User"]
-            GitHub["🐙 GitHub (Repos, Webhooks, API)"]
-            GoogleGemini["🧠 Google Gemini API"]
+            User[GitHub User]
+            PublicInternet[Public Internet]
+            GoogleGeminiAPI[Google Gemini API]
+            GitHubAPI[GitHub API]
+            Stripe[Stripe Payment Gateway]
         end
 
         subgraph "Security"
-            WAF["AWS WAF"]
-            ALB["AWS Application Load Balancer"]
-            IAM_OIDC["AWS IAM OIDC Provider"]
-            SecretsManager["AWS Secrets Manager"]
+            WAF[AWS WAF]
+            ALB[AWS Application Load Balancer]
+            IAMOIDC[AWS IAM OIDC Provider]
+            SecretsMgr[AWS Secrets Manager]
         end
         style Security fill:#1E40AF,color:#BFDBFE
 
         subgraph "CI/CD & Automation (GitHub Actions)"
-            GHA_Runner["GitHub Actions Runner"]
-            TerraformApply["Terraform Apply"]
+            GHActions[GitHub Actions Workflow]
+            DiagramGenerator[Architect AI Pro: generate_diagram.py]
+            ForemanAudit[Foreman AI: foreman_audit.py]
+            Remediation[Architect AI Pro: Remediation]
+            TerraformCLI[Terraform CLI]
+            GitAutoCommit[Git Auto-Commit]
         end
+        style CI/CD & Automation (GitHub Actions) fill:#1E3A5F,color:#BFDBFE
 
-        subgraph "Application Layer"
-            subgraph "Architect AI Pro Engine"
-                ArchitectAIScripts["Python Scripts (Generator, Auditor, Remediator)"]
-                PromptLibrary["Prompt Library"]
-                ArchitectConfig["ARCHITECT_CONFIG.json"]
-                MermaidPlugins["Mermaid Converter Plugins"]
-            end
-            subgraph "Architecture Gallery (AWS Fargate)"
-                GalleryApp["FastAPI Gallery App"]
-                GalleryContainer["Gallery Docker Image"]
-            end
+        subgraph "Application (BlueFalconInk LLC Platform)"
+            EKSCluster[AWS EKS Cluster]
+            GalleryApp[Architecture Gallery - FastAPI Container]
         end
-        style Application fill:#1E3A5F,color:#BFDBFE
+        style Application (BlueFalconInk LLC Platform) fill:#1E3A5F,color:#BFDBFE
 
-        subgraph "Data Layer"
-            RepoDiagrams["GitHub Repo: docs/architecture.md"]
-            AuditReports["GitHub Repo: foreman_report.txt"]
-            TerraformState["AWS S3 (Terraform State)"]
-            ECR["AWS ECR (Container Registry)"]
+        subgraph "Data & Storage"
+            S3State[AWS S3: Terraform State Backend]
+            S3Diagrams[AWS S3: Architecture Diagrams]
         end
-        style Data fill:#0F172A,color:#BFDBFE
+        style Data & Storage fill:#0F172A,color:#BFDBFE
+
+        subgraph "Payment (Conceptual Boundary)"
+            PaymentBoundary[Payment Processing]
+        end
+        style Payment (Conceptual Boundary) fill:#7C3AED,color:#BFDBFE
 
         %% Data Flows
-        User -- "1. Pushes Code / Views Gallery" --> GitHub
-        GitHub -- "2. Triggers Workflow" --> GHA_Runner
+        User --> GHActions: Triggers Workflow (Push/PR)
+        User --> PublicInternet: Accesses Gallery
+        PublicInternet --> WAF: HTTP/S Traffic
+        WAF --> ALB: Filters Requests
+        ALB --> GalleryApp: Routes to Gallery
 
-        GHA_Runner -- "3. Checkout Code" --> GitHub
-        GHA_Runner -- "4. Reads Config" --> ArchitectConfig
-        GHA_Runner -- "5. Scans Repo Files" --> GitHub
-        GHA_Runner -- "6. Executes Architect AI Scripts" --> ArchitectAIScripts
-        ArchitectAIScripts -- "7. Uses Prompts" --> PromptLibrary
-        ArchitectAIScripts -- "8. Sends Context" --> GoogleGemini
-        GoogleGemini -- "9. Returns Mermaid" --> ArchitectAIScripts
-        ArchitectAIScripts -- "10. Writes Diagram" --> RepoDiagrams
-        ArchitectAIScripts -- "11. Writes Audit Report" --> AuditReports
-        ArchitectAIScripts -- "12. Converts Formats" --> MermaidPlugins
+        GHActions -- Authenticates via --> IAMOIDC: OIDC Token
+        IAMOIDC -- Grants Access to --> SecretsMgr: Read Secrets
+        IAMOIDC -- Grants Access to --> S3State: Read/Write Terraform State
+        IAMOIDC -- Grants Access to --> S3Diagrams: Read/Write Diagrams
+        IAMOIDC -- Grants Access to --> EKSCluster: Deploy/Manage
 
-        GHA_Runner -- "13. Commits Changes" --> GitHub
+        GHActions --> DiagramGenerator: Executes Script
+        DiagramGenerator -- Reads Code from --> GitHubAPI: Repo Content
+        DiagramGenerator -- Calls --> GoogleGeminiAPI: Generate Diagram
+        DiagramGenerator -- Outputs Diagram to --> S3Diagrams: Store .md/.mermaid
+        DiagramGenerator -- Passes Diagram to --> ForemanAudit: For Review
 
-        GHA_Runner -- "14. Executes Terraform" --> TerraformApply
-        TerraformApply -- "15. Authenticates via OIDC" --> IAM_OIDC
-        IAM_OIDC -- "16. Grants Temp Credentials" --> TerraformApply
-        TerraformApply -- "17. Manages Secrets" --> SecretsManager
-        TerraformApply -- "18. Manages Container Registry" --> ECR
-        TerraformApply -- "19. Manages Terraform State" --> TerraformState
-        TerraformApply -- "20. Deploys Gallery Container" --> GalleryContainer
-        GalleryContainer -- "21. Deploys Gallery App" --> GalleryApp
+        ForemanAudit -- Reports Violations to --> Remediation: If Failed
+        Remediation -- Calls --> GoogleGeminiAPI: Correct Diagram
+        Remediation -- Updates Diagram in --> S3Diagrams: Store Corrected
 
-        GalleryApp -- "22. Fetches GITHUB_TOKEN" --> SecretsManager
-        GalleryApp -- "23. Fetches Repo Diagrams (GitHub API)" --> GitHub
+        GHActions --> TerraformCLI: Executes IaC
+        TerraformCLI -- Manages --> S3State: Terraform State
+        TerraformCLI -- Provisions --> EKSCluster: Cluster
+        TerraformCLI -- Provisions --> SecretsMgr: API Keys, Tokens
+        TerraformCLI -- Provisions --> S3Diagrams: Buckets
+        TerraformCLI -- Provisions --> IAMOIDC: WIF Setup
 
-        User -- "24. Accesses Gallery" --> WAF
-        WAF -- "25. Routes Traffic" --> ALB
-        ALB -- "26. Forwards Request" --> GalleryApp
+        GitAutoCommit -- Commits to --> GitHubAPI: docs/architecture.md
 
-        FOOTER["🏗️ Created with Architect AI Pro | BlueFalconInk LLC"]
+        GalleryApp -- Fetches Diagrams from --> S3Diagrams: For Display
+        GalleryApp -- Fetches Repo Info from --> GitHubAPI: For Display
+        GalleryApp -- Accesses GITHUB_TOKEN from --> SecretsMgr: For GitHub API
+
+        SecretsMgr -- Stores --> Stripe: Keys
+        PaymentBoundary -- Processes Payments via --> Stripe: API Calls (Conceptual)
+
+        FOOTER[🏗️ Created with Architect AI Pro | BlueFalconInk LLC]
     end
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
