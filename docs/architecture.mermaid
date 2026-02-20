@@ -2,81 +2,88 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture"
-        subgraph "External Systems"
-            User[User]
-            GitHub[GitHub Platform]
-            GoogleGeminiAPI[Google Gemini API]
-            GitHubAPI[GitHub API]
+        subgraph "External Users"
+            User[End User]
+            Developer[Developer]
         end
 
         subgraph "Security"
-            CloudArmor[Cloud Armor]
             CloudLB[Cloud Load Balancer]
+            CloudArmor[Cloud Armor]
             WIF[Workload Identity Federation]
-            SecretManager[Cloud Secret Manager]
+            SecretManager[Secret Manager]
             ForemanSA[Foreman Service Account]
         end
 
-        subgraph "CI/CD & Automation"
-            GitHubActions[GitHub Actions Workflow]
-            ArchitectAIScripts[Architect AI Pro Scripts]
-            MermaidCLI[Mermaid CLI]
-            Terraform[Terraform IaC]
-        end
+        subgraph "Application"
+            subgraph "Architecture Gallery (Cloud Run)"
+                GalleryApp[FastAPI Gallery App]
+                CloudRun[Cloud Run Service]
+                ArtifactRegistry[Artifact Registry]
+            end
 
-        subgraph "Architecture Gallery"
-            CloudRunGallery[Cloud Run Service: Architecture Gallery]
-            FastAPIApp[FastAPI App: Gallery Backend]
-            CloudCDN[Cloud CDN]
+            subgraph "Automation & CI/CD"
+                GitHubActions[GitHub Actions Workflow]
+                GenerateDiagram[generate_diagram.py Script]
+                ForemanAudit[foreman_audit.py Script]
+                Remediation[Remediation Loop]
+                MermaidCLI[Mermaid CLI]
+                TerraformCLI[Terraform CLI]
+                ARCHITECT_CONFIG[ARCHITECT_CONFIG.json]
+            end
         end
 
         subgraph "Data"
-            GitHubRepos[GitHub Repositories]
-            ArtifactRegistry[Artifact Registry]
-            GCSBackend[Cloud Storage: Terraform State]
+            GitHubAPI[GitHub API]
+            GoogleGemini[Google Gemini API]
+            GCSBackend[Cloud Storage Terraform Backend]
+            Docs[docs/architecture.md]
         end
 
-        %% Data Flows - User to Gallery
-        User -->|Access Gallery| CloudLB
-        CloudLB -->|HTTP/S| CloudArmor
-        CloudArmor -->|Protected Traffic| CloudRunGallery
-        CloudRunGallery -->|Serve Content| CloudCDN
-        CloudRunGallery -->|API Calls| FastAPIApp
-        FastAPIApp -->|Fetch Repo Data| GitHubAPI
-        FastAPIApp -->|Retrieve Secrets| SecretManager
-
-        %% Data Flows - CI/CD & Automation
-        GitHub -->|Push/PR Trigger| GitHubActions
-        GitHubActions -->|Authenticate via OIDC| WIF
-        WIF -->|Assume SA Identity| ForemanSA
-        ForemanSA -->|Access GCP Resources| SecretManager
-        ForemanSA -->|Access GCP Resources| ArtifactRegistry
-        ForemanSA -->|Access GCP Resources| GCSBackend
-        GitHubActions -->|Run Scripts| ArchitectAIScripts
-        ArchitectAIScripts -->|Generate Diagram| GoogleGeminiAPI
-        ArchitectAIScripts -->|Audit Diagram| GitHubRepos
-        ArchitectAIScripts -->|Render PNG| MermaidCLI
-        ArchitectAIScripts -->|Read/Write Code & Docs| GitHubRepos
-        GitHubActions -->|Deploy Infra| Terraform
-        Terraform -->|Manage State| GCSBackend
-        Terraform -->|Provision Resources| CloudRunGallery
-        Terraform -->|Provision Resources| SecretManager
-        Terraform -->|Provision Resources| WIF
-        GitHubActions -->|Build & Push Image| ArtifactRegistry
-        ArtifactRegistry -->|Container Image| CloudRunGallery
-
-        %% Internal Flows
-        CloudRunGallery -->|Container Image| ArtifactRegistry
-        FastAPIApp -->|Read Templates| GitHubRepos
-        ArchitectAIScripts -->|Read Config| GitHubRepos
-        ArchitectAIScripts -->|Read Prompts| GitHubRepos
-        ArchitectAIScripts -->|Read Plugins| GitHubRepos
-
-        style Security fill:#1E40AF,color:#BFDBFE
-        style CI/CD & Automation fill:#1E3A5F,color:#BFDBFE
-        style Architecture Gallery fill:#1E3A5F,color:#BFDBFE
-        style Data fill:#0F172A,color:#BFDBFE
+        subgraph "External Integrations"
+            StripeAPI[Stripe API]
+        end
     end
 
+    User -->|Accesses| CloudLB
+    CloudLB -->|Protects & Routes| CloudArmor
+    CloudArmor -->|To| CloudRun
+    CloudRun -->|Hosts| GalleryApp
+    GalleryApp -->|Renders UI| User
+    GalleryApp -->|Fetches Repo Data| GitHubAPI
+    GalleryApp -->|Retrieves GITHUB_TOKEN| SecretManager
+
+    Developer -->|Pushes Code| GitHubActions
+    GitHubActions -->|Authenticates via| WIF
+    WIF -->|Impersonates| ForemanSA
+    ForemanSA -->|Accesses| SecretManager
+    ForemanSA -->|Manages| CloudRun
+    ForemanSA -->|Pushes Images to| ArtifactRegistry
+
+    GitHubActions -->|Triggers Diagram Generation| GenerateDiagram
+    GenerateDiagram -->|Reads building codes| ARCHITECT_CONFIG
+    GenerateDiagram -->|Scans repo code| GitHubActions
+    GenerateDiagram -->|Calls AI for diagram| GoogleGemini
+    GoogleGemini -->|Returns Mermaid Code| GenerateDiagram
+    GenerateDiagram -->|Renders PNG| MermaidCLI
+    GenerateDiagram -->|Writes output to| Docs
+    Docs -->|Audited by| ForemanAudit
+    ForemanAudit -->|Reports Violations| Remediation
+    Remediation -->|Corrects & Retries| GenerateDiagram
+
+    GitHubActions -->|Deploys Infrastructure| TerraformCLI
+    TerraformCLI -->|Uses| ForemanSA
+    TerraformCLI -->|Manages| CloudRun
+    TerraformCLI -->|Manages| SecretManager
+    TerraformCLI -->|Manages| WIF
+    TerraformCLI -->|Stores state in| GCSBackend
+
+    SecretManager -->|Stores STRIPE_SECRET_KEY for| StripeAPI
+
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
+
+    style Security fill:#1E40AF,color:#BFDBFE
+    style Application fill:#1E3A5F,color:#BFDBFE
+    style Data fill:#0F172A,color:#BFDBFE
+    style External fill:#0F172A,color:#BFDBFE
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
