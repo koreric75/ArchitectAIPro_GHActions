@@ -217,7 +217,8 @@ def build_system_prompt(config: dict) -> str:
         13. Apply `#1E3A5F` to the main Application subgraph.
         14. Apply `#0F172A` to the Data layer subgraph.
         15. The top-level subgraph containing the entire application MUST be titled:
-            `"{org} — <RepoName> Architecture"`
+            `"{org} - <RepoName> Architecture"`
+            Use a plain hyphen `-`, NEVER use em dash `—` or en dash `–` — they cause lexical errors.
         16. Include a footer note node at the bottom of the diagram:
             `FOOTER["🏗️ Created with Architect AI Pro · {org}"]`
             Style it: `style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6`
@@ -372,6 +373,9 @@ def sanitize_mermaid(code: str) -> str:
         # Remove `direction TD/LR/BT/RL` lines (not supported inside subgraphs)
         if re.match(r'^direction\s+(TD|LR|BT|RL)\s*$', stripped):
             continue
+
+        # Replace em dash (—) and en dash (–) with plain hyphen - they cause lexical errors
+        line = line.replace('\u2014', '-').replace('\u2013', '-')
 
         # Replace stadium-shaped nodes  (["text"]) -> [text]
         line = re.sub(r'\(\["([^"]+)"\]\)', r'[\1]', line)
