@@ -1,7 +1,7 @@
 # 🏗️ BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture
 
 > **Created with [Architect AI Pro](https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/)** — the flagship architecture tool by **BlueFalconInk LLC**
-> Auto-generated on 2026-02-20 09:03 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
+> Auto-generated on 2026-02-20 15:12 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
 
 ![BlueFalconInk LLC](https://img.shields.io/badge/BlueFalconInk%20LLC-Standard-1E40AF)
 ![Architect AI Pro](https://img.shields.io/badge/Created%20with-Architect%20AI%20Pro-3B82F6)
@@ -19,90 +19,75 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture"
-        subgraph "External Users"
-            User[End User]
-            Developer[Developer]
-        end
+        User[External User]
 
         subgraph "Security"
-            CloudLB[Cloud Load Balancer]
+            LoadBalancer[Cloud Load Balancer]
             CloudArmor[Cloud Armor]
-            WIF[Workload Identity Federation]
-            SecretManager[Secret Manager]
-            ForemanSA[Foreman Service Account]
+        end
+
+        subgraph "CI/CD & Automation"
+            GitHub[GitHub Repositories]
+            GHActions[GitHub Actions Workflow]
+            ArchitectAIScripts[Architect AI Pro Scripts]
+            Terraform[Terraform IaC]
         end
 
         subgraph "Application"
-            subgraph "Architecture Gallery (Cloud Run)"
-                GalleryApp[FastAPI Gallery App]
-                CloudRun[Cloud Run Service]
-                ArtifactRegistry[Artifact Registry]
-            end
-
-            subgraph "Automation & CI/CD"
-                GitHubActions[GitHub Actions Workflow]
-                GenerateDiagram[generate_diagram.py Script]
-                ForemanAudit[foreman_audit.py Script]
-                Remediation[Remediation Loop]
-                MermaidCLI[Mermaid CLI]
-                TerraformCLI[Terraform CLI]
-                ARCHITECT_CONFIG[ARCHITECT_CONFIG.json]
-            end
+            CloudRun[Architect AI Pro Gallery · Cloud Run]
         end
 
-        subgraph "Data"
-            GitHubAPI[GitHub API]
-            GoogleGemini[Google Gemini API]
-            GCSBackend[Cloud Storage Terraform Backend]
-            Docs[docs/architecture.md]
+        subgraph "Data & Secrets"
+            SecretManager[Cloud Secret Manager]
+            ArtifactRegistry[Artifact Registry]
+        end
+
+        subgraph "Identity"
+            WIF[Workload Identity Federation]
         end
 
         subgraph "External Integrations"
+            GeminiAPI[Google Gemini API]
             StripeAPI[Stripe API]
         end
+
+        User -->|Accesses via HTTPS| LoadBalancer
+        LoadBalancer -->|Routes traffic| CloudArmor
+        CloudArmor -->|Protects| CloudRun
+
+        GitHub -->|Code Push/PR| GHActions
+        GHActions -->|Triggers| ArchitectAIScripts
+        ArchitectAIScripts -->|Scans repo content| GitHub
+        ArchitectAIScripts -->|Calls API for generation| GeminiAPI
+        GeminiAPI -->|Returns Mermaid.js| ArchitectAIScripts
+        ArchitectAIScripts -->|Stores diagram docs/architecture.md| GitHub
+        ArchitectAIScripts -->|Reads config ARCHITECT_CONFIG.json| GitHub
+
+        GHActions -->|Authenticates via OIDC| WIF
+        WIF -->|Grants temporary SA access| SecretManager
+        WIF -->|Grants temporary SA access| ArtifactRegistry
+        WIF -->|Grants temporary SA access| Terraform
+
+        Terraform -->|Deploys/Manages Infra| CloudRun
+        Terraform -->|Manages Secrets| SecretManager
+        Terraform -->|Configures WIF| WIF
+
+        CloudRun -->|Fetches GITHUB_TOKEN| SecretManager
+        CloudRun -->|Fetches repo data via API| GitHub
+        CloudRun -->|Serves gallery UI| User
+
+        ArchitectAIScripts -->|Accesses GEMINI_API_KEY| SecretManager
+        ArchitectAIScripts -->|Builds & Pushes Images| ArtifactRegistry
+
+        SecretManager -->|Stores GITHUB_PAT, ARCHITECT_AI_API_KEY| GHActions
+        SecretManager -->|Stores STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET| StripeAPI
+
+        FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     end
-
-    User -->|Accesses| CloudLB
-    CloudLB -->|Protects & Routes| CloudArmor
-    CloudArmor -->|To| CloudRun
-    CloudRun -->|Hosts| GalleryApp
-    GalleryApp -->|Renders UI| User
-    GalleryApp -->|Fetches Repo Data| GitHubAPI
-    GalleryApp -->|Retrieves GITHUB_TOKEN| SecretManager
-
-    Developer -->|Pushes Code| GitHubActions
-    GitHubActions -->|Authenticates via| WIF
-    WIF -->|Impersonates| ForemanSA
-    ForemanSA -->|Accesses| SecretManager
-    ForemanSA -->|Manages| CloudRun
-    ForemanSA -->|Pushes Images to| ArtifactRegistry
-
-    GitHubActions -->|Triggers Diagram Generation| GenerateDiagram
-    GenerateDiagram -->|Reads building codes| ARCHITECT_CONFIG
-    GenerateDiagram -->|Scans repo code| GitHubActions
-    GenerateDiagram -->|Calls AI for diagram| GoogleGemini
-    GoogleGemini -->|Returns Mermaid Code| GenerateDiagram
-    GenerateDiagram -->|Renders PNG| MermaidCLI
-    GenerateDiagram -->|Writes output to| Docs
-    Docs -->|Audited by| ForemanAudit
-    ForemanAudit -->|Reports Violations| Remediation
-    Remediation -->|Corrects & Retries| GenerateDiagram
-
-    GitHubActions -->|Deploys Infrastructure| TerraformCLI
-    TerraformCLI -->|Uses| ForemanSA
-    TerraformCLI -->|Manages| CloudRun
-    TerraformCLI -->|Manages| SecretManager
-    TerraformCLI -->|Manages| WIF
-    TerraformCLI -->|Stores state in| GCSBackend
-
-    SecretManager -->|Stores STRIPE_SECRET_KEY for| StripeAPI
-
-    FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
 
     style Security fill:#1E40AF,color:#BFDBFE
     style Application fill:#1E3A5F,color:#BFDBFE
     style Data fill:#0F172A,color:#BFDBFE
-    style External fill:#0F172A,color:#BFDBFE
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
 
