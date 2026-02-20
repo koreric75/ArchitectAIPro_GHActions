@@ -1,7 +1,7 @@
 # 🏗️ BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture
 
 > **Created with [Architect AI Pro](https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/)** — the flagship architecture tool by **BlueFalconInk LLC**
-> Auto-generated on 2026-02-20 15:12 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
+> Auto-generated on 2026-02-20 15:16 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
 
 ![BlueFalconInk LLC](https://img.shields.io/badge/BlueFalconInk%20LLC-Standard-1E40AF)
 ![Architect AI Pro](https://img.shields.io/badge/Created%20with-Architect%20AI%20Pro-3B82F6)
@@ -19,68 +19,64 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture"
-        subgraph "External Actors"
-            Developer[Developer]
-            InternetUsers[Internet Users]
-            GoogleGemini[Google Gemini API]
-        end
-
         subgraph "Security"
-            CloudArmor[Cloud Armor]
-            CloudLB[Cloud Load Balancer]
-            SecretMan[Cloud Secret Manager]
-            WIF[Workload Identity Federation]
-            GCP_SA[GCP Service Account · Foreman]
-        end
-
-        subgraph "CI/CD & Automation"
-            GitHub[GitHub Platform]
-            GHActions[GitHub Actions Runner]
-            Terraform[Terraform IaC]
-            ArchitectAIScripts[Architect AI Pro Scripts · Python]
+            Internet[Internet] --> CLB[Cloud Load Balancer]
+            CLB --> CA[Cloud Armor]
         end
 
         subgraph "Application"
-            CloudCDN[Cloud CDN]
-            CloudRun_Gallery[Architecture Gallery · Cloud Run]
+            CA --> CDN[Cloud CDN]
+            CDN --> GalleryApp[Cloud Run · FastAPI Gallery]
+            GHA[GitHub Actions CI/CD]
+            GeneratorScripts[Python Scripts · Diagram Gen/Audit]
+            MermaidCLI[Mermaid CLI · PNG Renderer]
         end
 
         subgraph "Data"
-            GCS_TFState[Cloud Storage · Terraform State]
+            GitHubRepo[GitHub Repository · Source/Docs]
             ArtifactReg[Artifact Registry · Container Images]
-            RepoFiles[GitHub Repositories · Source Code & Diagrams]
+            GCS[Cloud Storage · Terraform State]
+            SecretMan[Secret Manager · API Keys - Gemini, GitHub, Stripe]
         end
 
-        %% Flows
-        Developer -->|Pushes Code/IaC| GitHub
-        GitHub -->|Triggers Workflow| GHActions
-        GHActions -->|Executes Scripts| ArchitectAIScripts
-        ArchitectAIScripts -->|Calls API| GoogleGemini
-        ArchitectAIScripts -->|Reads/Writes| RepoFiles
-        ArchitectAIScripts -->|Accesses Secrets via WIF/SA| SecretMan
-        GHActions -->|Executes Plan/Apply| Terraform
-        Terraform -->|Authenticates via OIDC| WIF
-        WIF -->|Impersonates| GCP_SA
-        GCP_SA -->|Manages Secrets| SecretMan
-        GCP_SA -->|Deploys/Manages| CloudRun_Gallery
-        GCP_SA -->|Pushes Images| ArtifactReg
-        GCP_SA -->|Manages State| GCS_TFState
+        subgraph "IAM & Governance"
+            WIF[Workload Identity Federation]
+            ForemanSA[Foreman Service Account]
+        end
 
-        CloudRun_Gallery -->|Reads GITHUB_TOKEN| SecretMan
-        CloudRun_Gallery -->|Fetches Diagrams| RepoFiles
+        subgraph "External Integrations"
+            GitHubAPI[GitHub API]
+            GeminiAPI[Google Gemini API]
+        end
 
-        InternetUsers -->|Requests arch.bluefalconink.com| CloudLB
-        CloudLB -->|Protects Traffic| CloudArmor
-        CloudArmor -->|Routes Content| CloudCDN
-        CloudCDN -->|Serves Web App| CloudRun_Gallery
-        CloudRun_Gallery -->|Renders UI| InternetUsers
-
-        FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
+        %% Data Flows
+        Internet -->|HTTPS Requests| CLB
+        CA -->|Filtered Traffic| CDN
+        CDN -->|Cached Content/Requests| GalleryApp
+        GalleryApp -->|Fetch Repo Data| GitHubAPI
+        GHA -->|Trigger Workflow| GitHubRepo
+        GHA -->|Auth via OIDC| WIF
+        WIF -->|Impersonate| ForemanSA
+        ForemanSA -->|Access GCP Resources| ArtifactReg
+        ForemanSA -->|Access GCP Resources| GCS
+        ForemanSA -->|Access GCP Resources| SecretMan
+        GHA -->|Execute Scripts| GeneratorScripts
+        GeneratorScripts -->|Generate/Remediate Diagram| GeminiAPI
+        GeneratorScripts -->|Render PNG| MermaidCLI
+        GeneratorScripts -->|Commit Diagram| GitHubRepo
+        GHA -->|Push Image| ArtifactReg
+        GHA -->|Deploy Service| GalleryApp
+        GalleryApp -->|Retrieve GITHUB_TOKEN| SecretMan
+        GitHubRepo -->|Source Code Context| GeneratorScripts
     end
+
+    FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
 
     style Security fill:#1E40AF,color:#BFDBFE
     style Application fill:#1E3A5F,color:#BFDBFE
     style Data fill:#0F172A,color:#BFDBFE
+    style IAM fill:#1E3A5F,color:#BFDBFE
+    style External fill:#1E3A5F,color:#BFDBFE
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
 
