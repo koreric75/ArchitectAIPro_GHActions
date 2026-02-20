@@ -541,15 +541,16 @@ def convert_to_drawio(mermaid_code: str, repo_name: str, config: dict, api_key: 
 
         STYLING REQUIREMENTS:
         - Use professional styling with rounded rectangles for services
-        - Apply {org} brand colors: #1E40AF (primary blue), #1E3A5F (secondary navy), #0F172A (dark bg)
-        - Use white (#FFFFFF) or light blue (#BFDBFE) text on dark backgrounds
+        - Apply {org} brand colors: #1E40AF (primary blue), #1E3A5F (secondary navy), #3B82F6 (accent)
+        - Use white (#FFFFFF) or light (#BFDBFE) text on blue-filled shapes
+        - Use dark text (#1E293B) on light-filled shapes for readability
         - Group components with swimlanes or container shapes for architectural layers
         - Use directional arrows with labels showing data flow
         - Include a title bar showing "{org} - {repo_name} Architecture"
         - Make the diagram professional, clean, and easy to read at a glance
         - Use appropriate shapes for cloud services, databases, APIs, security
-        - Ensure all text is readable with sufficient contrast
-        - Set the diagram page background to #0F172A
+        - Ensure all text is readable with high contrast against a WHITE page background
+        - Set the diagram page background to #FFFFFF (white)
         - Use a clean top-down layout with clear visual hierarchy
         - Include a footer cell: "Created with Architect AI Pro | {org}"
     """)
@@ -685,7 +686,7 @@ def render_png_mermaid_ink(mermaid_path: str, png_path: str) -> bool:
     encoded = base64.urlsafe_b64encode(mermaid_code.encode("utf-8")).decode("ascii")
     api_url = (
         f"https://mermaid.ink/img/{encoded}"
-        f"?theme=dark&bgColor=0F172A&width=1600"
+        f"?theme=default&bgColor=FFFFFF&width=1600"
     )
 
     try:
