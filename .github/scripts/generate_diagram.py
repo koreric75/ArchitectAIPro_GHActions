@@ -517,24 +517,172 @@ def ensure_branding(mermaid_code: str, repo_name: str, config: dict) -> str:
     return joined
 
 
-def render_png(mermaid_path: str, png_path: str) -> bool:
-    """Render Mermaid source to PNG via the mermaid.ink public API.
+# ---------------------------------------------------------------------------
+# Draw.io Conversion (matches ArchitectAIPro web app approach)
+# ---------------------------------------------------------------------------
 
-    No local renderer required — the diagram is sent to mermaid.ink which
-    returns a high-quality PNG rendered by the full Mermaid.js engine, with
-    proper theming and layout quality matching the live editor.
+def convert_to_drawio(mermaid_code: str, repo_name: str, config: dict, api_key: str) -> Optional[str]:
+    """Convert Mermaid diagram to Draw.io XML using Gemini.
 
+    Uses the same approach as the ArchitectAIPro web app: send the diagram
+    description to Gemini with instructions to output Draw.io XML.
+    Returns the XML string, or None on failure.
+    """
+    org = config.get("org_name", "BlueFalconInk LLC")
+
+    system_prompt = textwrap.dedent(f"""\
+        You are a Technical Architect AI.
+        Engine: Draw.io.
+        Persona: Standard Architect (Balanced and technical.).
+
+        MANDATORY: Output ONLY valid Draw.io XML starting with <mxfile> and ending with </mxfile>.
+        Use root id="0" and id="1". Do not add chat text outside the XML.
+        Create a new production-ready architecture diagram.
+
+        STYLING REQUIREMENTS:
+        - Use professional styling with rounded rectangles for services
+        - Apply {org} brand colors: #1E40AF (primary blue), #1E3A5F (secondary navy), #0F172A (dark bg)
+        - Use white (#FFFFFF) or light blue (#BFDBFE) text on dark backgrounds
+        - Group components with swimlanes or container shapes for architectural layers
+        - Use directional arrows with labels showing data flow
+        - Include a title bar showing "{org} - {repo_name} Architecture"
+        - Make the diagram professional, clean, and easy to read at a glance
+        - Use appropriate shapes for cloud services, databases, APIs, security
+        - Ensure all text is readable with sufficient contrast
+        - Set the diagram page background to #0F172A
+        - Use a clean top-down layout with clear visual hierarchy
+        - Include a footer cell: "Created with Architect AI Pro | {org}"
+    """)
+
+    user_prompt = textwrap.dedent(f"""\
+        Convert the following Mermaid.js architecture diagram into a high-fidelity Draw.io XML diagram.
+        Maintain ALL components, relationships, data flows, and architectural boundaries exactly as shown.
+        Produce the same logical structure but with professional Draw.io styling and layout.
+
+        Mermaid Source:
+        ```mermaid
+        {mermaid_code}
+        ```
+
+        Output ONLY the Draw.io XML. No explanation.
+    """)
+
+    print(f"🎨 Converting Mermaid to Draw.io XML via Gemini...")
+
+    url = GEMINI_API_URL.format(model=GEMINI_MODEL)
+    payload = {
+        "system_instruction": {"parts": [{"text": system_prompt}]},
+        "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
+        "generationConfig": {
+            "temperature": 0.3,
+            "maxOutputTokens": 16384,
+            "topP": 0.95,
+        }
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "x-goog-api-key": api_key,
+    }
+
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=180)
+        if response.status_code != 200:
+            print(f"⚠️  Gemini API error during Draw.io conversion: {response.status_code}")
+            print(response.text[:500])
+            return None
+
+        data = response.json()
+        candidates = data.get("candidates", [])
+        if not candidates:
+            print("⚠️  No candidates returned for Draw.io conversion")
+            return None
+
+        text = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+        if not text:
+            print("⚠️  Empty response for Draw.io conversion")
+            return None
+
+        xml = extract_drawio_xml(text)
+        if xml:
+            print(f"✅ Draw.io XML generated ({len(xml)} chars)")
+        else:
+            print("⚠️  Could not extract Draw.io XML from response")
+        return xml
+
+    except Exception as exc:
+        print(f"⚠️  Draw.io conversion failed: {exc}")
+        return None
+
+
+def extract_drawio_xml(text: str) -> Optional[str]:
+    """Extract Draw.io XML from Gemini response."""
+    start = text.find("<mxfile")
+    end = text.rfind("</mxfile>")
+    if start != -1 and end != -1:
+        return text[start:end + len("</mxfile>")]
+
+    # Try stripping code fences
+    cleaned = text.replace("```xml", "").replace("```", "").strip()
+    if cleaned.startswith("<mxfile"):
+        return cleaned
+
+    return None
+
+
+# ---------------------------------------------------------------------------
+# PNG Rendering
+# ---------------------------------------------------------------------------
+
+def render_png_drawio(drawio_path: str, png_path: str) -> bool:
+    """Render Draw.io XML to PNG using drawio-desktop CLI.
+
+    Uses xvfb-run for headless rendering on Linux CI runners.
     Returns True if the PNG was saved successfully.
     """
+    import subprocess as sp
+
+    print(f"🖼️  Rendering PNG via Draw.io CLI: {drawio_path} → {png_path}")
+
+    try:
+        cmd = [
+            "xvfb-run", "-a",
+            "drawio", "--export",
+            "--format", "png",
+            "--scale", "2",
+            "--border", "20",
+            "--output", png_path,
+            drawio_path,
+        ]
+        result = sp.run(cmd, capture_output=True, text=True, timeout=60)
+
+        if result.returncode == 0 and Path(png_path).exists():
+            size_kb = Path(png_path).stat().st_size / 1024
+            print(f"✅ PNG rendered via Draw.io CLI ({size_kb:.0f} KB)")
+            return True
+
+        print(f"⚠️  Draw.io CLI returned code {result.returncode}")
+        if result.stderr:
+            print(f"   stderr: {result.stderr[:400]}")
+        if result.stdout:
+            print(f"   stdout: {result.stdout[:400]}")
+        return False
+
+    except FileNotFoundError:
+        print("⚠️  drawio CLI not found — install drawio-desktop")
+        return False
+    except Exception as exc:
+        print(f"⚠️  Draw.io render failed: {exc}")
+        return False
+
+
+def render_png_mermaid_ink(mermaid_path: str, png_path: str) -> bool:
+    """Fallback: render Mermaid source to PNG via the mermaid.ink public API."""
     import base64
 
     mermaid_code = Path(mermaid_path).read_text(encoding="utf-8")
-    print(f"🖼️  Rendering PNG via mermaid.ink: {mermaid_path} → {png_path}")
+    print(f"🖼️  Fallback: rendering PNG via mermaid.ink: {mermaid_path} → {png_path}")
 
-    # URL-safe base64 encode the Mermaid source
     encoded = base64.urlsafe_b64encode(mermaid_code.encode("utf-8")).decode("ascii")
-
-    # mermaid.ink API — dark theme, BlueFalconInk navy background, 1600px wide
     api_url = (
         f"https://mermaid.ink/img/{encoded}"
         f"?theme=dark&bgColor=0F172A&width=1600"
@@ -548,17 +696,14 @@ def render_png(mermaid_path: str, png_path: str) -> bool:
         if resp.status_code == 200 and "image" in content_type:
             Path(png_path).write_bytes(resp.content)
             size_kb = len(resp.content) / 1024
-            print(f"✅ PNG rendered via mermaid.ink ({size_kb:.0f} KB)")
+            print(f"✅ PNG rendered via mermaid.ink fallback ({size_kb:.0f} KB)")
             return True
 
-        # mermaid.ink returns 400 when the diagram has a syntax error — surface it
         print(f"⚠️  mermaid.ink returned HTTP {resp.status_code} ({content_type})")
-        detail = resp.text[:400] if resp.text else "(no body)"
-        print(f"   detail: {detail}")
         return False
 
-    except Exception as exc:  # network errors, timeouts, etc.
-        print(f"⚠️  mermaid.ink request failed: {exc}")
+    except Exception as exc:
+        print(f"⚠️  mermaid.ink fallback failed: {exc}")
         return False
 
 
@@ -736,9 +881,23 @@ def main():
     raw_path.write_text(mermaid_code)
     print(f"📄 Raw Mermaid written to {raw_path}")
 
-    # Render PNG from Mermaid using mermaid-cli
+    # Convert Mermaid to Draw.io XML (same approach as ArchitectAIPro web app)
+    drawio_path = output_path.with_suffix(".drawio")
     png_path = output_path.with_suffix(".png")
-    png_ok = render_png(str(raw_path), str(png_path))
+    drawio_xml = convert_to_drawio(mermaid_code, repo_name, config, api_key)
+
+    png_ok = False
+    if drawio_xml:
+        drawio_path.write_text(drawio_xml, encoding="utf-8")
+        print(f"📄 Draw.io XML written to {drawio_path}")
+        # Render PNG from Draw.io XML using drawio-desktop CLI
+        png_ok = render_png_drawio(str(drawio_path), str(png_path))
+        if not png_ok:
+            print("⚠️  Draw.io CLI render failed, falling back to mermaid.ink")
+            png_ok = render_png_mermaid_ink(str(raw_path), str(png_path))
+    else:
+        print("⚠️  Draw.io conversion failed, falling back to mermaid.ink")
+        png_ok = render_png_mermaid_ink(str(raw_path), str(png_path))
 
     # Write markdown doc (embeds PNG if available, always includes Mermaid source)
     full_doc = format_output(mermaid_code, repo_name, config, png_path=str(png_path) if png_ok else "")
