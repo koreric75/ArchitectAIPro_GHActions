@@ -1,31 +1,205 @@
 {
-  "audit_timestamp": "2026-02-20T16:42:27.847009+00:00",
+  "audit_timestamp": "2026-02-20T16:50:03.935650+00:00",
   "owner": "koreric75",
   "org_name": "BlueFalconInk LLC",
-  "api_calls_used": 106,
+  "api_calls_used": 183,
   "summary": {
-    "total_repos": 15,
-    "core": 3,
-    "active": 5,
+    "total_repos": 21,
+    "core": 8,
+    "active": 6,
     "stale": 1,
     "dead": 6,
     "forks": 5,
     "archived": 0,
     "delete_candidates": [],
     "archive_candidates": [
+      "Laser_control",
       "aws-elastic-beanstalk-express-js-sample",
       "devops-essentials-sample-app",
-      "HandBrake",
-      "Laser_control",
-      "owncloudpi-deb-jessie8",
       "RPI-Backup",
+      "HandBrake",
+      "owncloudpi-deb-jessie8",
       "rpi-clone"
     ],
     "branding_issues": [],
     "total_disk_mb": 0.0,
-    "total_monthly_burn": 165
+    "total_monthly_burn": 480
   },
   "repos": [
+    {
+      "name": "Afterword",
+      "description": "Digital Legacy application",
+      "url": "https://github.com/koreric75/Afterword",
+      "is_private": true,
+      "is_fork": false,
+      "is_archived": false,
+      "language": "Python",
+      "default_branch": "main",
+      "disk_usage_kb": 451,
+      "staleness": {
+        "last_push": "2026-02-17T21:26:32Z",
+        "days_since_push": 2,
+        "status": "ACTIVE",
+        "recommendation": "KEEP"
+      },
+      "classification": {
+        "tier": "CORE",
+        "action": "MAINTAIN",
+        "monthly_burn_estimate": 10,
+        "disk_mb": 0.0
+      },
+      "branding": {
+        "files_checked": 3,
+        "issues": [],
+        "compliant": true,
+        "has_branding": false
+      },
+      "architecture": {
+        "files": {
+          "docs/architecture.md": false,
+          "docs/architecture.mermaid": false,
+          "docs/architecture.png": false,
+          "docs/architecture.drawio": false,
+          "ARCHITECT_CONFIG.json": false
+        },
+        "has_workflow": false,
+        "fully_configured": false
+      },
+      "secrets": {
+        "secrets": [
+          "ENCRYPTION_KEY",
+          "GCP_PROJECT",
+          "GCP_REGION",
+          "GCP_SA_EMAIL",
+          "GCP_WIF_PROVIDER",
+          "GCP_WORKLOAD_IDENTITY_PROVIDER",
+          "GH_ADMIN_PAT"
+        ],
+        "has_gemini_key": false,
+        "has_gcp_creds": true
+      },
+      "workflows": {
+        "total_runs": 1905,
+        "recent_runs": [
+          {
+            "name": "pip in /. - Update #1249882764",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-19T21:25:24Z"
+          },
+          {
+            "name": "pip in /. - Update #1248639318",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-18T21:25:28Z"
+          },
+          {
+            "name": "Docker tag lint",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-17T21:26:35Z"
+          },
+          {
+            "name": "Python application",
+            "status": "completed",
+            "conclusion": "failure",
+            "created_at": "2026-02-17T21:26:35Z"
+          },
+          {
+            "name": ".github/workflows/setup-branch-protection.yml",
+            "status": "completed",
+            "conclusion": "failure",
+            "created_at": "2026-02-17T21:26:34Z"
+          }
+        ],
+        "recent_failures": 2,
+        "health": "DEGRADED"
+      }
+    },
+    {
+      "name": "ArchitectAIPro",
+      "description": "",
+      "url": "https://github.com/koreric75/ArchitectAIPro",
+      "is_private": true,
+      "is_fork": false,
+      "is_archived": false,
+      "language": "TypeScript",
+      "default_branch": "main",
+      "disk_usage_kb": 205,
+      "staleness": {
+        "last_push": "2026-02-20T16:16:07Z",
+        "days_since_push": 0,
+        "status": "ACTIVE",
+        "recommendation": "KEEP"
+      },
+      "classification": {
+        "tier": "CORE",
+        "action": "MAINTAIN",
+        "monthly_burn_estimate": 95,
+        "disk_mb": 0.0
+      },
+      "branding": {
+        "files_checked": 3,
+        "issues": [],
+        "compliant": true,
+        "has_branding": true
+      },
+      "architecture": {
+        "files": {
+          "docs/architecture.md": true,
+          "docs/architecture.mermaid": true,
+          "docs/architecture.png": true,
+          "docs/architecture.drawio": true,
+          "ARCHITECT_CONFIG.json": true
+        },
+        "has_workflow": true,
+        "fully_configured": true
+      },
+      "secrets": {
+        "secrets": [
+          "GEMINI_API_KEY"
+        ],
+        "has_gemini_key": true,
+        "has_gcp_creds": false
+      },
+      "workflows": {
+        "total_runs": 17,
+        "recent_runs": [
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T16:14:38Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T16:08:37Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T15:50:41Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T15:11:54Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T15:06:16Z"
+          }
+        ],
+        "recent_failures": 0,
+        "health": "HEALTHY"
+      }
+    },
     {
       "name": "ArchitectAIPro_GHActions",
       "description": "BlueFalconInk Architecture Standard \u2014 Automated Governance, Living Blueprints, Ruthless Consistency. GitHub Actions integration for Architect AI Pro.",
@@ -37,7 +211,7 @@
       "default_branch": "main",
       "disk_usage_kb": 591,
       "staleness": {
-        "last_push": "2026-02-20T16:41:44Z",
+        "last_push": "2026-02-20T16:49:12Z",
         "days_since_push": 0,
         "status": "ACTIVE",
         "recommendation": "KEEP"
@@ -66,17 +240,26 @@
         "fully_configured": true
       },
       "secrets": {
-        "secrets": [],
-        "has_gemini_key": false,
+        "secrets": [
+          "GEMINI_API_KEY",
+          "GH_PAT"
+        ],
+        "has_gemini_key": true,
         "has_gcp_creds": false
       },
       "workflows": {
-        "total_runs": 60,
+        "total_runs": 61,
         "recent_runs": [
           {
             "name": "CHAD Ops \u2014 Agent Orchestration",
             "status": "in_progress",
             "conclusion": null,
+            "created_at": "2026-02-20T16:49:19Z"
+          },
+          {
+            "name": "CHAD Ops \u2014 Agent Orchestration",
+            "status": "completed",
+            "conclusion": "success",
             "created_at": "2026-02-20T16:41:50Z"
           },
           {
@@ -87,25 +270,187 @@
           },
           {
             "name": "\ud83c\udfd7\ufe0f BlueFalconInk LLC Architecture Sync",
-            "status": "in_progress",
-            "conclusion": null,
+            "status": "completed",
+            "conclusion": "success",
             "created_at": "2026-02-20T16:41:22Z"
           },
           {
             "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
-            "status": "in_progress",
-            "conclusion": null,
-            "created_at": "2026-02-20T16:41:22Z"
-          },
-          {
-            "name": ".github/workflows/chad-ops.yml",
             "status": "completed",
-            "conclusion": "failure",
-            "created_at": "2026-02-20T16:41:21Z"
+            "conclusion": "success",
+            "created_at": "2026-02-20T16:41:22Z"
           }
         ],
-        "recent_failures": 1,
-        "health": "DEGRADED"
+        "recent_failures": 0,
+        "health": "HEALTHY"
+      }
+    },
+    {
+      "name": "BlueFalconInkLanding",
+      "description": "LandingPageforBlueFalconInk",
+      "url": "https://github.com/koreric75/BlueFalconInkLanding",
+      "is_private": true,
+      "is_fork": false,
+      "is_archived": false,
+      "language": "TypeScript",
+      "default_branch": "main",
+      "disk_usage_kb": 282,
+      "staleness": {
+        "last_push": "2026-02-20T16:16:16Z",
+        "days_since_push": 0,
+        "status": "ACTIVE",
+        "recommendation": "KEEP"
+      },
+      "classification": {
+        "tier": "CORE",
+        "action": "MAINTAIN",
+        "monthly_burn_estimate": 10,
+        "disk_mb": 0.0
+      },
+      "branding": {
+        "files_checked": 3,
+        "issues": [],
+        "compliant": true,
+        "has_branding": true
+      },
+      "architecture": {
+        "files": {
+          "docs/architecture.md": true,
+          "docs/architecture.mermaid": true,
+          "docs/architecture.png": true,
+          "docs/architecture.drawio": true,
+          "ARCHITECT_CONFIG.json": true
+        },
+        "has_workflow": true,
+        "fully_configured": true
+      },
+      "secrets": {
+        "secrets": [
+          "GEMINI_API_KEY"
+        ],
+        "has_gemini_key": true,
+        "has_gcp_creds": false
+      },
+      "workflows": {
+        "total_runs": 19,
+        "recent_runs": [
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T16:14:40Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T16:08:40Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T15:50:43Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T15:11:57Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T15:06:18Z"
+          }
+        ],
+        "recent_failures": 0,
+        "health": "HEALTHY"
+      }
+    },
+    {
+      "name": "ProposalBuddyAI",
+      "description": "AI-powered GovCon proposal assistant with multi-agent Gemini pipeline, opportunity tracking, and compliance scoring",
+      "url": "https://github.com/koreric75/ProposalBuddyAI",
+      "is_private": true,
+      "is_fork": false,
+      "is_archived": false,
+      "language": "TypeScript",
+      "default_branch": "main",
+      "disk_usage_kb": 222,
+      "staleness": {
+        "last_push": "2026-02-20T16:16:07Z",
+        "days_since_push": 0,
+        "status": "ACTIVE",
+        "recommendation": "KEEP"
+      },
+      "classification": {
+        "tier": "CORE",
+        "action": "MAINTAIN",
+        "monthly_burn_estimate": 95,
+        "disk_mb": 0.0
+      },
+      "branding": {
+        "files_checked": 3,
+        "issues": [],
+        "compliant": true,
+        "has_branding": true
+      },
+      "architecture": {
+        "files": {
+          "docs/architecture.md": true,
+          "docs/architecture.mermaid": true,
+          "docs/architecture.png": true,
+          "docs/architecture.drawio": true,
+          "ARCHITECT_CONFIG.json": true
+        },
+        "has_workflow": true,
+        "fully_configured": true
+      },
+      "secrets": {
+        "secrets": [
+          "GEMINI_API_KEY"
+        ],
+        "has_gemini_key": true,
+        "has_gcp_creds": false
+      },
+      "workflows": {
+        "total_runs": 17,
+        "recent_runs": [
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T16:14:37Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T16:08:36Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T15:50:40Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T15:11:53Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T15:06:15Z"
+          }
+        ],
+        "recent_failures": 0,
+        "health": "HEALTHY"
       }
     },
     {
@@ -148,8 +493,10 @@
         "fully_configured": true
       },
       "secrets": {
-        "secrets": [],
-        "has_gemini_key": false,
+        "secrets": [
+          "GEMINI_API_KEY"
+        ],
+        "has_gemini_key": true,
         "has_gcp_creds": false
       },
       "workflows": {
@@ -188,6 +535,91 @@
         ],
         "recent_failures": 0,
         "health": "HEALTHY"
+      }
+    },
+    {
+      "name": "polymath-hub",
+      "description": "The Polymath Hub  subscription-based learning platform by BlueFalconInk (Creative Arts, IT & Cyber Security, Vibe Coding)",
+      "url": "https://github.com/koreric75/polymath-hub",
+      "is_private": true,
+      "is_fork": false,
+      "is_archived": false,
+      "language": "TypeScript",
+      "default_branch": "master",
+      "disk_usage_kb": 310,
+      "staleness": {
+        "last_push": "2026-02-20T16:16:08Z",
+        "days_since_push": 0,
+        "status": "ACTIVE",
+        "recommendation": "KEEP"
+      },
+      "classification": {
+        "tier": "CORE",
+        "action": "MAINTAIN",
+        "monthly_burn_estimate": 95,
+        "disk_mb": 0.0
+      },
+      "branding": {
+        "files_checked": 3,
+        "issues": [],
+        "compliant": true,
+        "has_branding": true
+      },
+      "architecture": {
+        "files": {
+          "docs/architecture.md": true,
+          "docs/architecture.mermaid": true,
+          "docs/architecture.png": true,
+          "docs/architecture.drawio": true,
+          "ARCHITECT_CONFIG.json": true
+        },
+        "has_workflow": true,
+        "fully_configured": true
+      },
+      "secrets": {
+        "secrets": [
+          "GCP_SA_KEY",
+          "GEMINI_API_KEY"
+        ],
+        "has_gemini_key": true,
+        "has_gcp_creds": true
+      },
+      "workflows": {
+        "total_runs": 68,
+        "recent_runs": [
+          {
+            "name": "Deploy to Cloud Run",
+            "status": "completed",
+            "conclusion": "failure",
+            "created_at": "2026-02-20T16:14:41Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T16:14:41Z"
+          },
+          {
+            "name": "Deploy to Cloud Run",
+            "status": "completed",
+            "conclusion": "failure",
+            "created_at": "2026-02-20T16:14:33Z"
+          },
+          {
+            "name": "Deploy to Cloud Run",
+            "status": "completed",
+            "conclusion": "failure",
+            "created_at": "2026-02-20T16:08:41Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "success",
+            "created_at": "2026-02-20T16:08:41Z"
+          }
+        ],
+        "recent_failures": 3,
+        "health": "FAILING"
       }
     },
     {
@@ -230,8 +662,10 @@
         "fully_configured": true
       },
       "secrets": {
-        "secrets": [],
-        "has_gemini_key": false,
+        "secrets": [
+          "GEMINI_API_KEY"
+        ],
+        "has_gemini_key": true,
         "has_gcp_creds": false
       },
       "workflows": {
@@ -567,6 +1001,57 @@
         ],
         "recent_failures": 3,
         "health": "FAILING"
+      }
+    },
+    {
+      "name": "socialauditai",
+      "description": "Help align your personal brand across all platforms",
+      "url": "https://github.com/koreric75/socialauditai",
+      "is_private": true,
+      "is_fork": false,
+      "is_archived": false,
+      "language": "HTML",
+      "default_branch": "main",
+      "disk_usage_kb": 26,
+      "staleness": {
+        "last_push": "2026-02-10T02:27:16Z",
+        "days_since_push": 10,
+        "status": "ACTIVE",
+        "recommendation": "KEEP"
+      },
+      "classification": {
+        "tier": "ACTIVE",
+        "action": "MAINTAIN",
+        "monthly_burn_estimate": 10,
+        "disk_mb": 0.0
+      },
+      "branding": {
+        "files_checked": 2,
+        "issues": [],
+        "compliant": true,
+        "has_branding": false
+      },
+      "architecture": {
+        "files": {
+          "docs/architecture.md": false,
+          "docs/architecture.mermaid": false,
+          "docs/architecture.png": false,
+          "docs/architecture.drawio": false,
+          "ARCHITECT_CONFIG.json": false
+        },
+        "has_workflow": false,
+        "fully_configured": false
+      },
+      "secrets": {
+        "secrets": [],
+        "has_gemini_key": false,
+        "has_gcp_creds": false
+      },
+      "workflows": {
+        "total_runs": 0,
+        "recent_runs": [],
+        "recent_failures": 0,
+        "health": "HEALTHY"
       }
     },
     {
