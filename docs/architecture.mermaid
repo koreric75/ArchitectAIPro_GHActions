@@ -2,103 +2,66 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        User[Developer/User]
+
+        subgraph "Application Layer"
+            User[Developer/User]
+            GHRepo[GitHub Repository]
+            GHActions[GitHub Actions Workflows]
+            PythonScripts[Python Automation Scripts]
+            ArchitectAIPro[Architect AI Pro · Cloud Run Service]
+        end
 
         subgraph "Security"
             CloudArmor[Cloud Armor]
-            LoadBalancer[Cloud Load Balancer]
-            CloudCDN[Cloud CDN]
+            LoadBalancer[Global External Load Balancer]
         end
 
-        subgraph "CI/CD · GitHub Actions"
-            GHA[GitHub Workflows]
-            GHARunner[GitHub Actions Runner]
-            GenDiagram[.github/scripts/generate_diagram.py]
-            ForemanAudit[.github/scripts/foreman_audit.py]
-            CleanupAgent[.github/scripts/cleanup_agent.py]
-            DashboardGen[.github/scripts/dashboard_generator.py]
-            ProdReadiness[.github/scripts/production_readiness.py]
+        subgraph "Data Layer"
+            CloudStorage[Cloud Storage · Diagrams & Reports]
+            SecretManager[Secret Manager · API Keys]
         end
 
-        subgraph "Application"
-            GalleryApp[Architect AI Pro Gallery · FastAPI]
-            CloudRun[Cloud Run Service]
-        end
-
-        subgraph "Data"
-            CloudStorage[Cloud Storage · Diagrams/Reports]
-            SecretManager[Secret Manager]
-            AuditReport[Audit Report · JSON]
-            DashboardHTML[Dashboard · HTML]
-            MermaidDiagram[Mermaid Diagram · .md/.mermaid]
-            DrawIOXML[Draw.io XML · .drawio]
-            PNGDiagram[PNG Diagram · .png]
-        end
-
-        subgraph "Infrastructure as Code"
-            Terraform[Terraform IaC]
-            CloudBuild[Cloud Build]
-            ArtifactRegistry[Artifact Registry]
-        end
-
-        subgraph "External Services"
+        subgraph "External Integrations"
             GeminiAPI[Google Gemini API]
             GitHubAPI[GitHub API]
         end
 
-        %% Data Flows
-        User --triggers--> GHA
-        GHA --orchestrates--> GHARunner
-        GHARunner --executes--> GenDiagram
-        GHARunner --executes--> ForemanAudit
-        GHARunner --executes--> CleanupAgent
-        GHARunner --executes--> DashboardGen
-        GHARunner --executes--> ProdReadiness
+        subgraph "Infrastructure as Code"
+            Terraform[Terraform]
+        end
 
-        GenDiagram --calls API--> GeminiAPI
-        GenDiagram --reads/writes repo--> GitHubAPI
-        GenDiagram --generates--> MermaidDiagram
-        GenDiagram --converts--> DrawIOXML
-        GenDiagram --renders--> PNGDiagram
+        subgraph "Content Delivery"
+            CloudCDN[Cloud CDN]
+        end
 
-        ForemanAudit --audits--> MermaidDiagram
-        ForemanAudit --outputs--> AuditReport
+        User -->|Push Code| GHRepo
+        GHRepo -->|Trigger Workflow| GHActions
+        GHActions -->|Execute Scripts| PythonScripts
+        PythonScripts -->|Generate Diagram| GeminiAPI
+        GeminiAPI -->|Mermaid.js Output| PythonScripts
+        PythonScripts -->|Audit & Remediate| GHActions
+        PythonScripts -->|Store Diagrams & Reports| CloudStorage
+        PythonScripts -->|Update Repo Status| GitHubAPI
+        PythonScripts -->|Retrieve Secrets| SecretManager
+        Terraform -->|Deploy & Manage GCP Resources| ArchitectAIPro
+        Terraform -->|Deploy & Manage GCP Resources| CloudStorage
+        Terraform -->|Deploy & Manage GCP Resources| SecretManager
+        Terraform -->|Deploy & Manage GCP Resources| CloudArmor
+        Terraform -->|Deploy & Manage GCP Resources| LoadBalancer
+        Terraform -->|Deploy & Manage GCP Resources| CloudCDN
 
-        DashboardGen --reads--> AuditReport
-        DashboardGen --generates--> DashboardHTML
+        User -- HTTPS --> CloudArmor
+        CloudArmor -->|Filter Traffic| LoadBalancer
+        LoadBalancer -->|Route Requests| CloudCDN
+        CloudCDN -->|Serve Content| ArchitectAIPro
+        ArchitectAIPro -->|Retrieve Assets| CloudStorage
 
-        CleanupAgent --reads--> AuditReport
-        CleanupAgent --modifies repo--> GitHubAPI
-
-        ProdReadiness --validates config--> SecretManager
-        ProdReadiness --validates config--> GHA
-
-        GHA --deploys infra via--> Terraform
-        Terraform --manages--> CloudBuild
-        CloudBuild --builds/pushes image--> ArtifactRegistry
-        ArtifactRegistry --deploys container--> CloudRun
-        CloudRun --hosts--> GalleryApp
-
-        GalleryApp --serves from--> CloudStorage
-        CloudStorage --stores--> MermaidDiagram
-        CloudStorage --stores--> DrawIOXML
-        CloudStorage --stores--> PNGDiagram
-        CloudStorage --stores--> AuditReport
-        CloudStorage --stores--> DashboardHTML
-
-        User --accesses public endpoint--> CloudArmor
-        CloudArmor --protects--> LoadBalancer
-        LoadBalancer --routes traffic to--> CloudCDN
-        CloudCDN --serves content from--> GalleryApp
-
-        SecretManager --stores API keys for--> GenDiagram
-        SecretManager --stores API keys for--> CleanupAgent
-        SecretManager --stores API keys for--> Terraform
-
+        style Application Layer fill:#1E3A5F,color:#BFDBFE
         style Security fill:#1E40AF,color:#BFDBFE
-        style Application fill:#1E3A5F,color:#BFDBFE
-        style Data fill:#0F172A,color:#BFDBFE
-        style CloudCDN fill:#1E3A5F,color:#BFDBFE
+        style Data Layer fill:#0F172A,color:#BFDBFE
+        style Content Delivery fill:#1E3A5F,color:#BFDBFE
+        style Infrastructure as Code fill:#1E3A5F,color:#BFDBFE
+
     end
 
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
