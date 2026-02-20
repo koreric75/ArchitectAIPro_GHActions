@@ -19,106 +19,56 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        subgraph "External Users"
-            User[End User]
-            Architect[Architect AI Pro User]
-        end
+        Internet[Internet]
 
         subgraph "Security"
-            CloudLB[Cloud Load Balancer]
+            LoadBalancer[Cloud Load Balancer]
             CloudArmor[Cloud Armor]
-            IAP[Identity-Aware Proxy]
         end
 
-        subgraph "Application Layer"
-            CloudRun[Cloud Run Service · Gallery]
-            GalleryApp[Architect AI Pro Gallery · FastAPI]
-            CloudCDN[Cloud CDN]
-        end
-        style Application fill:#1E3A5F,color:#BFDBFE
-
-        subgraph "Automation & CI/CD"
-            GitHubRepo[GitHub Repository]
-            GHActions[GitHub Actions Workflows]
-            subgraph "GHA Scripts"
-                GenerateDiagram[generate_diagram.py · Gemini Caller]
-                ForemanAudit[foreman_audit.py · Compliance Auditor]
-                RepoAuditor[repo_auditor.py · Repo Scanner]
-                DashboardGen[dashboard_generator.py · HTML Generator]
-                CleanupAgent[cleanup_agent.py · Repo Manager]
-            end
-            CloudBuild[Cloud Build · Image Builder]
-            ArtifactRegistry[Artifact Registry · Container Images]
-            Terraform[Terraform IaC · Infra Deployment]
+        subgraph "CI/CD & Automation"
+            GitHubUser[GitHub User · Developer]
+            GitHubActions[GitHub Actions]
             WIF[Workload Identity Federation]
-        end
-
-        subgraph "Data Layer"
-            SecretManager[Secret Manager · API Keys]
-            CloudStorage[Cloud Storage · Gallery Assets & Reports]
-            Firestore[Firestore · Metadata & Audit Results]
+            AutomationScripts[BlueFalconInk AI Scripts]
+            Terraform[Terraform · IaC]
         end
         style Data fill:#0F172A,color:#BFDBFE
 
-        subgraph "External Integrations"
-            GeminiAPI[Google Gemini API · AI Engine]
-            GitHubAPI[GitHub API · Repo Management]
+        subgraph "Application"
+            ArchitectAIGallery[Architect AI Pro Gallery · Cloud Run]
         end
 
-        User -->|HTTPS Request| CloudLB
-        Architect -->|Secure HTTPS Request| IAP
-        CloudLB -->|Traffic Filtering| CloudArmor
-        CloudArmor -->|Authenticated Access| IAP
-        IAP -->|Route to Service| CloudRun
-        CloudRun -->|Hosts| GalleryApp
-        GalleryApp -->|Serves Content| CloudCDN
-        CloudCDN -->|Delivers Assets| User
+        subgraph "Data & AI Services"
+            GeminiAPI[Google Gemini API]
+            SecretManager[Cloud Secret Manager]
+            CloudStorage[Cloud Storage · Diagrams & Reports]
+        end
 
-        GitHubRepo -->|Push/PR Event| GHActions
-        GHActions -->|Executes Script| GenerateDiagram
-        GHActions -->|Executes Script| ForemanAudit
-        GHActions -->|Executes Script| RepoAuditor
-        GHActions -->|Executes Script| DashboardGen
-        GHActions -->|Executes Script| CleanupAgent
+        GitHubUser -->|Code Push| GitHubActions
+        GitHubActions -->|Authenticate via OIDC| WIF
+        WIF -->|GCP Credentials| AutomationScripts
+        WIF -->|GCP Credentials| Terraform
 
-        GenerateDiagram -->|API Call| GeminiAPI
-        GenerateDiagram -->|Reads Repo Context| GitHubAPI
-        GenerateDiagram -->|Stores Diagram Mermaid/PNG| CloudStorage
-        GenerateDiagram -->|Accesses GEMINI_API_KEY| SecretManager
+        AutomationScripts -->|Scan Repo & Generate Diagram| GeminiAPI
+        AutomationScripts -->|Retrieve API Keys| SecretManager
+        AutomationScripts -->|Store Generated Files Mermaid, Draw.io, PNG, Reports| CloudStorage
+        AutomationScripts -->|Audit Diagram & Generate Dashboard| AutomationScripts
 
-        ForemanAudit -->|Reads Diagram| CloudStorage
-        ForemanAudit -->|Writes Audit Report| CloudStorage
+        Terraform -->|Deploys & Configures| ArchitectAIGallery
+        Terraform -->|Manages| SecretManager
+        Terraform -->|Manages| CloudStorage
 
-        RepoAuditor -->|Scans Repos| GitHubAPI
-        RepoAuditor -->|Writes Audit Report| CloudStorage
-        RepoAuditor -->|Stores Metadata| Firestore
+        Internet -->|HTTPS Request| LoadBalancer
+        LoadBalancer -->|WAF Protection| CloudArmor
+        CloudArmor -->|Route Traffic| ArchitectAIGallery
 
-        DashboardGen -->|Reads Audit Report| CloudStorage
-        DashboardGen -->|Generates HTML Dashboard| CloudStorage
+        ArchitectAIGallery -->|Fetch Diagrams & Reports| CloudStorage
+        ArchitectAIGallery -->|Retrieve Operational Secrets| SecretManager
 
-        CleanupAgent -->|Manages Repos| GitHubAPI
-        CleanupAgent -->|Accesses GITHUB_TOKEN| SecretManager
-
-        GHActions -->|Deploys Infra deploy-infra.yml| Terraform
-        GHActions -->|Authenticates via| WIF
-        WIF -->|Grants Access to GCP| Terraform
-        Terraform -->|Provisions/Updates| CloudRun
-        Terraform -->|Provisions/Updates| CloudLB
-        Terraform -->|Provisions/Updates| CloudArmor
-        Terraform -->|Provisions/Updates| IAP
-        Terraform -->|Provisions/Updates| CloudCDN
-        Terraform -->|Provisions/Updates| SecretManager
-        Terraform -->|Provisions/Updates| CloudStorage
-        Terraform -->|Provisions/Updates| Firestore
-        Terraform -->|Triggers| CloudBuild
-
-        CloudBuild -->|Builds Docker Image from Dockerfile| GitHubRepo
-        CloudBuild -->|Pushes Image to| ArtifactRegistry
-        ArtifactRegistry -->|Deploys Image to| CloudRun
-
-        GalleryApp -->|Reads Diagrams/Reports| CloudStorage
-        GalleryApp -->|Reads/Writes Metadata| Firestore
-
+        style Security fill:#1E40AF,color:#BFDBFE
+        style Application fill:#1E3A5F,color:#BFDBFE
+        style Data fill:#0F172A,color:#BFDBFE
     end
 
     style Security fill:#1E40AF,color:#BFDBFE
