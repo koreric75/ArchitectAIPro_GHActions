@@ -1,7 +1,7 @@
 # 🏗️ BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture
 
 > **Created with [Architect AI Pro](https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/)** — the flagship architecture tool by **BlueFalconInk LLC**
-> Auto-generated on 2026-02-20 08:48 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
+> Auto-generated on 2026-02-20 08:55 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
 
 ![BlueFalconInk LLC](https://img.shields.io/badge/BlueFalconInk%20LLC-Standard-1E40AF)
 ![Architect AI Pro](https://img.shields.io/badge/Created%20with-Architect%20AI%20Pro-3B82F6)
@@ -15,74 +15,60 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture"
-        subgraph "Application Layer"
-            GHActions[GitHub Actions]
-            ArchitectAIGen[Architect AI Pro Generator]
-            ForemanAudit[Foreman Audit Engine]
-            MermaidCLI[Mermaid CLI]
-            Terraform[Terraform IaC]
-            GalleryApp[Architecture Gallery App]
-            CloudRun[Cloud Run Service]
-        end
-
-        subgraph "Data Layer"
-            RepoSource[Repository Source Code]
-            GeneratedDiagrams[Generated Diagrams]
-            SecretManager[Cloud Secret Manager]
-            GCSBackend[Cloud Storage Backend]
-        end
-
         subgraph "Security"
-            CloudArmor[Cloud Armor]
-            CloudLB[Cloud Load Balancer]
-            WIF[Workload Identity Federation]
+            User[End User] --> CloudLoadBalancer[Cloud Load Balancer]
+            CloudLoadBalancer -->|HTTP/S Traffic| CloudCDN[Cloud CDN]
+            CloudCDN -->|Cached/Dynamic Content| CloudArmor[Cloud Armor WAF]
         end
 
-        subgraph "Payment"
-            Stripe[Stripe Payment Gateway]
+        subgraph "Application"
+            CloudArmor -->|Protected Traffic| CloudRunGallery[ArchitectAI Gallery App - Cloud Run]
+            CloudRunGallery -->|Fetches Repo Data| GitHubAPI[GitHub API]
+            CloudRunGallery -->|Accesses Secrets| CloudSecretMgr[Cloud Secret Manager]
+            CloudRunGallery --pulls image from--> ArtifactReg[Artifact Registry]
         end
 
-        subgraph "External"
-            UserDev[User / Developer]
-            PublicInternet[Public Internet]
-            GitHub[GitHub Repository]
+        subgraph "CI/CD & Automation"
+            GHActions[GitHub Actions] --triggers--> ArchitectAIGen[Architect AI Pro Generator - Python]
+            GHActions --triggers--> ForemanAudit[Foreman Audit Engine - Python]
+            GHActions --triggers--> ProdReadiness[Production Readiness Check - Python]
+            GHActions --executes IaC--> Terraform[Terraform IaC]
+            GHActions --pushes image--> ArtifactReg
+            GHActions --authenticates via--> WIF[Workload Identity Federation]
+            WIF -->|Grants GCP Access| Terraform
+            WIF -->|Grants GCP Access| ArchitectAIGen
+            WIF -->|Grants GCP Access| ForemanAudit
+            WIF -->|Grants GCP Access| ProdReadiness
+        end
+
+        subgraph "Data"
+            ArchitectAIGen -->|Sends Code Context| GeminiAPI[Google Gemini API]
+            GeminiAPI -->|Returns Diagram| ArchitectAIGen
+            ArchitectAIGen -->|Writes Diagram/Report| GitHubRepo[GitHub Repository]
+            ForemanAudit -->|Reads Diagram/Config| GitHubRepo
+            ProdReadiness -->|Reads Config| GitHubRepo
+            Terraform -->|Stores State| GCSBackend[Cloud Storage - Terraform State]
+            CloudSecretMgr[Cloud Secret Manager]
+            ArtifactReg[Artifact Registry]
+            CloudDNS[Cloud DNS]
+            GitHubAPI[GitHub API]
             GeminiAPI[Google Gemini API]
         end
 
-        UserDev --> GitHub: Push/PR Code
-        GitHub --> GHActions: Triggers Workflow
-        GHActions --> RepoSource: Scans Code
-        GHActions --> ArchitectAIGen: Runs Generator Script
-        ArchitectAIGen --> GeminiAPI: Request Diagram Generation
-        GeminiAPI --> ArchitectAIGen: Returns Mermaid Code
-        ArchitectAIGen --> GeneratedDiagrams: Writes .mermaid
-        ArchitectAIGen --> MermaidCLI: Renders PNG
-        MermaidCLI --> GeneratedDiagrams: Writes .png
-        GHActions --> ForemanAudit: Runs Audit Script
-        ForemanAudit --> GeneratedDiagrams: Reads Diagram
-        GHActions --> GitHub: Commits Diagrams
-        GHActions --> Terraform: Runs IaC Apply
-        Terraform --> WIF: Authenticates
-        WIF --> SecretManager: Accesses Secrets
-        Terraform --> GCSBackend: Manages State
-        Terraform --> CloudRun: Deploys Gallery App
-        Terraform --> SecretManager: Provisions Secrets
-        PublicInternet --> CloudArmor: Public Access
-        CloudArmor --> CloudLB: Routes Traffic
-        CloudLB --> CloudRun: To Gallery App
-        CloudRun --> GalleryApp: Hosts
-        GalleryApp --> SecretManager: Fetches GITHUB_TOKEN
-        GalleryApp --> GitHub: Fetches Repo Diagrams (API)
-        SecretManager -.-> Stripe: Manages Keys for Payment Flows
-
+        style Security fill:#1E40AF,color:#BFDBFE
+        style Application fill:#1E3A5F,color:#BFDBFE
+        style CI_CD_Automation fill:#1E3A5F,color:#BFDBFE
+        style Data fill:#0F172A,color:#BFDBFE
     end
 
-    FOOTER[🏗️ Created with Architect AI Pro | BlueFalconInk LLC]
+    Terraform -->|Provisions/Manages| CloudRunGallery
+    Terraform -->|Provisions/Manages| CloudSecretMgr
+    Terraform -->|Provisions/Manages| CloudDNS
+    Terraform -->|Provisions/Manages| ArtifactReg
+    Terraform -->|Provisions/Manages| WIF
+    Terraform -->|Provisions/Manages| GCSBackend
 
-    style Security fill:#1E40AF,color:#BFDBFE
-    style Application fill:#1E3A5F,color:#BFDBFE
-    style Data fill:#0F172A,color:#BFDBFE
-    style Payment fill:#7C3AED,color:#BFDBFE
+    FOOTER[🏗️ Created with Architect AI Pro | BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
 
