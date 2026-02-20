@@ -250,9 +250,9 @@ def audit_workflows(owner: str, repo_name: str, token: str) -> dict:
 def classify_repo(repo: dict, staleness: dict) -> dict:
     """Generate classification and action recommendation."""
     name = repo["name"]
-    is_fork = repo.get("isFork", False)
-    is_archived = repo.get("isArchived", False)
-    disk_kb = repo.get("diskUsage", 0)
+    is_fork = repo.get("fork", repo.get("isFork", False))
+    is_archived = repo.get("archived", repo.get("isArchived", False))
+    disk_kb = repo.get("size", repo.get("diskUsage", 0))
 
     # Priority classification
     if is_archived:

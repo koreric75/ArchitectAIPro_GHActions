@@ -1,12 +1,12 @@
 {
-  "audit_timestamp": "2026-02-20T17:17:03.174499+00:00",
+  "audit_timestamp": "2026-02-20T18:14:23.884484+00:00",
   "owner": "koreric75",
   "org_name": "BlueFalconInk LLC",
-  "api_calls_used": 184,
+  "api_calls_used": 93,
   "summary": {
     "total_repos": 14,
-    "core": 8,
-    "active": 6,
+    "core": 7,
+    "active": 0,
     "stale": 0,
     "dead": 0,
     "forks": 0,
@@ -14,100 +14,10 @@
     "delete_candidates": [],
     "archive_candidates": [],
     "branding_issues": [],
-    "total_disk_mb": 0.0,
-    "total_monthly_burn": 480
+    "total_disk_mb": 28.2,
+    "total_monthly_burn": 460
   },
   "repos": [
-    {
-      "name": "Afterword",
-      "description": "Digital Legacy application",
-      "url": "https://github.com/koreric75/Afterword",
-      "is_private": true,
-      "is_fork": false,
-      "is_archived": true,
-      "language": "Python",
-      "default_branch": "main",
-      "disk_usage_kb": 451,
-      "staleness": {
-        "last_push": "2026-02-17T21:26:32Z",
-        "days_since_push": 2,
-        "status": "ACTIVE",
-        "recommendation": "KEEP"
-      },
-      "classification": {
-        "tier": "CORE",
-        "action": "MAINTAIN",
-        "monthly_burn_estimate": 10,
-        "disk_mb": 0.0
-      },
-      "branding": {
-        "files_checked": 3,
-        "issues": [],
-        "compliant": true,
-        "has_branding": false
-      },
-      "architecture": {
-        "files": {
-          "docs/architecture.md": false,
-          "docs/architecture.mermaid": false,
-          "docs/architecture.png": false,
-          "docs/architecture.drawio": false,
-          "ARCHITECT_CONFIG.json": false
-        },
-        "has_workflow": false,
-        "fully_configured": false
-      },
-      "secrets": {
-        "secrets": [
-          "ENCRYPTION_KEY",
-          "GCP_PROJECT",
-          "GCP_REGION",
-          "GCP_SA_EMAIL",
-          "GCP_WIF_PROVIDER",
-          "GCP_WORKLOAD_IDENTITY_PROVIDER",
-          "GH_ADMIN_PAT"
-        ],
-        "has_gemini_key": false,
-        "has_gcp_creds": true
-      },
-      "workflows": {
-        "total_runs": 1905,
-        "recent_runs": [
-          {
-            "name": "pip in /. - Update #1249882764",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-02-19T21:25:24Z"
-          },
-          {
-            "name": "pip in /. - Update #1248639318",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-02-18T21:25:28Z"
-          },
-          {
-            "name": "Docker tag lint",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-02-17T21:26:35Z"
-          },
-          {
-            "name": "Python application",
-            "status": "completed",
-            "conclusion": "failure",
-            "created_at": "2026-02-17T21:26:35Z"
-          },
-          {
-            "name": ".github/workflows/setup-branch-protection.yml",
-            "status": "completed",
-            "conclusion": "failure",
-            "created_at": "2026-02-17T21:26:34Z"
-          }
-        ],
-        "recent_failures": 2,
-        "health": "DEGRADED"
-      }
-    },
     {
       "name": "ArchitectAIPro",
       "description": "",
@@ -128,7 +38,7 @@
         "tier": "CORE",
         "action": "MAINTAIN",
         "monthly_burn_estimate": 95,
-        "disk_mb": 0.0
+        "disk_mb": 0.5
       },
       "branding": {
         "files_checked": 3,
@@ -203,7 +113,7 @@
       "default_branch": "main",
       "disk_usage_kb": 1425,
       "staleness": {
-        "last_push": "2026-02-20T17:15:30Z",
+        "last_push": "2026-02-20T18:06:49Z",
         "days_since_push": 0,
         "status": "ACTIVE",
         "recommendation": "KEEP"
@@ -211,8 +121,8 @@
       "classification": {
         "tier": "CORE",
         "action": "MAINTAIN",
-        "monthly_burn_estimate": 10,
-        "disk_mb": 0.0
+        "monthly_burn_estimate": 25,
+        "disk_mb": 1.4
       },
       "branding": {
         "files_checked": 2,
@@ -240,37 +150,37 @@
         "has_gcp_creds": false
       },
       "workflows": {
-        "total_runs": 64,
+        "total_runs": 70,
         "recent_runs": [
-          {
-            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
-            "status": "completed",
-            "conclusion": "startup_failure",
-            "created_at": "2026-02-20T17:13:38Z"
-          },
-          {
-            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-02-20T17:13:38Z"
-          },
           {
             "name": "\ud83c\udfd7\ufe0f BlueFalconInk LLC Architecture Sync",
             "status": "completed",
             "conclusion": "success",
-            "created_at": "2026-02-20T17:13:38Z"
+            "created_at": "2026-02-20T18:04:41Z"
           },
           {
-            "name": "CHAD Ops \u2014 Agent Orchestration",
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
             "status": "completed",
             "conclusion": "success",
-            "created_at": "2026-02-20T16:49:19Z"
+            "created_at": "2026-02-20T18:04:41Z"
           },
           {
-            "name": "CHAD Ops \u2014 Agent Orchestration",
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "startup_failure",
+            "created_at": "2026-02-20T18:04:41Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
+            "status": "completed",
+            "conclusion": "startup_failure",
+            "created_at": "2026-02-20T17:18:19Z"
+          },
+          {
+            "name": "\ud83c\udfd7\ufe0f Architecture Diagram",
             "status": "completed",
             "conclusion": "success",
-            "created_at": "2026-02-20T16:41:50Z"
+            "created_at": "2026-02-20T17:18:19Z"
           }
         ],
         "recent_failures": 0,
@@ -297,7 +207,7 @@
         "tier": "CORE",
         "action": "MAINTAIN",
         "monthly_burn_estimate": 10,
-        "disk_mb": 0.0
+        "disk_mb": 0.5
       },
       "branding": {
         "files_checked": 3,
@@ -381,7 +291,7 @@
         "tier": "CORE",
         "action": "MAINTAIN",
         "monthly_burn_estimate": 95,
-        "disk_mb": 0.0
+        "disk_mb": 0.5
       },
       "branding": {
         "files_checked": 3,
@@ -464,8 +374,8 @@
       "classification": {
         "tier": "CORE",
         "action": "MAINTAIN",
-        "monthly_burn_estimate": 95,
-        "disk_mb": 0.0
+        "monthly_burn_estimate": 130,
+        "disk_mb": 22.9
       },
       "branding": {
         "files_checked": 4,
@@ -549,7 +459,7 @@
         "tier": "CORE",
         "action": "MAINTAIN",
         "monthly_burn_estimate": 95,
-        "disk_mb": 0.0
+        "disk_mb": 0.3
       },
       "branding": {
         "files_checked": 3,
@@ -634,7 +544,7 @@
         "tier": "CORE",
         "action": "MAINTAIN",
         "monthly_burn_estimate": 10,
-        "disk_mb": 0.0
+        "disk_mb": 0.8
       },
       "branding": {
         "files_checked": 4,
@@ -699,6 +609,46 @@
       }
     },
     {
+      "name": "Afterword",
+      "description": "Digital Legacy application",
+      "url": "https://github.com/koreric75/Afterword",
+      "is_private": true,
+      "is_fork": false,
+      "is_archived": true,
+      "language": "Python",
+      "default_branch": "main",
+      "disk_usage_kb": 451,
+      "staleness": {
+        "last_push": "2026-02-17T21:26:32Z",
+        "days_since_push": 2,
+        "status": "ACTIVE",
+        "recommendation": "KEEP"
+      },
+      "classification": {
+        "tier": "ARCHIVED",
+        "action": "NONE",
+        "monthly_burn_estimate": 0,
+        "disk_mb": 0.4
+      },
+      "branding": {
+        "compliant": true,
+        "issues": [],
+        "files_checked": 0
+      },
+      "architecture": {
+        "fully_configured": false,
+        "has_workflow": false,
+        "files": {}
+      },
+      "secrets": {
+        "has_gemini_key": false
+      },
+      "workflows": {
+        "health": "UNKNOWN",
+        "recent_runs": []
+      }
+    },
+    {
       "name": "AnimorphStudios",
       "description": "Convert your music videos with vivid animorphic generation",
       "url": "https://github.com/koreric75/AnimorphStudios",
@@ -715,38 +665,27 @@
         "recommendation": "KEEP"
       },
       "classification": {
-        "tier": "ACTIVE",
-        "action": "MAINTAIN",
-        "monthly_burn_estimate": 10,
+        "tier": "ARCHIVED",
+        "action": "NONE",
+        "monthly_burn_estimate": 0,
         "disk_mb": 0.0
       },
       "branding": {
-        "files_checked": 2,
-        "issues": [],
         "compliant": true,
-        "has_branding": false
+        "issues": [],
+        "files_checked": 0
       },
       "architecture": {
-        "files": {
-          "docs/architecture.md": false,
-          "docs/architecture.mermaid": false,
-          "docs/architecture.png": false,
-          "docs/architecture.drawio": false,
-          "ARCHITECT_CONFIG.json": false
-        },
+        "fully_configured": false,
         "has_workflow": false,
-        "fully_configured": false
+        "files": {}
       },
       "secrets": {
-        "secrets": [],
-        "has_gemini_key": false,
-        "has_gcp_creds": false
+        "has_gemini_key": false
       },
       "workflows": {
-        "total_runs": 0,
-        "recent_runs": [],
-        "recent_failures": 0,
-        "health": "HEALTHY"
+        "health": "UNKNOWN",
+        "recent_runs": []
       }
     },
     {
@@ -766,69 +705,27 @@
         "recommendation": "KEEP"
       },
       "classification": {
-        "tier": "ACTIVE",
-        "action": "MAINTAIN",
-        "monthly_burn_estimate": 10,
-        "disk_mb": 0.0
+        "tier": "ARCHIVED",
+        "action": "NONE",
+        "monthly_burn_estimate": 0,
+        "disk_mb": 0.8
       },
       "branding": {
-        "files_checked": 3,
-        "issues": [],
         "compliant": true,
-        "has_branding": false
+        "issues": [],
+        "files_checked": 0
       },
       "architecture": {
-        "files": {
-          "docs/architecture.md": false,
-          "docs/architecture.mermaid": false,
-          "docs/architecture.png": false,
-          "docs/architecture.drawio": false,
-          "ARCHITECT_CONFIG.json": false
-        },
+        "fully_configured": false,
         "has_workflow": false,
-        "fully_configured": false
+        "files": {}
       },
       "secrets": {
-        "secrets": [],
-        "has_gemini_key": false,
-        "has_gcp_creds": false
+        "has_gemini_key": false
       },
       "workflows": {
-        "total_runs": 37,
-        "recent_runs": [
-          {
-            "name": "pages build and deployment",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-02-05T16:10:17Z"
-          },
-          {
-            "name": "Running Copilot coding agent",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-02-03T06:50:54Z"
-          },
-          {
-            "name": "pages build and deployment",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-02-03T06:43:32Z"
-          },
-          {
-            "name": "Running Copilot coding agent",
-            "status": "completed",
-            "conclusion": "cancelled",
-            "created_at": "2026-02-03T06:38:12Z"
-          },
-          {
-            "name": "pages build and deployment",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-02-03T06:33:42Z"
-          }
-        ],
-        "recent_failures": 0,
-        "health": "HEALTHY"
+        "health": "UNKNOWN",
+        "recent_runs": []
       }
     },
     {
@@ -848,69 +745,27 @@
         "recommendation": "KEEP"
       },
       "classification": {
-        "tier": "ACTIVE",
-        "action": "MAINTAIN",
-        "monthly_burn_estimate": 10,
-        "disk_mb": 0.0
+        "tier": "ARCHIVED",
+        "action": "NONE",
+        "monthly_burn_estimate": 0,
+        "disk_mb": 0.1
       },
       "branding": {
-        "files_checked": 2,
-        "issues": [],
         "compliant": true,
-        "has_branding": false
+        "issues": [],
+        "files_checked": 0
       },
       "architecture": {
-        "files": {
-          "docs/architecture.md": false,
-          "docs/architecture.mermaid": false,
-          "docs/architecture.png": false,
-          "docs/architecture.drawio": false,
-          "ARCHITECT_CONFIG.json": false
-        },
+        "fully_configured": false,
         "has_workflow": false,
-        "fully_configured": false
+        "files": {}
       },
       "secrets": {
-        "secrets": [],
-        "has_gemini_key": false,
-        "has_gcp_creds": false
+        "has_gemini_key": false
       },
       "workflows": {
-        "total_runs": 51,
-        "recent_runs": [
-          {
-            "name": "CI",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-02-03T06:28:14Z"
-          },
-          {
-            "name": "CI",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-01-27T21:03:25Z"
-          },
-          {
-            "name": "Running Copilot coding agent",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-01-27T20:58:07Z"
-          },
-          {
-            "name": "CI",
-            "status": "completed",
-            "conclusion": "failure",
-            "created_at": "2026-01-25T23:26:34Z"
-          },
-          {
-            "name": "CI",
-            "status": "completed",
-            "conclusion": "failure",
-            "created_at": "2026-01-25T23:18:38Z"
-          }
-        ],
-        "recent_failures": 2,
-        "health": "DEGRADED"
+        "health": "UNKNOWN",
+        "recent_runs": []
       }
     },
     {
@@ -930,69 +785,27 @@
         "recommendation": "KEEP"
       },
       "classification": {
-        "tier": "ACTIVE",
-        "action": "MAINTAIN",
-        "monthly_burn_estimate": 10,
+        "tier": "ARCHIVED",
+        "action": "NONE",
+        "monthly_burn_estimate": 0,
         "disk_mb": 0.0
       },
       "branding": {
-        "files_checked": 2,
-        "issues": [],
         "compliant": true,
-        "has_branding": false
+        "issues": [],
+        "files_checked": 0
       },
       "architecture": {
-        "files": {
-          "docs/architecture.md": false,
-          "docs/architecture.mermaid": false,
-          "docs/architecture.png": false,
-          "docs/architecture.drawio": false,
-          "ARCHITECT_CONFIG.json": false
-        },
+        "fully_configured": false,
         "has_workflow": false,
-        "fully_configured": false
+        "files": {}
       },
       "secrets": {
-        "secrets": [],
-        "has_gemini_key": false,
-        "has_gcp_creds": false
+        "has_gemini_key": false
       },
       "workflows": {
-        "total_runs": 6,
-        "recent_runs": [
-          {
-            "name": "Addressing comment on PR #3",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-01-27T22:12:45Z"
-          },
-          {
-            "name": "Python Application CI",
-            "status": "completed",
-            "conclusion": "failure",
-            "created_at": "2026-01-27T22:06:50Z"
-          },
-          {
-            "name": "Copilot code review",
-            "status": "completed",
-            "conclusion": "success",
-            "created_at": "2026-01-27T22:03:06Z"
-          },
-          {
-            "name": "Python Application CI",
-            "status": "completed",
-            "conclusion": "failure",
-            "created_at": "2026-01-27T21:55:57Z"
-          },
-          {
-            "name": "Python Application CI",
-            "status": "completed",
-            "conclusion": "failure",
-            "created_at": "2026-01-27T21:51:04Z"
-          }
-        ],
-        "recent_failures": 3,
-        "health": "FAILING"
+        "health": "UNKNOWN",
+        "recent_runs": []
       }
     },
     {
@@ -1012,38 +825,27 @@
         "recommendation": "KEEP"
       },
       "classification": {
-        "tier": "ACTIVE",
-        "action": "MAINTAIN",
-        "monthly_burn_estimate": 10,
+        "tier": "ARCHIVED",
+        "action": "NONE",
+        "monthly_burn_estimate": 0,
         "disk_mb": 0.0
       },
       "branding": {
-        "files_checked": 2,
-        "issues": [],
         "compliant": true,
-        "has_branding": false
+        "issues": [],
+        "files_checked": 0
       },
       "architecture": {
-        "files": {
-          "docs/architecture.md": false,
-          "docs/architecture.mermaid": false,
-          "docs/architecture.png": false,
-          "docs/architecture.drawio": false,
-          "ARCHITECT_CONFIG.json": false
-        },
+        "fully_configured": false,
         "has_workflow": false,
-        "fully_configured": false
+        "files": {}
       },
       "secrets": {
-        "secrets": [],
-        "has_gemini_key": false,
-        "has_gcp_creds": false
+        "has_gemini_key": false
       },
       "workflows": {
-        "total_runs": 0,
-        "recent_runs": [],
-        "recent_failures": 0,
-        "health": "HEALTHY"
+        "health": "UNKNOWN",
+        "recent_runs": []
       }
     },
     {
@@ -1063,38 +865,27 @@
         "recommendation": "KEEP"
       },
       "classification": {
-        "tier": "ACTIVE",
-        "action": "MAINTAIN",
-        "monthly_burn_estimate": 10,
+        "tier": "ARCHIVED",
+        "action": "NONE",
+        "monthly_burn_estimate": 0,
         "disk_mb": 0.0
       },
       "branding": {
-        "files_checked": 1,
-        "issues": [],
         "compliant": true,
-        "has_branding": false
+        "issues": [],
+        "files_checked": 0
       },
       "architecture": {
-        "files": {
-          "docs/architecture.md": false,
-          "docs/architecture.mermaid": false,
-          "docs/architecture.png": false,
-          "docs/architecture.drawio": false,
-          "ARCHITECT_CONFIG.json": false
-        },
+        "fully_configured": false,
         "has_workflow": false,
-        "fully_configured": false
+        "files": {}
       },
       "secrets": {
-        "secrets": [],
-        "has_gemini_key": false,
-        "has_gcp_creds": false
+        "has_gemini_key": false
       },
       "workflows": {
-        "total_runs": 0,
-        "recent_runs": [],
-        "recent_failures": 0,
-        "health": "HEALTHY"
+        "health": "UNKNOWN",
+        "recent_runs": []
       }
     }
   ]
