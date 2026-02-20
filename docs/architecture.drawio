@@ -1,238 +1,68 @@
-<mxfile host="app.diagrams.net" modified="2023-10-27T12:00:00.000Z" agent="ArchitectAIPro" etag="unique-etag" version="22.0.8">
-  <diagram id="architect-ai-pro-diagram" name="Page-1">
-    <mxGraphModel dx="1428" dy="1120" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageEnabled="1" pageScale="1" pageWidth="1100" pageHeight="1700" background="#FFFFFF" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
+<mxfile host="app.diagrams.net" modified="2023-10-27T12:00:00.000Z" agent="Architect AI Pro" etag="unique-etag" version="22.0.0">
+  <mxGraphModel dx="1400" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" background="#FFFFFF" math="0" shadow="0">
+    <root>
+      <mxCell id="0" />
+      <mxCell id="1" parent="0" />
 
-        <!-- Title Bar -->
-        <mxCell id="titleBar" value="BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=none;fontStyle=1;fontSize=20;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="50" y="30" width="1000" height="60" as="geometry" />
-        </mxCell>
+      <!-- Title Bar -->
+      <mxCell id="title" value="BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture" style="shape=rectangle;fillColor=#1E40AF;fontColor=#BFDBFE;fontSize=24;fontStyle=1;strokeColor=none;align=center;verticalAlign=middle;spacingLeft=10;spacingRight=10;" vertex="1" parent="1">
+        <mxGeometry x="0" y="0" width="1400" height="60" as="geometry" />
+      </mxCell>
 
-        <!-- External Subgraph -->
-        <mxCell id="externalSubgraph" value="External" style="swimlane;rounded=1;arcSize=10;whiteSpace=wrap;html=1;container=1;collapsible=0;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#3B82F6;fontStyle=1;align=left;spacingLeft=10;" vertex="1" parent="1">
-          <mxGeometry x="50" y="120" width="250" height="300" as="geometry" />
-        </mxCell>
-        <mxCell id="user" value="External User" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="externalSubgraph">
-          <mxGeometry x="50" y="60" width="150" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="githubApi" value="GitHub API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="externalSubgraph">
-          <mxGeometry x="50" y="140" width="150" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="geminiApi" value="Google Gemini API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="externalSubgraph">
-          <mxGeometry x="50" y="220" width="150" height="50" as="geometry" />
-        </mxCell>
+      <!-- Footer -->
+      <mxCell id="footer" value="Created with Architect AI Pro | BlueFalconInk LLC" style="shape=rectangle;fillColor=#1E40AF;fontColor=#BFDBFE;fontSize=12;fontStyle=0;strokeColor=#3B82F6;strokeWidth=2;align=center;verticalAlign=middle;" vertex="1" parent="1">
+        <mxGeometry x="0" y="940" width="1400" height="60" as="geometry" />
+      </mxCell>
 
-        <!-- Security Subgraph -->
-        <mxCell id="securitySubgraph" value="Security" style="swimlane;rounded=1;arcSize=10;whiteSpace=wrap;html=1;container=1;collapsible=0;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;fontStyle=1;align=left;spacingLeft=10;" vertex="1" parent="1">
-          <mxGeometry x="320" y="120" width="250" height="300" as="geometry" />
-        </mxCell>
-        <mxCell id="loadBalancer" value="Global HTTP-S Load Balancer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="securitySubgraph">
-          <mxGeometry x="50" y="60" width="150" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="cloudArmor" value="Cloud Armor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="securitySubgraph">
-          <mxGeometry x="50" y="140" width="150" height="50" as="geometry" />
-        </mxCell>
+      <!-- Main Containers -->
+      <!-- External Container -->
+      <mxCell id="externalContainer" value="&lt;b&gt;External&lt;/b&gt;" style="swimlane;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E40AF;rounded=1;align=center;verticalAlign=top;spacingTop=10;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+        <mxGeometry x="50" y="100" width="1300" height="150" as="geometry" />
+      </mxCell>
 
-        <!-- Application Subgraph -->
-        <mxCell id="applicationSubgraph" value="Application" style="swimlane;rounded=1;arcSize=10;whiteSpace=wrap;html=1;container=1;collapsible=0;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#3B82F6;fontStyle=1;align=left;spacingLeft=10;" vertex="1" parent="1">
-          <mxGeometry x="600" y="120" width="450" height="300" as="geometry" />
-        </mxCell>
-        <mxCell id="dashboardCR" value="Cloud Run · CHAD Dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="applicationSubgraph">
-          <mxGeometry x="30" y="60" width="180" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="dashboardApp" value="Flask App · dashboard-server.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="applicationSubgraph">
-          <mxGeometry x="30" y="140" width="180" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="galleryCR" value="Cloud Run · Architecture Gallery" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="applicationSubgraph">
-          <mxGeometry x="240" y="60" width="180" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="galleryApp" value="FastAPI App · gallery/main.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="applicationSubgraph">
-          <mxGeometry x="240" y="140" width="180" height="50" as="geometry" />
-        </mxCell>
+      <!-- Security Container -->
+      <mxCell id="securityContainer" value="&lt;b&gt;Security&lt;/b&gt;" style="swimlane;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#1E40AF;rounded=1;align=center;verticalAlign=top;spacingTop=10;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+        <mxGeometry x="50" y="270" width="1300" height="100" as="geometry" />
+      </mxCell>
 
-        <!-- Automation & CI/CD Subgraph -->
-        <mxCell id="automationCICDSubgraph" value="Automation &amp; CI/CD" style="swimlane;rounded=1;arcSize=10;whiteSpace=wrap;html=1;container=1;collapsible=0;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#3B82F6;fontStyle=1;align=left;spacingLeft=10;" vertex="1" parent="1">
-          <mxGeometry x="50" y="450" width="600" height="600" as="geometry" />
-        </mxCell>
-        <mxCell id="ghActions" value="GitHub Actions Runner" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="automationCICDSubgraph">
-          <mxGeometry x="30" y="60" width="150" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="cloudBuild" value="Cloud Build" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="automationCICDSubgraph">
-          <mxGeometry x="30" y="140" width="150" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="artifactRegistry" value="Artifact Registry" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="automationCICDSubgraph">
-          <mxGeometry x="30" y="220" width="150" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="terraform" value="Terraform IaC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="automationCICDSubgraph">
-          <mxGeometry x="30" y="300" width="150" height="50" as="geometry" />
-        </mxCell>
+      <!-- Application Container -->
+      <mxCell id="applicationContainer" value="&lt;b&gt;Application&lt;/b&gt;" style="swimlane;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#1E3A5F;rounded=1;align=center;verticalAlign=top;spacingTop=10;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+        <mxGeometry x="50" y="390" width="1300" height="300" as="geometry" />
+      </mxCell>
 
-        <!-- Architect AI Pro Scripts Nested Subgraph -->
-        <mxCell id="architectAIScriptsSubgraph" value="Architect AI Pro Scripts" style="swimlane;rounded=1;arcSize=10;whiteSpace=wrap;html=1;container=1;collapsible=0;fillColor=#E0F2FE;fontColor=#1E293B;strokeColor=#3B82F6;fontStyle=1;align=left;spacingLeft=10;" vertex="1" parent="automationCICDSubgraph">
-          <mxGeometry x="220" y="60" width="350" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="diagramGen" value="generate_diagram.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="architectAIScriptsSubgraph">
-          <mxGeometry x="20" y="50" width="140" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="foremanAudit" value="foreman_audit.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="architectAIScriptsSubgraph">
-          <mxGeometry x="20" y="120" width="140" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="cleanupAgent" value="cleanup_agent.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="architectAIScriptsSubgraph">
-          <mxGeometry x="190" y="50" width="140" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="mermaidPlugins" value="Mermaid Conversion Plugins" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="architectAIScriptsSubgraph">
-          <mxGeometry x="190" y="120" width="140" height="40" as="geometry" />
-        </mxCell>
+      <!-- Data Container -->
+      <mxCell id="dataContainer" value="&lt;b&gt;Data&lt;/b&gt;" style="swimlane;fillColor=#0F172A;fontColor=#BFDBFE;strokeColor=#0F172A;rounded=1;align=center;verticalAlign=top;spacingTop=10;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+        <mxGeometry x="50" y="700" width="1300" height="80" as="geometry" />
+      </mxCell>
 
-        <!-- CHAD Dashboard Scripts Nested Subgraph -->
-        <mxCell id="chadDashboardScriptsSubgraph" value="CHAD Dashboard Scripts" style="swimlane;rounded=1;arcSize=10;whiteSpace=wrap;html=1;container=1;collapsible=0;fillColor=#E0F2FE;fontColor=#1E293B;strokeColor=#3B82F6;fontStyle=1;align=left;spacingLeft=10;" vertex="1" parent="automationCICDSubgraph">
-          <mxGeometry x="220" y="300" width="350" height="150" as="geometry" />
-        </mxCell>
-        <mxCell id="repoAuditor" value="repo_auditor.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="chadDashboardScriptsSubgraph">
-          <mxGeometry x="20" y="50" width="140" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="dashboardGen" value="dashboard_generator.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="chadDashboardScriptsSubgraph">
-          <mxGeometry x="190" y="50" width="140" height="40" as="geometry" />
-        </mxCell>
+      <!-- External Components -->
+      <mxCell id="user" value="External User/Developer" style="shape=person;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E40AF;rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="externalContainer">
+        <mxGeometry x="50" y="50" width="100" height="80" as="geometry" />
+      </mxCell>
+      <mxCell id="github" value="GitHub Repository" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E40AF;" vertex="1" parent="externalContainer">
+        <mxGeometry x="500" y="60" width="120" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="geminiAPI" value="Google Gemini API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E40AF;" vertex="1" parent="externalContainer">
+        <mxGeometry x="1100" y="60" width="120" height="60" as="geometry" />
+      </mxCell>
 
-        <!-- Data & Storage Subgraph -->
-        <mxCell id="dataStorageSubgraph" value="Data &amp; Storage" style="swimlane;rounded=1;arcSize=10;whiteSpace=wrap;html=1;container=1;collapsible=0;fillColor=#0F172A;fontColor=#BFDBFE;strokeColor=#3B82F6;fontStyle=1;align=left;spacingLeft=10;" vertex="1" parent="1">
-          <mxGeometry x="680" y="450" width="370" height="250" as="geometry" />
-        </mxCell>
-        <mxCell id="secretManager" value="Cloud Secret Manager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="dataStorageSubgraph">
-          <mxGeometry x="90" y="60" width="180" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="cloudStorage" value="Cloud Storage · Diagrams &amp; Reports" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#3B82F6;arcSize=10;" vertex="1" parent="dataStorageSubgraph">
-          <mxGeometry x="90" y="140" width="180" height="50" as="geometry" />
-        </mxCell>
+      <!-- Security Components -->
+      <mxCell id="loadBalancer" value="Cloud Load Balancer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3B82F6;fontColor=#FFFFFF;strokeColor=#1E40AF;" vertex="1" parent="securityContainer">
+        <mxGeometry x="300" y="40" width="140" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="cloudArmor" value="Cloud Armor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3B82F6;fontColor=#FFFFFF;strokeColor=#1E40AF;" vertex="1" parent="securityContainer">
+        <mxGeometry x="800" y="40" width="120" height="60" as="geometry" />
+      </mxCell>
 
-        <!-- Data Flows (Edges) -->
-        <mxCell id="e1" value="HTTPS Request" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="user" target="loadBalancer">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e2" value="Traffic Filtering" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="loadBalancer" target="cloudArmor">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e3" value="Secure Traffic" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="cloudArmor" target="dashboardCR">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e4" value="Secure Traffic" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="cloudArmor" target="galleryCR">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <mxCell id="e5" value="Hosts" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="dashboardCR" target="dashboardApp">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e6" value="Invokes Subprocess" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="dashboardApp" target="repoAuditor">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e7" value="Invokes Subprocess" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="dashboardApp" target="dashboardGen">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e8" value="Reads/Writes JSON" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="dashboardApp" target="cloudStorage">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e9" value="Auth Token" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="dashboardApp" target="secretManager">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e10" value="GitHub API Calls" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="dashboardApp" target="githubApi">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <mxCell id="e11" value="Hosts" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="galleryCR" target="galleryApp">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e12" value="Reads Diagrams/Reports" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="galleryApp" target="cloudStorage">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <mxCell id="e13" value="Trigger Workflow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="ghActions" target="diagramGen">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e14" value="Trigger Workflow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="ghActions" target="foremanAudit">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e15" value="Trigger Workflow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="ghActions" target="cleanupAgent">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e16" value="Execute IaC" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="ghActions" target="terraform">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <mxCell id="e17" value="API Request" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="diagramGen" target="geminiApi">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e18" value="Generates Mermaid" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="diagramGen" target="cloudStorage">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e19" value="Uses" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="diagramGen" target="mermaidPlugins">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e20" value="Output XML/JSON" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="mermaidPlugins" target="cloudStorage">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <mxCell id="e21" value="Reads Mermaid" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="foremanAudit" target="cloudStorage">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e22" value="Writes Report" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="foremanAudit" target="cloudStorage">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <mxCell id="e23" value="Auth Token" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="cleanupAgent" target="secretManager">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e24" value="GitHub API Calls" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="cleanupAgent" target="githubApi">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <mxCell id="e25" value="Provisions Resources" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="terraform" target="dashboardCR">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e26" value="Provisions Resources" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="terraform" target="galleryCR">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e27" value="Manages Secrets" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="terraform" target="secretManager">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e28" value="Manages Storage" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="terraform" target="cloudStorage">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e29" value="Manages Registry" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="terraform" target="artifactRegistry">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <mxCell id="e30" value="Trigger Build" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="ghActions" target="cloudBuild">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e31" value="Build Docker Image" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="cloudBuild" target="artifactRegistry">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e32" value="Deploy Image" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="artifactRegistry" target="dashboardCR">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e33" value="Deploy Image" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="artifactRegistry" target="galleryCR">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <mxCell id="e34" value="Provides API Keys" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="secretManager" target="diagramGen">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e35" value="Provides GH Token" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="secretManager" target="ghActions">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e36" value="Provides GH Token" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;" edge="1" parent="1" source="secretManager" target="dashboardApp">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-
-        <!-- Footer -->
-        <mxCell id="footer" value="Created with Architect AI Pro | BlueFalconInk LLC" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;fontStyle=1;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="50" y="1150" width="1000" height="40" as="geometry" />
-        </mxCell>
-
-      </root>
-    </mxGraphModel>
-  </diagram>
-</mxfile>
+      <!-- Application Components -->
+      <!-- CI/CD & Automation Container -->
+      <mxCell id="cicdContainer" value="&lt;b&gt;CI/CD &amp; Automation&lt;/b&gt;" style="swimlane;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#3B82F6;rounded=1;align=center;verticalAlign=top;spacingTop=10;fontStyle=1;fontSize=14;" vertex="1" parent="applicationContainer">
+        <mxGeometry x="20" y="40" width="250" height="240" as="geometry" />
+      </mxCell>
+      <mxCell id="ghActions" value="GitHub Actions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E3A5F;" vertex="1" parent="cicdContainer">
+        <mxGeometry x="65" y="40" width="120" height="50" as="geometry" />
+      </mxCell>
+      <mxCell id="wif" value="Workload Identity Federation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E3A5F;" vertex="1" parent="cicdContainer">
+        <mxGeometry x="45" y="100" width="160" height="50" as="geometry" />
+      </mxCell>
+      <mxCell id="terraform" value="Terraform" style="rounded=
