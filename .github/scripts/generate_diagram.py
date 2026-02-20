@@ -488,7 +488,7 @@ def render_png(mermaid_path: str, png_path: str) -> bool:
 
     # Write a puppeteer config to disable Chromium sandboxing (required on GH Actions)
     puppeteer_cfg = Path(tempfile.gettempdir()) / "puppeteer-config.json"
-    puppeteer_cfg.write_text('{"args":["--no-sandbox","--disable-setuid-sandbox"]}')
+    puppeteer_cfg.write_text('{"args": ["--no-sandbox"]}')
 
     try:
         result = subprocess.run(
