@@ -19,68 +19,61 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture"
-        User[External User]
+        subgraph "External Actors"
+            Developer[Developer]
+            InternetUsers[Internet Users]
+            GoogleGemini[Google Gemini API]
+        end
 
         subgraph "Security"
-            LoadBalancer[Cloud Load Balancer]
             CloudArmor[Cloud Armor]
+            CloudLB[Cloud Load Balancer]
+            SecretMan[Cloud Secret Manager]
+            WIF[Workload Identity Federation]
+            GCP_SA[GCP Service Account · Foreman]
         end
 
         subgraph "CI/CD & Automation"
-            GitHub[GitHub Repositories]
-            GHActions[GitHub Actions Workflow]
-            ArchitectAIScripts[Architect AI Pro Scripts]
+            GitHub[GitHub Platform]
+            GHActions[GitHub Actions Runner]
             Terraform[Terraform IaC]
+            ArchitectAIScripts[Architect AI Pro Scripts · Python]
         end
 
         subgraph "Application"
-            CloudRun[Architect AI Pro Gallery · Cloud Run]
+            CloudCDN[Cloud CDN]
+            CloudRun_Gallery[Architecture Gallery · Cloud Run]
         end
 
-        subgraph "Data & Secrets"
-            SecretManager[Cloud Secret Manager]
-            ArtifactRegistry[Artifact Registry]
+        subgraph "Data"
+            GCS_TFState[Cloud Storage · Terraform State]
+            ArtifactReg[Artifact Registry · Container Images]
+            RepoFiles[GitHub Repositories · Source Code & Diagrams]
         end
 
-        subgraph "Identity"
-            WIF[Workload Identity Federation]
-        end
+        %% Flows
+        Developer -->|Pushes Code/IaC| GitHub
+        GitHub -->|Triggers Workflow| GHActions
+        GHActions -->|Executes Scripts| ArchitectAIScripts
+        ArchitectAIScripts -->|Calls API| GoogleGemini
+        ArchitectAIScripts -->|Reads/Writes| RepoFiles
+        ArchitectAIScripts -->|Accesses Secrets via WIF/SA| SecretMan
+        GHActions -->|Executes Plan/Apply| Terraform
+        Terraform -->|Authenticates via OIDC| WIF
+        WIF -->|Impersonates| GCP_SA
+        GCP_SA -->|Manages Secrets| SecretMan
+        GCP_SA -->|Deploys/Manages| CloudRun_Gallery
+        GCP_SA -->|Pushes Images| ArtifactReg
+        GCP_SA -->|Manages State| GCS_TFState
 
-        subgraph "External Integrations"
-            GeminiAPI[Google Gemini API]
-            StripeAPI[Stripe API]
-        end
+        CloudRun_Gallery -->|Reads GITHUB_TOKEN| SecretMan
+        CloudRun_Gallery -->|Fetches Diagrams| RepoFiles
 
-        User -->|Accesses via HTTPS| LoadBalancer
-        LoadBalancer -->|Routes traffic| CloudArmor
-        CloudArmor -->|Protects| CloudRun
-
-        GitHub -->|Code Push/PR| GHActions
-        GHActions -->|Triggers| ArchitectAIScripts
-        ArchitectAIScripts -->|Scans repo content| GitHub
-        ArchitectAIScripts -->|Calls API for generation| GeminiAPI
-        GeminiAPI -->|Returns Mermaid.js| ArchitectAIScripts
-        ArchitectAIScripts -->|Stores diagram docs/architecture.md| GitHub
-        ArchitectAIScripts -->|Reads config ARCHITECT_CONFIG.json| GitHub
-
-        GHActions -->|Authenticates via OIDC| WIF
-        WIF -->|Grants temporary SA access| SecretManager
-        WIF -->|Grants temporary SA access| ArtifactRegistry
-        WIF -->|Grants temporary SA access| Terraform
-
-        Terraform -->|Deploys/Manages Infra| CloudRun
-        Terraform -->|Manages Secrets| SecretManager
-        Terraform -->|Configures WIF| WIF
-
-        CloudRun -->|Fetches GITHUB_TOKEN| SecretManager
-        CloudRun -->|Fetches repo data via API| GitHub
-        CloudRun -->|Serves gallery UI| User
-
-        ArchitectAIScripts -->|Accesses GEMINI_API_KEY| SecretManager
-        ArchitectAIScripts -->|Builds & Pushes Images| ArtifactRegistry
-
-        SecretManager -->|Stores GITHUB_PAT, ARCHITECT_AI_API_KEY| GHActions
-        SecretManager -->|Stores STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET| StripeAPI
+        InternetUsers -->|Requests arch.bluefalconink.com| CloudLB
+        CloudLB -->|Protects Traffic| CloudArmor
+        CloudArmor -->|Routes Content| CloudCDN
+        CloudCDN -->|Serves Web App| CloudRun_Gallery
+        CloudRun_Gallery -->|Renders UI| InternetUsers
 
         FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     end
