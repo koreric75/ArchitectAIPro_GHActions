@@ -242,17 +242,219 @@ tr:hover { background: var(--bg-card); }
     transition: width 0.5s;
 }
 
+/* Token Bar */
+.token-bar {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.token-bar label { font-size: 13px; color: var(--text-secondary); white-space: nowrap; }
+.token-bar input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+}
+.token-bar input:focus { outline: none; border-color: var(--accent-blue); }
+.token-bar .connect-btn {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-weight: 600;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+.token-bar .connect-btn:hover { background: #2563eb; }
+.token-bar .status { font-size: 12px; font-family: var(--font-mono); }
+.token-bar .status.ok { color: var(--accent-green); }
+.token-bar .status.err { color: var(--accent-red); }
+
+/* Checkbox column */
+.cb-cell { width: 36px; text-align: center; }
+.repo-cb {
+    width: 16px; height: 16px; cursor: pointer;
+    accent-color: var(--accent-blue);
+}
+#selectAll { width: 16px; height: 16px; cursor: pointer; accent-color: var(--accent-blue); }
+tr.selected { background: rgba(59,130,246,0.1) !important; }
+
+/* Floating Action Toolbar */
+.action-toolbar {
+    position: fixed;
+    bottom: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--accent-blue);
+    border-radius: 16px;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    transition: bottom 0.3s ease;
+}
+.action-toolbar.visible { bottom: 32px; }
+.action-toolbar .sel-count {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--accent-blue);
+    font-weight: 600;
+    min-width: 120px;
+}
+.action-toolbar button {
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+.btn-archive { background: var(--accent-amber); color: #000; }
+.btn-archive:hover { background: #d97706; }
+.btn-delete { background: var(--accent-red); color: #fff; }
+.btn-delete:hover { background: #dc2626; }
+.btn-deselect { background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border) !important; }
+.btn-deselect:hover { color: var(--text-primary); }
+.btn-archive:disabled, .btn-delete:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Modal */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 520px;
+    width: 90%;
+}
+.modal h3 { font-size: 18px; margin-bottom: 16px; }
+.modal .repo-list {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    max-height: 200px;
+    overflow-y: auto;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+.modal .repo-list div { padding: 2px 0; }
+.modal .warning { color: var(--accent-red); font-size: 13px; margin: 12px 0; }
+.modal .btn-row { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+.modal .btn-cancel {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 8px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-size: 13px;
+}
+.modal .btn-confirm {
+    border: none;
+    padding: 8px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-weight: 600;
+    font-size: 13px;
+    color: #fff;
+}
+.modal .btn-confirm.archive { background: var(--accent-amber); color: #000; }
+.modal .btn-confirm.delete { background: var(--accent-red); }
+.modal .btn-confirm:disabled { opacity: 0.5; cursor: wait; }
+
+/* Activity Log */
+.activity-log {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+.log-entry {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    display: flex;
+    gap: 10px;
+}
+.log-entry:last-child { border-bottom: none; }
+.log-time { color: var(--text-muted); font-family: var(--font-mono); font-size: 11px; min-width: 80px; }
+.log-ok { color: var(--accent-green); }
+.log-err { color: var(--accent-red); }
+.log-info { color: var(--text-secondary); }
+
+/* Toast */
+.toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--accent-green);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 13px;
+    z-index: 3000;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s;
+    max-width: 400px;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { border-color: var(--accent-red); }
+
 /* Responsive */
 @media (max-width: 768px) {
     .container { padding: 12px; }
     .header { flex-direction: column; text-align: center; gap: 12px; }
     .stats-grid { grid-template-columns: repeat(2, 1fr); }
     .section-header { flex-direction: column; gap: 12px; }
+    .action-toolbar { padding: 10px 16px; gap: 10px; flex-wrap: wrap; justify-content: center; }
 }
 </style>
 </head>
 <body>
 <div class="container">
+
+<!-- Token Connect Bar -->
+<div class="token-bar" id="tokenBar">
+    <label>🔑 GitHub Token:</label>
+    <input type="password" id="ghToken" placeholder="ghp_... or paste token with repo scope" />
+    <button class="connect-btn" onclick="connectToken()">Connect</button>
+    <span class="status" id="tokenStatus"></span>
+</div>
 
 <!-- Header -->
 <div class="header">
@@ -262,7 +464,11 @@ tr:hover { background: var(--bg-card); }
     </div>
     <div class="meta">
         <div>Owner: <span class="timestamp">koreric75</span></div>
+<<<<<<< Updated upstream
         <div>Audit: <span class="timestamp">2026-02-20T16:50:03Z</span></div>
+=======
+        <div>Audit: <span class="timestamp">2026-02-20T16:53:51Z</span></div>
+>>>>>>> Stashed changes
         <div>API calls: 183/300</div>
     </div>
 </div>
@@ -328,6 +534,7 @@ tr:hover { background: var(--bg-card); }
         <table>
             <thead>
                 <tr>
+                    <th class="cb-cell"><input type="checkbox" id="selectAll" title="Select all" /></th>
                     <th>Repository</th>
                     <th>Tier</th>
                     <th>Action</th>
@@ -343,7 +550,46 @@ tr:hover { background: var(--bg-card); }
             </thead>
             <tbody id="repoTable">
                 
-        <tr class="repo-row" data-tier="CORE">
+        <tr class="repo-row" data-tier="CORE" data-repo="Afterword" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="Afterword" /></td>
+            <td>
+                <a href="https://github.com/koreric75/Afterword" target="_blank" class="repo-link">
+                    🔒 Afterword
+                </a>
+                <div class="repo-desc">Digital Legacy application</div>
+            </td>
+            <td><span class="tier-dot" style="background:#22c55e"></span>CORE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>Python</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">2d</td>
+            <td class="num">$10</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#f59e0b">⚠️ DEGRADED</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="CORE" data-repo="ArchitectAIPro" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="ArchitectAIPro" /></td>
+            <td>
+                <a href="https://github.com/koreric75/ArchitectAIPro" target="_blank" class="repo-link">
+                    🔒 ArchitectAIPro
+                </a>
+                <div class="repo-desc"></div>
+            </td>
+            <td><span class="tier-dot" style="background:#22c55e"></span>CORE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>TypeScript</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">0d</td>
+            <td class="num">$95</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="CORE" data-repo="ArchitectAIPro_GHActions" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="ArchitectAIPro_GHActions" /></td>
             <td>
                 <a href="https://github.com/koreric75/Afterword" target="_blank" class="repo-link">
                     🔒 Afterword
@@ -396,6 +642,7 @@ tr:hover { background: var(--bg-card); }
             <td>✅</td>
             <td>✅</td>
             <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+<<<<<<< Updated upstream
         </tr>
         <tr class="repo-row" data-tier="CORE">
             <td>
@@ -432,8 +679,49 @@ tr:hover { background: var(--bg-card); }
             <td>✅</td>
             <td>✅</td>
             <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+=======
+>>>>>>> Stashed changes
         </tr>
-        <tr class="repo-row" data-tier="CORE">
+        <tr class="repo-row" data-tier="CORE" data-repo="BlueFalconInkLanding" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="BlueFalconInkLanding" /></td>
+            <td>
+                <a href="https://github.com/koreric75/BlueFalconInkLanding" target="_blank" class="repo-link">
+                    🔒 BlueFalconInkLanding
+                </a>
+                <div class="repo-desc">LandingPageforBlueFalconInk</div>
+            </td>
+            <td><span class="tier-dot" style="background:#22c55e"></span>CORE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>TypeScript</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">0d</td>
+            <td class="num">$10</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="CORE" data-repo="ProposalBuddyAI" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="ProposalBuddyAI" /></td>
+            <td>
+                <a href="https://github.com/koreric75/ProposalBuddyAI" target="_blank" class="repo-link">
+                    🔒 ProposalBuddyAI
+                </a>
+                <div class="repo-desc">AI-powered GovCon proposal assistant with multi-agent Gemini pipeline, opportuni</div>
+            </td>
+            <td><span class="tier-dot" style="background:#22c55e"></span>CORE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>TypeScript</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">0d</td>
+            <td class="num">$95</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="CORE" data-repo="clipstream" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="clipstream" /></td>
             <td>
                 <a href="https://github.com/koreric75/clipstream" target="_blank" class="repo-link">
                     🌐 clipstream
@@ -451,7 +739,27 @@ tr:hover { background: var(--bg-card); }
             <td>✅</td>
             <td><span style="color:#22c55e">✅ HEALTHY</span></td>
         </tr>
-        <tr class="repo-row" data-tier="CORE">
+        <tr class="repo-row" data-tier="CORE" data-repo="polymath-hub" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="polymath-hub" /></td>
+            <td>
+                <a href="https://github.com/koreric75/polymath-hub" target="_blank" class="repo-link">
+                    🔒 polymath-hub
+                </a>
+                <div class="repo-desc">The Polymath Hub  subscription-based learning platform by BlueFalconInk (Creativ</div>
+            </td>
+            <td><span class="tier-dot" style="background:#22c55e"></span>CORE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>TypeScript</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">0d</td>
+            <td class="num">$95</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td>✅</td>
+            <td><span style="color:#ef4444">🔴 FAILING</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="CORE" data-repo="videogamedev" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="videogamedev" /></td>
             <td>
                 <a href="https://github.com/koreric75/polymath-hub" target="_blank" class="repo-link">
                     🔒 polymath-hub
@@ -487,7 +795,8 @@ tr:hover { background: var(--bg-card); }
             <td>✅</td>
             <td><span style="color:#f59e0b">⚠️ DEGRADED</span></td>
         </tr>
-        <tr class="repo-row" data-tier="ACTIVE">
+        <tr class="repo-row" data-tier="ACTIVE" data-repo="AnimorphStudios" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="AnimorphStudios" /></td>
             <td>
                 <a href="https://github.com/koreric75/AnimorphStudios" target="_blank" class="repo-link">
                     🌐 AnimorphStudios
@@ -505,7 +814,8 @@ tr:hover { background: var(--bg-card); }
             <td>❌</td>
             <td><span style="color:#22c55e">✅ HEALTHY</span></td>
         </tr>
-        <tr class="repo-row" data-tier="ACTIVE">
+        <tr class="repo-row" data-tier="ACTIVE" data-repo="LinkedInStrategyAsst" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="LinkedInStrategyAsst" /></td>
             <td>
                 <a href="https://github.com/koreric75/LinkedInStrategyAsst" target="_blank" class="repo-link">
                     🌐 LinkedInStrategyAsst
@@ -523,7 +833,8 @@ tr:hover { background: var(--bg-card); }
             <td>❌</td>
             <td><span style="color:#22c55e">✅ HEALTHY</span></td>
         </tr>
-        <tr class="repo-row" data-tier="ACTIVE">
+        <tr class="repo-row" data-tier="ACTIVE" data-repo="MCquotemaker" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="MCquotemaker" /></td>
             <td>
                 <a href="https://github.com/koreric75/MCquotemaker" target="_blank" class="repo-link">
                     🌐 MCquotemaker
@@ -541,7 +852,8 @@ tr:hover { background: var(--bg-card); }
             <td>❌</td>
             <td><span style="color:#f59e0b">⚠️ DEGRADED</span></td>
         </tr>
-        <tr class="repo-row" data-tier="ACTIVE">
+        <tr class="repo-row" data-tier="ACTIVE" data-repo="duplicate-cleaner" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="duplicate-cleaner" /></td>
             <td>
                 <a href="https://github.com/koreric75/duplicate-cleaner" target="_blank" class="repo-link">
                     🌐 duplicate-cleaner
@@ -559,7 +871,27 @@ tr:hover { background: var(--bg-card); }
             <td>❌</td>
             <td><span style="color:#ef4444">🔴 FAILING</span></td>
         </tr>
-        <tr class="repo-row" data-tier="ACTIVE">
+        <tr class="repo-row" data-tier="ACTIVE" data-repo="socialauditai" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="socialauditai" /></td>
+            <td>
+                <a href="https://github.com/koreric75/socialauditai" target="_blank" class="repo-link">
+                    🔒 socialauditai
+                </a>
+                <div class="repo-desc">Help align your personal brand across all platforms</div>
+            </td>
+            <td><span class="tier-dot" style="background:#3b82f6"></span>ACTIVE</td>
+            <td><span class="badge" style="background:#052e16;color:#22c55e;border:1px solid #22c55e40">MAINTAIN</span></td>
+            <td>HTML</td>
+            <td class="num">0.0 MB</td>
+            <td class="num">10d</td>
+            <td class="num">$10</td>
+            <td>✅</td>
+            <td>❌</td>
+            <td>❌</td>
+            <td><span style="color:#22c55e">✅ HEALTHY</span></td>
+        </tr>
+        <tr class="repo-row" data-tier="ACTIVE" data-repo="sunopipeline" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="sunopipeline" /></td>
             <td>
                 <a href="https://github.com/koreric75/socialauditai" target="_blank" class="repo-link">
                     🔒 socialauditai
@@ -595,7 +927,8 @@ tr:hover { background: var(--bg-card); }
             <td>❌</td>
             <td><span style="color:#22c55e">✅ HEALTHY</span></td>
         </tr>
-        <tr class="repo-row" data-tier="STALE">
+        <tr class="repo-row" data-tier="STALE" data-repo="Laser_control" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="Laser_control" /></td>
             <td>
                 <a href="https://github.com/koreric75/Laser_control" target="_blank" class="repo-link">
                     🌐 Laser_control
@@ -613,7 +946,8 @@ tr:hover { background: var(--bg-card); }
             <td>❌</td>
             <td><span style="color:#6b7280">➖ UNKNOWN</span></td>
         </tr>
-        <tr class="repo-row" data-tier="DEAD">
+        <tr class="repo-row" data-tier="DEAD" data-repo="HandBrake" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="HandBrake" /></td>
             <td>
                 <a href="https://github.com/koreric75/HandBrake" target="_blank" class="repo-link">
                     🌐 HandBrake
@@ -631,7 +965,8 @@ tr:hover { background: var(--bg-card); }
             <td>❌</td>
             <td><span style="color:#6b7280">➖ UNKNOWN</span></td>
         </tr>
-        <tr class="repo-row" data-tier="DEAD">
+        <tr class="repo-row" data-tier="DEAD" data-repo="RPI-Backup" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="RPI-Backup" /></td>
             <td>
                 <a href="https://github.com/koreric75/RPI-Backup" target="_blank" class="repo-link">
                     🌐 RPI-Backup
@@ -649,7 +984,8 @@ tr:hover { background: var(--bg-card); }
             <td>❌</td>
             <td><span style="color:#6b7280">➖ UNKNOWN</span></td>
         </tr>
-        <tr class="repo-row" data-tier="DEAD">
+        <tr class="repo-row" data-tier="DEAD" data-repo="aws-elastic-beanstalk-express-js-sample" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="aws-elastic-beanstalk-express-js-sample" /></td>
             <td>
                 <a href="https://github.com/koreric75/aws-elastic-beanstalk-express-js-sample" target="_blank" class="repo-link">
                     🌐 aws-elastic-beanstalk-express-js-sample
@@ -667,7 +1003,8 @@ tr:hover { background: var(--bg-card); }
             <td>❌</td>
             <td><span style="color:#6b7280">➖ UNKNOWN</span></td>
         </tr>
-        <tr class="repo-row" data-tier="DEAD">
+        <tr class="repo-row" data-tier="DEAD" data-repo="devops-essentials-sample-app" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="devops-essentials-sample-app" /></td>
             <td>
                 <a href="https://github.com/koreric75/devops-essentials-sample-app" target="_blank" class="repo-link">
                     🌐 devops-essentials-sample-app
@@ -685,7 +1022,8 @@ tr:hover { background: var(--bg-card); }
             <td>❌</td>
             <td><span style="color:#6b7280">➖ UNKNOWN</span></td>
         </tr>
-        <tr class="repo-row" data-tier="DEAD">
+        <tr class="repo-row" data-tier="DEAD" data-repo="owncloudpi-deb-jessie8" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="owncloudpi-deb-jessie8" /></td>
             <td>
                 <a href="https://github.com/koreric75/owncloudpi-deb-jessie8" target="_blank" class="repo-link">
                     🌐 owncloudpi-deb-jessie8
@@ -703,7 +1041,8 @@ tr:hover { background: var(--bg-card); }
             <td>❌</td>
             <td><span style="color:#6b7280">➖ UNKNOWN</span></td>
         </tr>
-        <tr class="repo-row" data-tier="DEAD">
+        <tr class="repo-row" data-tier="DEAD" data-repo="rpi-clone" data-owner="koreric75" data-archived="false">
+            <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="rpi-clone" /></td>
             <td>
                 <a href="https://github.com/koreric75/rpi-clone" target="_blank" class="repo-link">
                     🌐 rpi-clone
@@ -739,6 +1078,14 @@ tr:hover { background: var(--bg-card); }
 <!-- Branding Issues Detail -->
 
 
+<!-- Activity Log -->
+<div class="section" id="logSection" style="display:none">
+    <div class="section-header">
+        <h2>📋 Activity Log</h2>
+    </div>
+    <div class="activity-log" id="activityLog"></div>
+</div>
+
 <!-- Footer -->
 <div class="footer">
     <p>CHAD Dashboard — BlueFalconInk LLC © 2026</p>
@@ -747,8 +1094,115 @@ tr:hover { background: var(--bg-card); }
 
 </div>
 
+<!-- Floating Action Toolbar -->
+<div class="action-toolbar" id="actionToolbar">
+    <span class="sel-count" id="selCount">0 selected</span>
+    <button class="btn-archive" id="btnArchive" disabled onclick="showModal('archive')">📦 Archive</button>
+    <button class="btn-delete" id="btnDelete" disabled onclick="showModal('delete')">🗑️ Delete</button>
+    <button class="btn-deselect" onclick="deselectAll()">✕ Clear</button>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h3 id="modalTitle">Confirm Action</h3>
+        <p id="modalDesc" style="color:var(--text-secondary);font-size:13px"></p>
+        <div class="repo-list" id="modalRepos"></div>
+        <p class="warning" id="modalWarning"></p>
+        <div class="btn-row">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-confirm" id="modalConfirm" onclick="executeAction()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
 <script>
-const MAX_API_CALLS = 300;
+const OWNER = 'koreric75';
+let ghToken = localStorage.getItem('chad_gh_token') || '';
+let pendingAction = null;
+
+// ── Token Management ──
+async function connectToken() {
+    const input = document.getElementById('ghToken');
+    const status = document.getElementById('tokenStatus');
+    const token = input.value.trim();
+    if (!token) { status.className = 'status err'; status.textContent = 'Enter a token'; return; }
+    status.className = 'status'; status.textContent = 'Connecting...';
+    try {
+        const r = await fetch('https://api.github.com/user', { headers: { Authorization: 'token ' + token } });
+        if (r.ok) {
+            const u = await r.json();
+            ghToken = token;
+            localStorage.setItem('chad_gh_token', token);
+            status.className = 'status ok';
+            status.textContent = '✅ Connected as ' + u.login;
+            input.value = '••••••••••' + token.slice(-4);
+            updateToolbarState();
+        } else {
+            status.className = 'status err'; status.textContent = '❌ Invalid token (' + r.status + ')';
+        }
+    } catch(e) { status.className = 'status err'; status.textContent = '❌ ' + e.message; }
+}
+
+// Auto-restore saved token
+(function() {
+    if (ghToken) {
+        document.getElementById('ghToken').value = '••••••••••' + ghToken.slice(-4);
+        fetch('https://api.github.com/user', { headers: { Authorization: 'token ' + ghToken } })
+            .then(r => r.ok ? r.json() : Promise.reject(r.status))
+            .then(u => {
+                document.getElementById('tokenStatus').className = 'status ok';
+                document.getElementById('tokenStatus').textContent = '✅ ' + u.login;
+            })
+            .catch(() => {
+                document.getElementById('tokenStatus').className = 'status err';
+                document.getElementById('tokenStatus').textContent = '⚠️ Saved token expired';
+                ghToken = '';
+            });
+    }
+})();
+
+// ── Selection ──
+function getSelected() {
+    return [...document.querySelectorAll('.repo-cb:checked')].map(cb => cb.dataset.repo);
+}
+
+function updateToolbarState() {
+    const sel = getSelected();
+    const toolbar = document.getElementById('actionToolbar');
+    document.getElementById('selCount').textContent = sel.length + ' selected';
+    toolbar.classList.toggle('visible', sel.length > 0);
+    const hasToken = !!ghToken;
+    document.getElementById('btnArchive').disabled = !hasToken || sel.length === 0;
+    document.getElementById('btnDelete').disabled = !hasToken || sel.length === 0;
+}
+
+function deselectAll() {
+    document.querySelectorAll('.repo-cb').forEach(cb => { cb.checked = false; cb.closest('tr').classList.remove('selected'); });
+    document.getElementById('selectAll').checked = false;
+    updateToolbarState();
+}
+
+document.addEventListener('change', e => {
+    if (e.target.id === 'selectAll') {
+        const checked = e.target.checked;
+        document.querySelectorAll('.repo-row').forEach(row => {
+            if (row.style.display !== 'none') {
+                const cb = row.querySelector('.repo-cb');
+                cb.checked = checked;
+                row.classList.toggle('selected', checked);
+            }
+        });
+    } else if (e.target.classList.contains('repo-cb')) {
+        e.target.closest('tr').classList.toggle('selected', e.target.checked);
+    }
+    updateToolbarState();
+});
+
+// ── Filter ──
 function filterRepos(tier) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     event.target.classList.add('active');
@@ -765,6 +1219,116 @@ function filterRepos(tier) {
             row.style.display = row.dataset.tier === tier ? '' : 'none';
         }
     });
+    deselectAll();
+}
+
+// ── Modal ──
+function showModal(action) {
+    const repos = getSelected();
+    if (!repos.length) return;
+    pendingAction = action;
+    const overlay = document.getElementById('modalOverlay');
+    const title = document.getElementById('modalTitle');
+    const desc = document.getElementById('modalDesc');
+    const list = document.getElementById('modalRepos');
+    const warn = document.getElementById('modalWarning');
+    const btn = document.getElementById('modalConfirm');
+    list.innerHTML = repos.map(r => '<div>' + r + '</div>').join('');
+    if (action === 'archive') {
+        title.textContent = '📦 Archive ' + repos.length + ' repo(s)?';
+        desc.textContent = 'Archived repos become read-only. You can unarchive later.';
+        warn.textContent = '';
+        btn.className = 'btn-confirm archive';
+        btn.textContent = 'Archive Now';
+    } else {
+        title.textContent = '🗑️ Delete ' + repos.length + ' repo(s)?';
+        desc.textContent = 'This action is PERMANENT and cannot be undone.';
+        warn.textContent = '⚠️ All code, issues, pull requests, and wikis will be permanently destroyed.';
+        btn.className = 'btn-confirm delete';
+        btn.textContent = 'Delete Forever';
+    }
+    btn.disabled = false;
+    overlay.classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    pendingAction = null;
+}
+
+// ── Execute ──
+async function executeAction() {
+    const repos = getSelected();
+    if (!repos.length || !ghToken || !pendingAction) return;
+    const btn = document.getElementById('modalConfirm');
+    btn.disabled = true;
+    btn.textContent = 'Working...';
+    const action = pendingAction;
+    let success = 0, failed = 0;
+
+    for (const repo of repos) {
+        try {
+            let res;
+            if (action === 'archive') {
+                res = await fetch(`https://api.github.com/repos/${OWNER}/${repo}`, {
+                    method: 'PATCH',
+                    headers: { Authorization: 'token ' + ghToken, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ archived: true })
+                });
+            } else {
+                res = await fetch(`https://api.github.com/repos/${OWNER}/${repo}`, {
+                    method: 'DELETE',
+                    headers: { Authorization: 'token ' + ghToken }
+                });
+            }
+            if (res.ok || res.status === 204) {
+                success++;
+                addLog('ok', `${action === 'archive' ? '📦 Archived' : '🗑️ Deleted'}: ${repo}`);
+                // Update the row visually
+                const row = document.querySelector(`tr[data-repo="${repo}"]`);
+                if (row) {
+                    if (action === 'delete') {
+                        row.style.opacity = '0.3';
+                        row.querySelector('.repo-cb').disabled = true;
+                        row.querySelector('.repo-cb').checked = false;
+                    } else {
+                        row.dataset.tier = 'ARCHIVED';
+                        row.style.opacity = '0.5';
+                        row.querySelector('.repo-cb').checked = false;
+                    }
+                }
+            } else {
+                const err = await res.json().catch(() => ({}));
+                failed++;
+                addLog('err', `Failed ${repo}: ${res.status} ${err.message || ''}`);
+            }
+        } catch(e) {
+            failed++;
+            addLog('err', `Error ${repo}: ${e.message}`);
+        }
+    }
+
+    closeModal();
+    deselectAll();
+    showToast(`${action === 'archive' ? 'Archived' : 'Deleted'} ${success}/${repos.length} repos` + (failed ? ` (${failed} failed)` : ''), failed > 0);
+}
+
+// ── Activity Log ──
+function addLog(type, msg) {
+    const section = document.getElementById('logSection');
+    section.style.display = '';
+    const log = document.getElementById('activityLog');
+    const time = new Date().toLocaleTimeString();
+    const cls = type === 'ok' ? 'log-ok' : type === 'err' ? 'log-err' : 'log-info';
+    log.insertAdjacentHTML('afterbegin', `<div class="log-entry"><span class="log-time">${time}</span><span class="${cls}">${msg}</span></div>`);
+}
+
+// ── Toast ──
+function showToast(msg, isError) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (isError ? ' error' : '');
+    setTimeout(() => t.className = 'toast', 4000);
 }
 </script>
 </body>
