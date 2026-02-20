@@ -1,7 +1,7 @@
 # 🏗️ BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture
 
 > **Created with [Architect AI Pro](https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/)** — the flagship architecture tool by **BlueFalconInk LLC**
-> Auto-generated on 2026-02-20 08:55 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
+> Auto-generated on 2026-02-20 09:03 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
 
 ![BlueFalconInk LLC](https://img.shields.io/badge/BlueFalconInk%20LLC-Standard-1E40AF)
 ![Architect AI Pro](https://img.shields.io/badge/Created%20with-Architect%20AI%20Pro-3B82F6)
@@ -15,60 +15,83 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture"
-        subgraph "Security"
-            User[End User] --> CloudLoadBalancer[Cloud Load Balancer]
-            CloudLoadBalancer -->|HTTP/S Traffic| CloudCDN[Cloud CDN]
-            CloudCDN -->|Cached/Dynamic Content| CloudArmor[Cloud Armor WAF]
+        subgraph "External Systems"
+            User[User]
+            GitHub[GitHub Platform]
+            GoogleGeminiAPI[Google Gemini API]
+            GitHubAPI[GitHub API]
         end
 
-        subgraph "Application"
-            CloudArmor -->|Protected Traffic| CloudRunGallery[ArchitectAI Gallery App - Cloud Run]
-            CloudRunGallery -->|Fetches Repo Data| GitHubAPI[GitHub API]
-            CloudRunGallery -->|Accesses Secrets| CloudSecretMgr[Cloud Secret Manager]
-            CloudRunGallery --pulls image from--> ArtifactReg[Artifact Registry]
+        subgraph "Security"
+            CloudArmor[Cloud Armor]
+            CloudLB[Cloud Load Balancer]
+            WIF[Workload Identity Federation]
+            SecretManager[Cloud Secret Manager]
+            ForemanSA[Foreman Service Account]
         end
 
         subgraph "CI/CD & Automation"
-            GHActions[GitHub Actions] --triggers--> ArchitectAIGen[Architect AI Pro Generator - Python]
-            GHActions --triggers--> ForemanAudit[Foreman Audit Engine - Python]
-            GHActions --triggers--> ProdReadiness[Production Readiness Check - Python]
-            GHActions --executes IaC--> Terraform[Terraform IaC]
-            GHActions --pushes image--> ArtifactReg
-            GHActions --authenticates via--> WIF[Workload Identity Federation]
-            WIF -->|Grants GCP Access| Terraform
-            WIF -->|Grants GCP Access| ArchitectAIGen
-            WIF -->|Grants GCP Access| ForemanAudit
-            WIF -->|Grants GCP Access| ProdReadiness
+            GitHubActions[GitHub Actions Workflow]
+            ArchitectAIScripts[Architect AI Pro Scripts]
+            MermaidCLI[Mermaid CLI]
+            Terraform[Terraform IaC]
+        end
+
+        subgraph "Architecture Gallery"
+            CloudRunGallery[Cloud Run Service: Architecture Gallery]
+            FastAPIApp[FastAPI App: Gallery Backend]
+            CloudCDN[Cloud CDN]
         end
 
         subgraph "Data"
-            ArchitectAIGen -->|Sends Code Context| GeminiAPI[Google Gemini API]
-            GeminiAPI -->|Returns Diagram| ArchitectAIGen
-            ArchitectAIGen -->|Writes Diagram/Report| GitHubRepo[GitHub Repository]
-            ForemanAudit -->|Reads Diagram/Config| GitHubRepo
-            ProdReadiness -->|Reads Config| GitHubRepo
-            Terraform -->|Stores State| GCSBackend[Cloud Storage - Terraform State]
-            CloudSecretMgr[Cloud Secret Manager]
-            ArtifactReg[Artifact Registry]
-            CloudDNS[Cloud DNS]
-            GitHubAPI[GitHub API]
-            GeminiAPI[Google Gemini API]
+            GitHubRepos[GitHub Repositories]
+            ArtifactRegistry[Artifact Registry]
+            GCSBackend[Cloud Storage: Terraform State]
         end
 
+        %% Data Flows - User to Gallery
+        User -->|Access Gallery| CloudLB
+        CloudLB -->|HTTP/S| CloudArmor
+        CloudArmor -->|Protected Traffic| CloudRunGallery
+        CloudRunGallery -->|Serve Content| CloudCDN
+        CloudRunGallery -->|API Calls| FastAPIApp
+        FastAPIApp -->|Fetch Repo Data| GitHubAPI
+        FastAPIApp -->|Retrieve Secrets| SecretManager
+
+        %% Data Flows - CI/CD & Automation
+        GitHub -->|Push/PR Trigger| GitHubActions
+        GitHubActions -->|Authenticate via OIDC| WIF
+        WIF -->|Assume SA Identity| ForemanSA
+        ForemanSA -->|Access GCP Resources| SecretManager
+        ForemanSA -->|Access GCP Resources| ArtifactRegistry
+        ForemanSA -->|Access GCP Resources| GCSBackend
+        GitHubActions -->|Run Scripts| ArchitectAIScripts
+        ArchitectAIScripts -->|Generate Diagram| GoogleGeminiAPI
+        ArchitectAIScripts -->|Audit Diagram| GitHubRepos
+        ArchitectAIScripts -->|Render PNG| MermaidCLI
+        ArchitectAIScripts -->|Read/Write Code & Docs| GitHubRepos
+        GitHubActions -->|Deploy Infra| Terraform
+        Terraform -->|Manage State| GCSBackend
+        Terraform -->|Provision Resources| CloudRunGallery
+        Terraform -->|Provision Resources| SecretManager
+        Terraform -->|Provision Resources| WIF
+        GitHubActions -->|Build & Push Image| ArtifactRegistry
+        ArtifactRegistry -->|Container Image| CloudRunGallery
+
+        %% Internal Flows
+        CloudRunGallery -->|Container Image| ArtifactRegistry
+        FastAPIApp -->|Read Templates| GitHubRepos
+        ArchitectAIScripts -->|Read Config| GitHubRepos
+        ArchitectAIScripts -->|Read Prompts| GitHubRepos
+        ArchitectAIScripts -->|Read Plugins| GitHubRepos
+
         style Security fill:#1E40AF,color:#BFDBFE
-        style Application fill:#1E3A5F,color:#BFDBFE
-        style CI_CD_Automation fill:#1E3A5F,color:#BFDBFE
+        style CI/CD & Automation fill:#1E3A5F,color:#BFDBFE
+        style Architecture Gallery fill:#1E3A5F,color:#BFDBFE
         style Data fill:#0F172A,color:#BFDBFE
     end
 
-    Terraform -->|Provisions/Manages| CloudRunGallery
-    Terraform -->|Provisions/Manages| CloudSecretMgr
-    Terraform -->|Provisions/Manages| CloudDNS
-    Terraform -->|Provisions/Manages| ArtifactReg
-    Terraform -->|Provisions/Manages| WIF
-    Terraform -->|Provisions/Manages| GCSBackend
-
-    FOOTER[🏗️ Created with Architect AI Pro | BlueFalconInk LLC]
+    FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
 
