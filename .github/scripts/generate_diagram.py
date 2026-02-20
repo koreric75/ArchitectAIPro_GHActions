@@ -160,8 +160,8 @@ def build_system_prompt(config: dict) -> str:
     compliance_rules = ""
     if compliance.get("require_security_subgraph"):
         compliance_rules += "  - MUST include a `subgraph Security` block.\n"
-    if compliance.get("require_waf_alb_for_public"):
-        compliance_rules += "  - All public endpoints MUST route through WAF/ALB/API Gateway.\n"
+    if compliance.get("require_cloud_armor_for_public") or compliance.get("require_waf_alb_for_public"):
+        compliance_rules += "  - All public endpoints MUST be protected by Cloud Armor, Load Balancer, or API Gateway.\n"
     if compliance.get("pci_compliance_for_payments"):
         compliance_rules += "  - Payment flows MUST be in an isolated `subgraph Payment` boundary.\n"
     if compliance.get("require_branding"):
@@ -199,30 +199,38 @@ def build_system_prompt(config: dict) -> str:
            `%% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/`
         6. The diagram title MUST include '{org}'.
         7. Keep the diagram readable — no more than 40 nodes. Group trivial files into service blocks.
-        8. Identify the ACTUAL architecture from the source code — do not invent services that don't exist.
+        8. CRITICAL — Identify the ACTUAL hosting and services from the source code. Do NOT invent
+           services or cloud resources that don't exist in the code. If you see Dockerfiles,
+           Cloud Run configs, GCP service accounts, or `gcloud` references, the app runs on GCP.
+           If you see references to Vercel, Netlify, Firebase, etc., use those — reflect reality.
         9. Show external integrations (APIs, databases, queues, CDNs, auth providers) as distinct nodes.
         10. For subscription/payment services, show the Stripe/payment boundary clearly.
+        11. The preferred cloud for {org} is {cloud}. All BlueFalconInk apps deploy on Google Cloud
+            Platform using Cloud Run unless the source code clearly shows otherwise.
+            Use GCP service names: Cloud Run, Cloud SQL, Cloud Storage, Cloud CDN, Secret Manager,
+            Artifact Registry, Cloud Build, Firestore, Cloud Memorystore, Cloud Armor, etc.
+            Do NOT use AWS service names (EKS, S3, CloudFront, ALB, ECR, etc.) unless the code explicitly uses AWS.
 
         BRANDING & STYLING REQUIREMENTS:
-        11. Apply the {org} brand color `#1E40AF` (Blue Falcon Blue) to the Security subgraph:
+        12. Apply the {org} brand color `#1E40AF` (Blue Falcon Blue) to the Security subgraph:
             `style Security fill:#1E40AF,color:#BFDBFE`
-        12. Apply `#1E3A5F` to the main Application subgraph.
-        13. Apply `#0F172A` to the Data layer subgraph.
-        14. The top-level subgraph containing the entire application MUST be titled:
+        13. Apply `#1E3A5F` to the main Application subgraph.
+        14. Apply `#0F172A` to the Data layer subgraph.
+        15. The top-level subgraph containing the entire application MUST be titled:
             `"{org} — <RepoName> Architecture"`
-        15. Include a footer note node at the bottom of the diagram:
+        16. Include a footer note node at the bottom of the diagram:
             `FOOTER["🏗️ Created with Architect AI Pro | {org}"]`
             Style it: `style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6`
 
         GITHUB MERMAID COMPATIBILITY (critical — these cause parse errors on GitHub):
-        16. Do NOT use `direction TD` or `direction LR` inside subgraphs — GitHub does not support it.
-        17. Use simple node IDs with square brackets only: `NodeID[Label Text]`.
+        17. Do NOT use `direction TD` or `direction LR` inside subgraphs — GitHub does not support it.
+        18. Use simple node IDs with square brackets only: `NodeID[Label Text]`.
             Do NOT use stadium shapes `([...])`, cylindrical `[(...)`, or `["..."]` — they break GitHub rendering.
-        18. Do NOT use `<br>` or HTML tags in node labels — use short plain-text labels instead.
-        19. Do NOT put parentheses in node labels — e.g. use `NodeApp[Node.js Express Proxy]` not `NodeApp[Node.js (Express) Proxy]`.
-        20. Prefer plain quoted subgraph names: `subgraph "Security"` not `subgraph Security Layer`.
-        21. Every node must be on its own line. Never place two statements on the same line.
-        22. Use `---` (solid link), `-->` (arrow), or `-.->` (dotted) for edges. Do not use `~~~` or unusual link types.
+        19. Do NOT use `<br>` or HTML tags in node labels — use short plain-text labels instead.
+        20. Do NOT put parentheses in node labels — e.g. use `NodeApp[Node.js Express Proxy]` not `NodeApp[Node.js (Express) Proxy]`.
+        21. Prefer plain quoted subgraph names: `subgraph "Security"` not `subgraph Security Layer`.
+        22. Every node must be on its own line. Never place two statements on the same line.
+        23. Use `---` (solid link), `-->` (arrow), or `-.->` (dotted) for edges. Do not use `~~~` or unusual link types.
 
         DO NOT include any explanation, markdown headings, or text outside the mermaid code block.
         DO NOT wrap the output in any additional markdown formatting — ONLY the fenced mermaid block.
@@ -278,10 +286,10 @@ def build_remediation_prompt(violations: str, current_diagram: str, config: dict
         3. Ensure valid Mermaid.js syntax that renders on GitHub.
         4. Add a `subgraph Security` block if missing.
         5. Replace non-standard cloud references with {cloud} equivalents.
-        6. Ensure public endpoints route through WAF/ALB/API Gateway.
+        6. Ensure public endpoints are protected by Cloud Armor or Load Balancer.
         7. Include '{org}' in the diagram title.
         8. For subscription services, ensure a clear `subgraph Payment` boundary.
-        9. Add CDN (CloudFront) for content delivery paths.
+        9. Add CDN (Cloud CDN) for content delivery paths.
         10. Add comment: `%% Remediated by Architect AI Pro Foreman`
 
         Output ONLY the corrected Mermaid.js code block. No explanations.
@@ -506,7 +514,7 @@ def format_output(mermaid_code: str, repo_name: str, config: dict) -> str:
         f"| Orchestration | {orch} | ✅ Enforced |",
         f"| API Standard | {api_std} | ✅ Enforced |",
         "| Security Boundary | Required | ✅ Enforced |",
-        "| WAF/ALB for Public | Required | ✅ Enforced |",
+        "| Cloud Armor / LB for Public | Required | ✅ Enforced |",
         f"| Brand Identity | {org} | ✅ Enforced |",
         "",
         "---",

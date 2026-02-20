@@ -9,11 +9,11 @@
     "layout_engine": "elk"
   },
   "technical_constraints": {
-    "preferred_cloud": "AWS",
+    "preferred_cloud": "GCP",
     "iac_tool": "Terraform",
-    "container_orchestration": "Kubernetes (EKS)",
-    "database_defaults": ["PostgreSQL", "Redis"],
-    "api_standard": "GraphQL"
+    "container_orchestration": "Cloud Run",
+    "database_defaults": ["Cloud SQL (PostgreSQL)", "Firestore", "Cloud Memorystore (Redis)"],
+    "api_standard": "REST/GraphQL"
   },
   "diagram_rules": {
     "show_data_flow": true,
@@ -65,7 +65,7 @@
     "require_tool_attribution": true,
     "require_brand_colors": true,
     "block_non_standard_providers": true,
-    "require_waf_alb_for_public": true,
+    "require_cloud_armor_for_public": true,
     "pci_compliance_for_payments": true
   }
 }

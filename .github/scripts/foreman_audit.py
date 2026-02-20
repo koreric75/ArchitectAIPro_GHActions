@@ -83,10 +83,12 @@ def check_security_layer(diagram: str, config: dict) -> List[Violation]:
         security_patterns = [
             r"subgraph\s+Security",
             r"subgraph\s+.*[Ss]ecurity",
-            r"WAF",
+            r"Cloud Armor",
             r"Firewall",
-            r"ALB",
-            r"Security Group",
+            r"WAF",
+            r"Load Balancer",
+            r"IAP",
+            r"Identity.Aware.Proxy",
         ]
         has_security = any(re.search(p, diagram) for p in security_patterns)
         if not has_security:
@@ -95,20 +97,22 @@ def check_security_layer(diagram: str, config: dict) -> List[Violation]:
                     Violation.CRITICAL,
                     "Security",
                     "No explicit 'Security' boundary found in architecture.",
-                    "Add a 'subgraph Security' block containing WAF, ALB, and firewall components.",
+                    "Add a 'subgraph Security' block containing Cloud Armor, Load Balancer, or firewall components.",
                 )
             )
 
-    # Check for WAF/ALB on public endpoints
-    if compliance.get("require_waf_alb_for_public"):
+    # Check for Cloud Armor / LB on public endpoints
+    if compliance.get("require_cloud_armor_for_public") or compliance.get("require_waf_alb_for_public"):
         if "Public" in diagram or "Internet" in diagram:
-            if "WAF" not in diagram and "ALB" not in diagram:
+            security_terms = ["Cloud Armor", "Load Balancer", "WAF", "ALB", "IAP"]
+            has_protection = any(term in diagram for term in security_terms)
+            if not has_protection:
                 violations.append(
                     Violation(
                         Violation.WARNING,
                         "Security",
-                        "Public-facing endpoints detected without WAF/ALB protection.",
-                        "Add WAF and/or ALB between Public Internet and application services.",
+                        "Public-facing endpoints detected without Cloud Armor or Load Balancer protection.",
+                        "Add Cloud Armor and/or a Load Balancer between public traffic and application services.",
                     )
                 )
 
@@ -200,7 +204,7 @@ def check_subscription_compliance(diagram: str, config: dict) -> List[Violation]
                         Violation.WARNING,
                         "Performance",
                         f"No CDN detected for subscription service '{name}'.",
-                        "Add CloudFront or equivalent CDN for low-latency content delivery.",
+                        "Add Cloud CDN or equivalent CDN for low-latency content delivery.",
                     )
                 )
 
