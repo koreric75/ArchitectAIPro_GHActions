@@ -1,7 +1,7 @@
 # 🏗️ BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture
 
 > **Created with [Architect AI Pro](https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/)** — the flagship architecture tool by **BlueFalconInk LLC**
-> Auto-generated on 2026-02-20 08:41 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
+> Auto-generated on 2026-02-20 08:48 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
 
 ![BlueFalconInk LLC](https://img.shields.io/badge/BlueFalconInk%20LLC-Standard-1E40AF)
 ![Architect AI Pro](https://img.shields.io/badge/Created%20with-Architect%20AI%20Pro-3B82F6)
@@ -15,75 +15,74 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture"
-        User[GitHub User]
+        subgraph "Application Layer"
+            GHActions[GitHub Actions]
+            ArchitectAIGen[Architect AI Pro Generator]
+            ForemanAudit[Foreman Audit Engine]
+            MermaidCLI[Mermaid CLI]
+            Terraform[Terraform IaC]
+            GalleryApp[Architecture Gallery App]
+            CloudRun[Cloud Run Service]
+        end
 
-        subgraph "Application"
-            style Application fill:#1E3A5F,color:#BFDBFE
-            subgraph "Architect AI Pro Automation"
-                GHActions[GitHub Actions Runner]
-                ArchitectAIGen[Architect AI Pro Generator Script]
-                ForemanAudit[Foreman AI Audit Engine]
-                MermaidCLI[Mermaid CLI Renderer]
-            end
-
-            subgraph "Architecture Gallery"
-                CloudRunGallery[Cloud Run: Architecture Gallery - FastAPI]
-            end
+        subgraph "Data Layer"
+            RepoSource[Repository Source Code]
+            GeneratedDiagrams[Generated Diagrams]
+            SecretManager[Cloud Secret Manager]
+            GCSBackend[Cloud Storage Backend]
         end
 
         subgraph "Security"
-            style Security fill:#1E40AF,color:#BFDBFE
-            CloudArmorLB[Cloud Armor / Load Balancer]
-            GCPWIF[GCP Workload Identity Federation]
-            SecretMan[Google Secret Manager]
+            CloudArmor[Cloud Armor]
+            CloudLB[Cloud Load Balancer]
+            WIF[Workload Identity Federation]
         end
 
-        subgraph "Data"
-            style Data fill:#0F172A,color:#BFDBFE
-            GHRepos[GitHub Repositories]
-            ArtifactReg[Artifact Registry]
-            GCSState[Cloud Storage - Terraform State]
-            ARCHITECT_CONFIG[ARCHITECT_CONFIG.json - Building Codes]
+        subgraph "Payment"
+            Stripe[Stripe Payment Gateway]
         end
 
-        subgraph "Infrastructure"
-            Terraform[Terraform IaC]
+        subgraph "External"
+            UserDev[User / Developer]
+            PublicInternet[Public Internet]
+            GitHub[GitHub Repository]
+            GeminiAPI[Google Gemini API]
         end
 
-        GeminiAPI[Google Gemini API]
+        UserDev --> GitHub: Push/PR Code
+        GitHub --> GHActions: Triggers Workflow
+        GHActions --> RepoSource: Scans Code
+        GHActions --> ArchitectAIGen: Runs Generator Script
+        ArchitectAIGen --> GeminiAPI: Request Diagram Generation
+        GeminiAPI --> ArchitectAIGen: Returns Mermaid Code
+        ArchitectAIGen --> GeneratedDiagrams: Writes .mermaid
+        ArchitectAIGen --> MermaidCLI: Renders PNG
+        MermaidCLI --> GeneratedDiagrams: Writes .png
+        GHActions --> ForemanAudit: Runs Audit Script
+        ForemanAudit --> GeneratedDiagrams: Reads Diagram
+        GHActions --> GitHub: Commits Diagrams
+        GHActions --> Terraform: Runs IaC Apply
+        Terraform --> WIF: Authenticates
+        WIF --> SecretManager: Accesses Secrets
+        Terraform --> GCSBackend: Manages State
+        Terraform --> CloudRun: Deploys Gallery App
+        Terraform --> SecretManager: Provisions Secrets
+        PublicInternet --> CloudArmor: Public Access
+        CloudArmor --> CloudLB: Routes Traffic
+        CloudLB --> CloudRun: To Gallery App
+        CloudRun --> GalleryApp: Hosts
+        GalleryApp --> SecretManager: Fetches GITHUB_TOKEN
+        GalleryApp --> GitHub: Fetches Repo Diagrams (API)
+        SecretManager -.-> Stripe: Manages Keys for Payment Flows
 
-        %% Flows
-        User -- "Triggers Push/PR" --> GHActions
-        GHActions -- "Authenticates via OIDC" --> GCPWIF
-        GCPWIF -- "Grants SA access to" --> SecretMan
-        GCPWIF -- "Grants SA access to" --> ArtifactReg
-        GHActions -- "Executes" --> ArchitectAIGen
-        ArchitectAIGen -- "Reads Code" --> GHRepos
-        ArchitectAIGen -- "Reads Config" --> ARCHITECT_CONFIG
-        ArchitectAIGen -- "Generates Prompt" --> GeminiAPI
-        GeminiAPI -- "Returns Mermaid.js" --> ArchitectAIGen
-        ArchitectAIGen -- "Renders PNG" --> MermaidCLI
-        MermaidCLI -- "Outputs Diagram" --> GHRepos
-        GHActions -- "Executes" --> ForemanAudit
-        ForemanAudit -- "Audits Diagram" --> GHRepos
-        ForemanAudit -- "Checks against" --> ARCHITECT_CONFIG
-        GHActions -- "Commits Updates" --> GHRepos
-
-        Terraform -- "Manages" --> GCPWIF
-        Terraform -- "Manages" --> SecretMan
-        Terraform -- "Manages" --> ArtifactReg
-        Terraform -- "Deploys & Configures" --> CloudRunGallery
-        Terraform -- "Stores State" --> GCSState
-
-        CloudRunGallery -- "Pulls Image from" --> ArtifactReg
-        CloudRunGallery -- "Accesses GITHUB_TOKEN" --> SecretMan
-        CloudRunGallery -- "Fetches Diagrams via GitHub API" --> GHRepos
-
-        User -- "Accesses Public Gallery" --> CloudArmorLB
-        CloudArmorLB -- "Routes Traffic" --> CloudRunGallery
     end
 
     FOOTER[🏗️ Created with Architect AI Pro | BlueFalconInk LLC]
+
+    style Security fill:#1E40AF,color:#BFDBFE
+    style Application fill:#1E3A5F,color:#BFDBFE
+    style Data fill:#0F172A,color:#BFDBFE
+    style Payment fill:#7C3AED,color:#BFDBFE
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
 
