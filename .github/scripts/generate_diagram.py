@@ -476,21 +476,68 @@ def ensure_branding(mermaid_code: str, repo_name: str, config: dict) -> str:
     return joined
 
 
-def format_output(mermaid_code: str, repo_name: str, config: dict) -> str:
-    """Format the Mermaid diagram into a complete architecture.md document."""
+def render_png(mermaid_path: str, png_path: str) -> bool:
+    """Render a .mermaid file to PNG using mermaid-cli (mmdc).
+
+    Returns True if the PNG was created successfully.
+    """
+    import subprocess
+
+    print(f"🖼️  Rendering PNG: {mermaid_path} → {png_path}")
+    try:
+        result = subprocess.run(
+            [
+                "mmdc",
+                "-i", mermaid_path,
+                "-o", png_path,
+                "-b", "transparent",
+                "-t", "dark",
+                "-s", "2",          # 2x scale for crisp images
+            ],
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+        if result.returncode == 0 and Path(png_path).exists():
+            size_kb = Path(png_path).stat().st_size / 1024
+            print(f"✅ PNG rendered ({size_kb:.0f} KB)")
+            return True
+        else:
+            print(f"⚠️  mmdc exited with code {result.returncode}")
+            if result.stderr:
+                print(f"   stderr: {result.stderr[:500]}")
+            return False
+    except FileNotFoundError:
+        print("⚠️  mmdc not found — PNG rendering skipped (Mermaid CLI not installed)")
+        return False
+    except subprocess.TimeoutExpired:
+        print("⚠️  mmdc timed out after 120s")
+        return False
+
+
+def format_output(mermaid_code: str, repo_name: str, config: dict, png_path: str = "") -> str:
+    """Format the architecture.md document with an embedded PNG diagram image.
+
+    If png_path is provided and the file exists, the diagram is shown as an image.
+    The raw Mermaid source is always included in a collapsible details block.
+    """
     org = config.get("org_name", "BlueFalconInk LLC")
     app_url = "https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/"
     gh_url = "https://github.com/koreric75/ArchitectAIPro_GHActions"
     org_badge = org.replace(' ', '%20')
     cloud = config.get('technical_constraints', {}).get('preferred_cloud', 'GCP')
     iac = config.get('technical_constraints', {}).get('iac_tool', 'Terraform')
-    orch = config.get('technical_constraints', {}).get('container_orchestration', 'Kubernetes')
-    api_std = config.get('technical_constraints', {}).get('api_standard', 'GraphQL')
+    orch = config.get('technical_constraints', {}).get('container_orchestration', 'Cloud Run')
+    api_std = config.get('technical_constraints', {}).get('api_standard', 'REST/GraphQL')
     date_str = __import__("datetime").datetime.now().strftime("%Y-%m-%d %H:%M UTC")
 
     # Strip any leading whitespace from mermaid code lines
     mermaid_lines = mermaid_code.strip().splitlines()
     mermaid_clean = "\n".join(line.rstrip() for line in mermaid_lines)
+
+    # Determine if we have a PNG
+    has_png = bool(png_path) and Path(png_path).exists()
+    png_relpath = Path(png_path).name if has_png else ""
 
     lines = [
         f"# 🏗️ {org} — {repo_name} Architecture",
@@ -502,9 +549,25 @@ def format_output(mermaid_code: str, repo_name: str, config: dict) -> str:
         "![Architect AI Pro](https://img.shields.io/badge/Created%20with-Architect%20AI%20Pro-3B82F6)",
         "![Gemini](https://img.shields.io/badge/Powered%20by-Google%20Gemini-4285F4)",
         "",
+    ]
+
+    if has_png:
+        lines += [
+            "## Architecture Diagram",
+            "",
+            f"![{repo_name} Architecture]({png_relpath})",
+            "",
+        ]
+
+    lines += [
+        "<details>",
+        "<summary>📄 View Mermaid Source Code</summary>",
+        "",
         "```mermaid",
         mermaid_clean,
         "```",
+        "",
+        "</details>",
         "",
         "---",
         "",
@@ -621,14 +684,19 @@ def main():
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    full_doc = format_output(mermaid_code, repo_name, config)
-    output_path.write_text(full_doc)
-    print(f"📄 Written to {args.output}")
-
-    # Also write raw mermaid for other tools
+    # Write raw mermaid file
     raw_path = output_path.with_suffix(".mermaid")
     raw_path.write_text(mermaid_code)
     print(f"📄 Raw Mermaid written to {raw_path}")
+
+    # Render PNG from Mermaid using mermaid-cli
+    png_path = output_path.with_suffix(".png")
+    png_ok = render_png(str(raw_path), str(png_path))
+
+    # Write markdown doc (embeds PNG if available, always includes Mermaid source)
+    full_doc = format_output(mermaid_code, repo_name, config, png_path=str(png_path) if png_ok else "")
+    output_path.write_text(full_doc)
+    print(f"📄 Written to {args.output}")
 
     print("🏁 Done!")
 

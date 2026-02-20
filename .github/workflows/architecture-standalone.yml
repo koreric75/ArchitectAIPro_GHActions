@@ -63,6 +63,14 @@ jobs:
       - name: Install Dependencies
         run: pip install requests
 
+      - name: Set up Node.js (for Mermaid CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Mermaid CLI
+        run: npm install -g @mermaid-js/mermaid-cli
+
       # ── Download Architect AI Pro scripts ──
       - name: Fetch Architect AI Pro Scripts
         run: |
@@ -94,10 +102,10 @@ jobs:
             --scan-dir "$SCAN_DIR" \
             --repo-name "${{ github.event.repository.name }}"
 
-          if grep -q '```mermaid' "$OUTPUT_PATH" 2>/dev/null; then
-            echo "✅ Valid Mermaid diagram generated"
+          if [ -f "$OUTPUT_PATH" ]; then
+            echo "✅ Architecture document generated"
           else
-            echo "❌ Output missing Mermaid syntax"
+            echo "❌ Output file not created"
             exit 1
           fi
 
@@ -145,7 +153,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "docs: auto-update architecture diagram via Architect AI Pro [skip ci]"
-          file_pattern: "docs/*.md docs/*.mermaid"
+          file_pattern: "docs/*.md docs/*.mermaid docs/*.png"
 
       # ── Comment on PR ──
       - name: "💬 PR Diagram Preview"
@@ -202,6 +210,7 @@ jobs:
           path: |
             ${{ env.OUTPUT_PATH }}
             docs/*.mermaid
+            docs/*.png
           retention-days: 30
 
       - name: "✅ Final Status"
