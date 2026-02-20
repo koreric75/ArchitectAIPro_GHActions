@@ -2,88 +2,87 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture"
-        subgraph "External Systems"
-            User[GitHub User]
-            PublicInternet[Public Internet]
-            GoogleGeminiAPI[Google Gemini API]
-            GitHubAPI[GitHub API]
-            Stripe[Stripe Payment Gateway]
+        subgraph "External Users"
+            User[End User]
+            Developer[Developer]
         end
 
         subgraph "Security"
-            WAF[AWS WAF]
-            ALB[AWS Application Load Balancer]
-            IAMOIDC[AWS IAM OIDC Provider]
-            SecretsMgr[AWS Secrets Manager]
+            CloudLoadBalancer[Cloud Load Balancer]
+            CloudArmor[Cloud Armor]
         end
-        style Security fill:#1E40AF,color:#BFDBFE
 
-        subgraph "CI/CD & Automation (GitHub Actions)"
-            GHActions[GitHub Actions Workflow]
-            DiagramGenerator[Architect AI Pro: generate_diagram.py]
-            ForemanAudit[Foreman AI: foreman_audit.py]
-            Remediation[Architect AI Pro: Remediation]
-            TerraformCLI[Terraform CLI]
-            GitAutoCommit[Git Auto-Commit]
+        subgraph "Application: Architecture Gallery"
+            CloudRunGallery[Cloud Run Service: Architecture Gallery]
+            FastAPIApp[FastAPI App: main.py]
+            InMemCache[In-Memory Cache]
         end
-        style CI/CD & Automation (GitHub Actions) fill:#1E3A5F,color:#BFDBFE
 
-        subgraph "Application (BlueFalconInk LLC Platform)"
-            EKSCluster[AWS EKS Cluster]
-            GalleryApp[Architecture Gallery - FastAPI Container]
+        subgraph "CI/CD & Automation"
+            GitHubActions[GitHub Actions Workflow]
+            WIF[Workload Identity Federation]
+            ForemanSA[Foreman Service Account]
+            GenerateDiagramScript[generate_diagram.py]
+            ForemanAuditScript[foreman_audit.py]
+            ProdReadinessScript[production_readiness.py]
+            GitAutoCommit[Git Auto Commit Action]
         end
-        style Application (BlueFalconInk LLC Platform) fill:#1E3A5F,color:#BFDBFE
 
-        subgraph "Data & Storage"
-            S3State[AWS S3: Terraform State Backend]
-            S3Diagrams[AWS S3: Architecture Diagrams]
+        subgraph "AI & Data Sources"
+            GoogleGeminiAPI[Google Gemini API]
+            GitHubAPI[GitHub API]
+            SecretManager[Cloud Secret Manager]
+            GCSBackend[Cloud Storage: Terraform State]
         end
-        style Data & Storage fill:#0F172A,color:#BFDBFE
 
-        subgraph "Payment (Conceptual Boundary)"
-            PaymentBoundary[Payment Processing]
+        subgraph "Infrastructure as Code"
+            Terraform[Terraform]
         end
-        style Payment (Conceptual Boundary) fill:#7C3AED,color:#BFDBFE
 
-        %% Data Flows
-        User --> GHActions: Triggers Workflow (Push/PR)
-        User --> PublicInternet: Accesses Gallery
-        PublicInternet --> WAF: HTTP/S Traffic
-        WAF --> ALB: Filters Requests
-        ALB --> GalleryApp: Routes to Gallery
+        User -->|Accesses arch.bluefalconink.com| CloudLoadBalancer
+        CloudLoadBalancer -->|Protects Public Endpoint| CloudArmor
+        CloudArmor -->|Traffic to| CloudRunGallery
+        CloudRunGallery -->|Hosts| FastAPIApp
+        FastAPIApp -->|Caches data| InMemCache
+        FastAPIApp -->|Fetches repo data, diagrams| GitHubAPI
+        FastAPIApp -->|Retrieves GITHUB_TOKEN| SecretManager
 
-        GHActions -- Authenticates via --> IAMOIDC: OIDC Token
-        IAMOIDC -- Grants Access to --> SecretsMgr: Read Secrets
-        IAMOIDC -- Grants Access to --> S3State: Read/Write Terraform State
-        IAMOIDC -- Grants Access to --> S3Diagrams: Read/Write Diagrams
-        IAMOIDC -- Grants Access to --> EKSCluster: Deploy/Manage
+        Developer -->|Pushes code to GitHub| GitHubRepos[GitHub Repositories]
+        GitHubRepos -->|Triggers| GitHubActions
+        GitHubActions -->|Authenticates via| WIF
+        WIF -->|Assumes role of| ForemanSA
+        ForemanSA -->|Executes| GenerateDiagramScript
+        GenerateDiagramScript -->|Calls AI for diagram| GoogleGeminiAPI
+        GenerateDiagramScript -->|Reads repo context| GitHubRepos
+        ForemanSA -->|Executes| ForemanAuditScript
+        ForemanAuditScript -->|Audits generated diagram| GitHubRepos
+        ForemanSA -->|Executes| ProdReadinessScript
+        GitHubActions -->|Commits updated docs/architecture.md| GitAutoCommit
+        GitAutoCommit -->|Updates| GitHubRepos
 
-        GHActions --> DiagramGenerator: Executes Script
-        DiagramGenerator -- Reads Code from --> GitHubAPI: Repo Content
-        DiagramGenerator -- Calls --> GoogleGeminiAPI: Generate Diagram
-        DiagramGenerator -- Outputs Diagram to --> S3Diagrams: Store .md/.mermaid
-        DiagramGenerator -- Passes Diagram to --> ForemanAudit: For Review
+        GitHubActions -->|Manages infrastructure via| Terraform
+        Terraform -->|Authenticates via WIF| WIF
+        Terraform -->|Manages| CloudRunGallery
+        Terraform -->|Manages| ForemanSA
+        Terraform -->|Manages| SecretManager
+        Terraform -->|Stores state in| GCSBackend
 
-        ForemanAudit -- Reports Violations to --> Remediation: If Failed
-        Remediation -- Calls --> GoogleGeminiAPI: Correct Diagram
-        Remediation -- Updates Diagram in --> S3Diagrams: Store Corrected
+        SecretManager -->|Stores| GITHUB_PAT[GITHUB_PAT]
+        SecretManager -->|Stores| ARCHITECT_AI_API_KEY[ARCHITECT_AI_API_KEY]
+        SecretManager -->|Stores| STRIPE_SECRET_KEY[STRIPE_SECRET_KEY]
+        SecretManager -->|Stores| STRIPE_WEBHOOK_SECRET[STRIPE_WEBHOOK_SECRET]
 
-        GHActions --> TerraformCLI: Executes IaC
-        TerraformCLI -- Manages --> S3State: Terraform State
-        TerraformCLI -- Provisions --> EKSCluster: Cluster
-        TerraformCLI -- Provisions --> SecretsMgr: API Keys, Tokens
-        TerraformCLI -- Provisions --> S3Diagrams: Buckets
-        TerraformCLI -- Provisions --> IAMOIDC: WIF Setup
+        ForemanSA -->|Accesses| SecretManager
+        ForemanSA -->|Deploys images to| ArtifactRegistry[Cloud Artifact Registry]
+        CloudRunGallery -->|Pulls image from| ArtifactRegistry
 
-        GitAutoCommit -- Commits to --> GitHubAPI: docs/architecture.md
-
-        GalleryApp -- Fetches Diagrams from --> S3Diagrams: For Display
-        GalleryApp -- Fetches Repo Info from --> GitHubAPI: For Display
-        GalleryApp -- Accesses GITHUB_TOKEN from --> SecretsMgr: For GitHub API
-
-        SecretsMgr -- Stores --> Stripe: Keys
-        PaymentBoundary -- Processes Payments via --> Stripe: API Calls (Conceptual)
-
-        FOOTER[🏗️ Created with Architect AI Pro | BlueFalconInk LLC]
     end
+
+    FOOTER[🏗️ Created with Architect AI Pro | BlueFalconInk LLC]
+
+    style Security fill:#1E40AF,color:#BFDBFE
+    style Application fill:#1E3A5F,color:#BFDBFE
+    style CI/CD & Automation fill:#1E3A5F,color:#BFDBFE
+    style AI & Data Sources fill:#0F172A,color:#BFDBFE
+    style Infrastructure as Code fill:#0F172A,color:#BFDBFE
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
