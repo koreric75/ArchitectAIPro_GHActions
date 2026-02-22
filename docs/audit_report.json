@@ -4,9 +4,9 @@
   "org_name": "BlueFalconInk LLC",
   "api_calls_used": 93,
   "summary": {
-    "total_repos": 14,
+    "total_repos": 15,
     "core": 7,
-    "active": 0,
+    "active": 1,
     "stale": 0,
     "dead": 0,
     "forks": 0,
@@ -873,6 +873,46 @@
       "branding": {
         "compliant": true,
         "issues": [],
+        "files_checked": 0
+      },
+      "architecture": {
+        "fully_configured": false,
+        "has_workflow": false,
+        "files": {}
+      },
+      "secrets": {
+        "has_gemini_key": false
+      },
+      "workflows": {
+        "health": "UNKNOWN",
+        "recent_runs": []
+      }
+    },
+    {
+      "name": "FalconVerse-ACE",
+      "description": "Autonomous Content Engine",
+      "url": "https://github.com/koreric75/FalconVerse-ACE",
+      "is_private": true,
+      "is_fork": false,
+      "is_archived": false,
+      "language": "Python",
+      "default_branch": "main",
+      "disk_usage_kb": 139,
+      "staleness": {
+        "last_push": "2026-02-21T08:18:40Z",
+        "days_since_push": 0,
+        "status": "ACTIVE",
+        "recommendation": "KEEP"
+      },
+      "classification": {
+        "tier": "ACTIVE",
+        "action": "DEVELOP",
+        "monthly_burn_estimate": 0,
+        "disk_mb": 0.1
+      },
+      "branding": {
+        "compliant": false,
+        "issues": ["No branding files detected"],
         "files_checked": 0
       },
       "architecture": {
