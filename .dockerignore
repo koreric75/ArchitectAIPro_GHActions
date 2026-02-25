@@ -10,9 +10,11 @@
 .git/
 .gitignore
 
-# Documentation (not needed in runtime containers)
-docs/
-*.md
+# Documentation (not needed in runtime containers — except dashboard/audit files)
+docs/*.md
+docs/*.mermaid
+docs/*.drawio
+docs/*.png
 LICENSE
 
 # Terraform state and config
