@@ -28,7 +28,7 @@ terraform {
 variable "project_id" {
   description = "The GCP project ID"
   type        = string
-  default     = "bluefalconink-prod"
+  default     = "bluefalconink"
 }
 
 variable "region" {
@@ -38,9 +38,9 @@ variable "region" {
 }
 
 variable "github_org" {
-  description = "The GitHub organization name"
+  description = "The GitHub owner (user or organization)"
   type        = string
-  default     = "bluefalconink"
+  default     = "koreric75"
 }
 
 # -------------------------------------------

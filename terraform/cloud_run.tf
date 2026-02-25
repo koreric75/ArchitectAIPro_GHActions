@@ -18,7 +18,7 @@ resource "google_cloud_run_v2_service" "architecture_gallery" {
     }
 
     containers {
-      image = "gcr.io/${var.project_id}/architecture-gallery:latest"
+      image = "us-central1-docker.pkg.dev/${var.project_id}/bluefalconink-apps/architecture-gallery:latest"
 
       resources {
         limits = {
@@ -29,7 +29,7 @@ resource "google_cloud_run_v2_service" "architecture_gallery" {
 
       env {
         name  = "GITHUB_ORG"
-        value = var.github_org
+        value = "koreric75"
       }
 
       env {

@@ -26,7 +26,7 @@ app = FastAPI(
 
 # Configuration from Environment Variables
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-GITHUB_ORG = os.getenv("GITHUB_ORG", "bluefalconink")
+GITHUB_ORG = os.getenv("GITHUB_ORG", "koreric75")
 HEADERS = {
     "Authorization": f"token {GITHUB_TOKEN}",
     "Accept": "application/vnd.github.v3+json",
@@ -60,7 +60,7 @@ async def get_repos() -> list:
     if cached is not None:
         return cached
 
-    url = f"https://api.github.com/orgs/{GITHUB_ORG}/repos"
+    url = f"https://api.github.com/users/{GITHUB_ORG}/repos"
     async with httpx.AsyncClient() as client:
         response = await client.get(url, headers=HEADERS, params={"per_page": 100})
         if response.status_code == 200:

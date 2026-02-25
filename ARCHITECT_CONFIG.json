@@ -1,6 +1,6 @@
 {
   "org_name": "BlueFalconInk LLC",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "styling": {
     "theme": "dark",
     "primary_color": "#1E40AF",
@@ -33,8 +33,8 @@
       "description": "Ruthless Automation in the proposal space - 80% reduction in technical assessment drag"
     },
     "Clipstream": {
-      "domain": "Media/RC Hobby",
-      "description": "Media engine for BlueFalconInk LLC - high-fidelity video and RC telemetry"
+      "domain": "Media/Video",
+      "description": "Media engine for BlueFalconInk LLC - video production and streaming"
     },
     "InstructionalVideoSite": {
       "domain": "Education/SaaS",
