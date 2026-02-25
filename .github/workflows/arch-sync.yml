@@ -30,6 +30,19 @@ on:
       - "ARCHITECT_CONFIG.json"
   pull_request:
     branches: [main]
+    paths:
+      - "src/**"
+      - "server/**"
+      - "services/**"
+      - "components/**"
+      - "**/*.ts"
+      - "**/*.tsx"
+      - "**/*.py"
+      - "**/*.js"
+      - "Dockerfile"
+      - "docker-compose*.yml"
+      - "terraform/**"
+      - "ARCHITECT_CONFIG.json"
 
   # ── Reusable trigger (other repos call this) ──
   workflow_call:
