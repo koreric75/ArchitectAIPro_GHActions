@@ -1,163 +1,118 @@
-%% Architect AI Pro — System Architecture
-%% BlueFalconInk LLC | https://github.com/koreric75/ArchitectAIPro_GHActions
-%%
-%% This diagram shows the three main workflows:
-%%   1. Architecture Diagram Generation (the core product)
-%%   2. CHAD Weekly Governance (automated repo health)
-%%   3. Deployed Web Services (dashboard + gallery)
-
 flowchart TB
+    %% Architect AI Pro — System Architecture
+    %% BlueFalconInk LLC
 
-    %% =====================================================================
-    %% FLOW 1: Architecture Diagram Generation Pipeline
-    %% This is the core product — auto-generates architecture diagrams
-    %% for any repo on every code push to main.
-    %% =====================================================================
+    %% ── FLOW 1: Diagram Generation Pipeline ──
 
-    subgraph Flow1["① Diagram Generation Pipeline — runs on every code push"]
+    subgraph Flow1["① Diagram Generation — on every code push"]
         direction LR
+        Push(["Developer pushes<br/>code to main"])
+        Trigger["GitHub Actions<br/>arch-sync.yml"]
+        Scan["generate_diagram.py<br/>Scans repo file tree"]
+        Config[("ARCHITECT_CONFIG.json<br/>Building codes")]
+        Guard["prompt_guard.py<br/>Sanitize + block injection"]
+        Gemini(["Gemini 2.5 Flash<br/>Generates Mermaid"])
+        Foreman["foreman_audit.py<br/>Compliance check"]
+        Pass{"Audit<br/>passed?"}
+        Fix["Auto-remediate<br/>via Gemini re-prompt"]
+        Export["Export Plugins<br/>Draw.io, PNG, Excalidraw"]
+        Save["Commit to repo<br/>docs/architecture.*"]
 
-        Push([Developer pushes code to main])
-        Trigger[GitHub Actions\narch-sync.yml]
-        Scan[generate_diagram.py\nScans repo: file tree,\nDockerfiles, Terraform,\nAPI routes, configs]
-        Config[(ARCHITECT_CONFIG.json\nBuilding codes: GCP only,\nTerraform, Cloud Run,\nsecurity boundaries)]
-        PromptGuard[prompt_guard.py\nSanitize input,\nblock injection]
-        Gemini([Gemini 2.5 Flash API\nGenerates Mermaid diagram\nfrom repo context])
-        Foreman[foreman_audit.py\nCompliance check:\ncloud provider, branding,\nsecurity layers, IaC]
-        Pass{Audit\npassed?}
-        Remediate[Auto-remediate\nvia Gemini re-prompt\nwith violation report]
-        Plugins[Export Plugins\nDraw.io XML, PNG,\nExcalidraw JSON]
-        Commit[Commit to repo:\ndocs/architecture.md\ndocs/architecture.mermaid\ndocs/architecture.png]
-
-        Push --> Trigger
-        Trigger --> Scan
-        Config -.->|building codes| Scan
-        Scan --> PromptGuard
-        PromptGuard --> Gemini
-        Gemini --> Foreman
-        Foreman --> Pass
-        Pass -->|Yes| Plugins
-        Pass -->|No| Remediate
-        Remediate --> Gemini
-        Plugins --> Commit
+        Push --> Trigger --> Scan
+        Config -.-> Scan
+        Scan --> Guard --> Gemini --> Foreman --> Pass
+        Pass -- Yes --> Export --> Save
+        Pass -- No --> Fix --> Gemini
     end
 
-    %% =====================================================================
-    %% FLOW 2: CHAD Governance — Weekly Automated Repo Health
-    %% Audits ALL repos, generates an advisory dashboard, and
-    %% optionally cleans up stale repos.
-    %% =====================================================================
+    %% ── FLOW 2: CHAD Governance — Weekly ──
 
-    subgraph Flow2["② CHAD Governance — runs weekly on Monday 06:00 UTC"]
+    subgraph Flow2["② CHAD Governance — weekly Monday 06:00 UTC"]
         direction LR
+        Cron(["Scheduled or<br/>manual trigger"])
+        Audit["repo_auditor.py<br/>Scan all GitHub repos"]
+        GH(["GitHub API"])
+        Report[("audit_report.json")]
+        DashGen["dashboard_generator.py<br/>Build HTML dashboard"]
+        HTML[("dashboard.html")]
+        Clean["cleanup_agent.py<br/>Archive, fix branding"]
+        SaveCHAD["Commit reports<br/>to repo"]
 
-        Cron([Weekly schedule or\nmanual dispatch])
-        Auditor[repo_auditor.py\nScans all GitHub repos:\nbranding, staleness,\nbranch hygiene, secrets]
-        GHAPI([GitHub API\nFetch repo metadata,\nfile contents, commits])
-        AuditReport[(audit_report.json\nPer-repo scores,\nrecommendations)]
-        DashGen[dashboard_generator.py\nBuilds interactive HTML\nwith charts and tables]
-        DashHTML[(dashboard.html\nAdvisory dashboard)]
-        Cleanup[cleanup_agent.py\nArchive stale repos,\nfix branding, deploy\nworkflows to new repos]
-        CommitCHAD[Commit reports to\nArchitectAIPro_GHActions\nrepo]
-
-        Cron --> Auditor
-        Auditor --> GHAPI
-        GHAPI --> AuditReport
-        AuditReport --> DashGen
-        DashGen --> DashHTML
-        AuditReport --> Cleanup
-        DashHTML --> CommitCHAD
-        Cleanup -.->|dry-run by default| CommitCHAD
+        Cron --> Audit --> GH --> Report
+        Report --> DashGen --> HTML --> SaveCHAD
+        Report --> Clean -.-> SaveCHAD
     end
 
-    %% =====================================================================
-    %% FLOW 3: Deployed Services on GCP Cloud Run
-    %% =====================================================================
+    %% ── FLOW 3: Deployed Services ──
 
-    subgraph Flow3["③ Deployed Services — GCP Cloud Run"]
+    subgraph Flow3["③ Cloud Run Services"]
         direction LR
+        User(["Browser"])
 
-        Browser([User opens browser])
-
-        subgraph DashSvc["CHAD Dashboard — Flask on Cloud Run"]
-            DashApp[dashboard-server.py\nServes audit dashboard\nand on-demand audit API]
-            DashStatic[(docs/dashboard.html\ndocs/audit_report.json)]
+        subgraph Dash["CHAD Dashboard — Flask"]
+            DashApp["dashboard-server.py<br/>Audit dashboard + API"]
+            DashData[("dashboard.html<br/>audit_report.json")]
         end
 
-        subgraph GallerySvc["Architecture Gallery — FastAPI on Cloud Run"]
-            GalleryApp[gallery/main.py\nFetches diagrams from\nall BlueFalconInk repos\nvia GitHub API]
-            GalleryCache[(In-memory cache\n10-min TTL)]
+        subgraph Gallery["Arch Gallery — FastAPI"]
+            GallApp["gallery/main.py<br/>Diagram viewer"]
+            Cache[("In-memory cache<br/>10-min TTL")]
         end
 
-        Browser -->|chad-dashboard URL| DashApp
-        DashApp --> DashStatic
-        Browser -->|gallery URL| GalleryApp
-        GalleryApp --> GalleryCache
+        User -- dashboard URL --> DashApp --> DashData
+        User -- gallery URL --> GallApp --> Cache
     end
 
-    %% =====================================================================
-    %% FLOW 4: Security Scanning — runs on every push
-    %% =====================================================================
+    %% ── FLOW 4: Security Scans ──
 
-    subgraph Flow4["④ Security Scans — runs on every push"]
+    subgraph Flow4["④ Security Scans — on every push"]
         direction LR
+        SPush(["Push to main"])
+        SAST["Bandit SAST"]
+        Deps["pip-audit + Safety"]
+        Cont["Trivy container scan"]
+        SARIF[("GitHub Security Tab<br/>SARIF reports")]
 
-        SecPush([Push to main])
-        SAST[Bandit\nPython SAST]
-        DepScan[pip-audit + Safety\nDependency CVEs]
-        ContScan[Trivy\nContainer image scan]
-        SARIF[(GitHub Security Tab\nSARIF reports)]
-
-        SecPush --> SAST
-        SecPush --> DepScan
-        SecPush --> ContScan
-        SAST --> SARIF
-        DepScan --> SARIF
-        ContScan --> SARIF
+        SPush --> SAST --> SARIF
+        SPush --> Deps --> SARIF
+        SPush --> Cont --> SARIF
     end
 
-    %% =====================================================================
-    %% Cross-flow connections
-    %% =====================================================================
+    %% ── Cross-flow connections ──
 
-    Commit -.->|architecture files\nserved by gallery| GalleryApp
-    CommitCHAD -.->|dashboard + audit data\nserved by dashboard| DashApp
-    DashApp -.->|can trigger\non-demand audit| Auditor
+    Save -.-> GallApp
+    SaveCHAD -.-> DashApp
+    DashApp -.-> Audit
 
-    %% =====================================================================
-    %% Infrastructure (shared context)
-    %% =====================================================================
+    %% ── Infrastructure ──
 
     subgraph Infra["Infrastructure"]
         direction LR
-        TF[Terraform\ncloud_run.tf, wif.tf]
-        AR[(Artifact Registry\nDocker images)]
-        CB[Cloud Build\nci/cd for containers]
-
+        TF["Terraform"]
+        AR[("Artifact Registry")]
+        CB["Cloud Build"]
         TF -.-> AR
         CB --> AR
     end
 
-    CB -.->|deploy| DashApp
-    CB -.->|deploy| GalleryApp
+    CB -.-> DashApp
+    CB -.-> GallApp
 
-    %% =====================================================================
-    %% Styles
-    %% =====================================================================
+    %% ── Styles ──
 
     classDef trigger fill:#F59E0B,color:#1F2937,stroke:#D97706,stroke-width:2px
-    classDef process fill:#1E3A5F,color:#BFDBFE,stroke:#3B82F6,stroke-width:1px
-    classDef external fill:#7C3AED,color:#EDE9FE,stroke:#8B5CF6,stroke-width:2px
-    classDef data fill:#0F172A,color:#E2E8F0,stroke:#475569,stroke-width:1px
-    classDef decision fill:#DC2626,color:#FEE2E2,stroke:#EF4444,stroke-width:2px
-    classDef security fill:#065F46,color:#D1FAE5,stroke:#10B981,stroke-width:1px
-    classDef infra fill:#374151,color:#F9FAFB,stroke:#6B7280,stroke-width:1px
+    classDef process fill:#1E3A5F,color:#BFDBFE,stroke:#3B82F6
+    classDef api fill:#7C3AED,color:#EDE9FE,stroke:#8B5CF6,stroke-width:2px
+    classDef data fill:#0F172A,color:#E2E8F0,stroke:#475569
+    classDef decide fill:#DC2626,color:#FEE2E2,stroke:#EF4444,stroke-width:2px
+    classDef sec fill:#065F46,color:#D1FAE5,stroke:#10B981
+    classDef infra fill:#374151,color:#F9FAFB,stroke:#6B7280
 
-    class Push,Cron,Browser,SecPush trigger
-    class Trigger,Scan,PromptGuard,Foreman,Remediate,Plugins,Commit process
-    class Auditor,DashGen,Cleanup,CommitCHAD,DashApp,GalleryApp process
-    class Gemini,GHAPI external
-    class Config,AuditReport,DashHTML,DashStatic,GalleryCache,SARIF data
-    class Pass decision
-    class SAST,DepScan,ContScan security
+    class Push,Cron,User,SPush trigger
+    class Trigger,Scan,Guard,Foreman,Fix,Export,Save process
+    class Audit,DashGen,Clean,SaveCHAD,DashApp,GallApp process
+    class Gemini,GH api
+    class Config,Report,HTML,DashData,Cache,SARIF data
+    class Pass decide
+    class SAST,Deps,Cont sec
     class TF,AR,CB infra
