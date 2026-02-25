@@ -29,11 +29,24 @@ on:
       - "terraform/**"
   pull_request:
     branches: [main]
+    paths:
+      - "src/**"
+      - "server/**"
+      - "services/**"
+      - "components/**"
+      - "**/*.ts"
+      - "**/*.tsx"
+      - "**/*.py"
+      - "**/*.js"
+      - "Dockerfile"
+      - "docker-compose*.yml"
+      - "terraform/**"
   workflow_dispatch:
 
-# Least privilege: only needs read since the reusable workflow handles writes
+# Caller must grant at least the permissions the reusable workflow needs
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 jobs:
   architecture:

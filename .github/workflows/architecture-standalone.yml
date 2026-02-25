@@ -33,6 +33,18 @@ on:
       - "terraform/**"
   pull_request:
     branches: [main, master]
+    paths:
+      - "src/**"
+      - "server/**"
+      - "services/**"
+      - "components/**"
+      - "**/*.ts"
+      - "**/*.tsx"
+      - "**/*.py"
+      - "**/*.js"
+      - "Dockerfile"
+      - "docker-compose*.yml"
+      - "terraform/**"
   workflow_dispatch:
 
 permissions:
