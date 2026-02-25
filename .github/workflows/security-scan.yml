@@ -128,7 +128,7 @@ jobs:
           docker build -f Dockerfile.dashboard -t chad-dashboard:scan .
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@0.34.1
         with:
           image-ref: "chad-dashboard:scan"
           format: "sarif"
