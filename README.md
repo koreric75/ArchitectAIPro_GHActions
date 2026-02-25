@@ -166,9 +166,9 @@ The Foreman AI performs the following checks on every architecture diagram:
 │   ├── architecture.md                    # Auto-generated architecture diagram
 │   ├── architecture.mermaid               # Raw Mermaid source
 │   ├── architecture.drawio                # Draw.io XML
-│   ├── architecture.png                   # Rendered PNG diagram
-│   ├── audit_report.json                  # Latest CHAD audit report
-│   └── dashboard.html                     # CHAD advisory dashboard (generated)
+│   └── architecture.png                   # Rendered PNG diagram
+│   # audit_report.json and dashboard.html are NOT in the public repo.
+│   # They are generated at runtime by the Cloud Run dashboard service.
 ├── Dockerfile.dashboard                   # CHAD dashboard container image
 ├── cloudbuild-dashboard.yaml              # Cloud Build config for dashboard
 ├── dashboard-server.py                    # Flask server for Cloud Run dashboard
@@ -222,16 +222,16 @@ python .github/scripts/generate_diagram.py \
 # Set your GitHub token
 export GITHUB_TOKEN="your-github-pat"
 
-# Audit all repos
+# Audit all repos (output is local-only, not committed to public repo)
 pip install requests
 python .github/scripts/repo_auditor.py \
   --owner koreric75 \
-  --output docs/audit_report.json
+  --output audit_report.json
 
-# Generate dashboard
+# Generate dashboard (local-only)
 python .github/scripts/dashboard_generator.py \
-  --input docs/audit_report.json \
-  --output docs/dashboard.html
+  --input audit_report.json \
+  --output dashboard.html
 ```
 
 ### Run Foreman Audits Locally

@@ -207,23 +207,10 @@ jobs:
           mkdir -p docs
           
           # Copy artifacts
-          cp -f artifacts/audit-report/audit_report.json docs/ 2>/dev/null || true
-          cp -f artifacts/chad-dashboard/dashboard.html docs/ 2>/dev/null || true
-          
-          git config user.name "CHAD-Agent"
-          git config user.email "chad@bluefalconink.com"
-          git add docs/audit_report.json docs/dashboard.html
-          
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            REPOS="${{ needs.audit.outputs.total_repos }}"
-            CALLS="${{ needs.audit.outputs.api_calls }}"
-            STAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            git commit -m "chore: Update CHAD audit report and dashboard [skip ci]" \
-              -m "Repos audited: ${REPOS} | API calls: ${CALLS} | Generated: ${STAMP}"
-            
-            git pull --rebase origin main || true
-            git push origin main
-            echo "✅ Reports committed"
-          fi
+          # Audit data is NOT committed to the public repo.
+          # Reports are available as workflow artifacts and served
+          # at runtime via the Cloud Run dashboard (/api/refresh).
+          REPOS="${{ needs.audit.outputs.total_repos }}"
+          CALLS="${{ needs.audit.outputs.api_calls }}"
+          echo "✅ CHAD audit complete — ${REPOS} repos, ${CALLS} API calls"
+          echo "   Artifacts uploaded (not committed to public repo)"

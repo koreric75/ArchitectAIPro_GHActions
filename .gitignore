@@ -40,3 +40,7 @@ service-account*.json
 
 # Generated reports
 foreman_report.txt
+
+# CHAD audit data — served only via Cloud Run, not committed to public repo
+docs/audit_report.json
+docs/dashboard.html

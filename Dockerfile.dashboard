@@ -16,9 +16,11 @@ COPY .github/scripts/dashboard_generator.py /app/dashboard_generator.py
 COPY .github/scripts/token_budget.py /app/token_budget.py
 COPY .github/scripts/security_logger.py /app/security_logger.py
 
-# Copy the pre-built dashboard and audit data
-COPY docs/dashboard.html /app/static/dashboard.html
-COPY docs/audit_report.json /app/static/audit_report.json
+# Create empty static dir — audit data is generated at runtime via /api/refresh
+# (audit_report.json and dashboard.html are NOT committed to the public repo)
+RUN mkdir -p /app/static && \
+    echo '{"summary":{"total_repos":0},"repos":[]}' > /app/static/audit_report.json && \
+    echo '<html><body><h1>CHAD Dashboard</h1><p>Run POST /api/refresh to generate.</p></body></html>' > /app/static/dashboard.html
 
 # Server script
 COPY dashboard-server.py /app/server.py
