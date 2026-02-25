@@ -1,7 +1,7 @@
 # 🏗️ BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture
 
 > **Created with [Architect AI Pro](https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/)** — the flagship architecture tool by **BlueFalconInk LLC**
-> Auto-generated on 2026-02-25 16:11 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
+> Auto-generated on 2026-02-25 16:12 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
 
 ![BlueFalconInk LLC](https://img.shields.io/badge/BlueFalconInk%20LLC-Standard-1E40AF)
 ![Architect AI Pro](https://img.shields.io/badge/Created%20with-Architect%20AI%20Pro-3B82F6)
@@ -19,51 +19,45 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        subgraph "Frontend"
-            User[User/Developer]
-        end
-
-        subgraph "Security"
-            CloudLoadBalancer[Cloud Load Balancer]
-            CloudArmor[Cloud Armor]
-            WIF[GCP Workload Identity Federation]
-            GCPSecretMgr[GCP Secret Manager]
-        end
-        style Security fill:#1E40AF,color:#BFDBFE
-
-        subgraph "Backend Services"
-            CHADDashboardCR[Cloud Run · CHAD Dashboard]
-            ArchGalleryCR[Cloud Run · Architecture Gallery]
-        end
-        style Backend Services fill:#1E3A5F,color:#BFDBFE
-
-        subgraph "Automation & CI/CD"
-            GitHub[GitHub Repository]
-            GHActions[GitHub Actions]
-            PythonScripts[Python Automation Scripts]
-            CloudBuild[Cloud Build]
-            Terraform[Terraform]
-            Bandit[Bandit SAST]
-            PipAudit[pip-audit]
-            Safety[Safety.io]
-            Trivy[Trivy Container Scan]
-        end
-
-        subgraph "AI & External Integrations"
+        subgraph "External Systems"
+            User[GitHub User]
+            GHRepos[GitHub Repositories · Source Code, Docs]
             GeminiAPI[Google Gemini API]
-            DrawioCLI[Draw.io CLI · Headless]
+            GHAPI[GitHub API]
         end
 
-        subgraph "Data & Storage"
-            RepoDocs[GitHub Repo · Docs]
-            ArtifactRegistry[Artifact Registry]
-            SARIFReports[GitHub Security · SARIF Reports]
-            ARCHITECT_CONFIG[ARCHITECT_CONFIG.json]
-            PROMPT_LIBRARY[PROMPT_LIBRARY]
+        subgraph "Frontend & Public Access"
+            CloudArmor[Cloud Armor · WAF]
+            CHADDash[CHAD Dashboard · Cloud Run]
+            ArchGallery[Architecture Gallery · Cloud Run]
         end
-        style Data & Storage fill:#0F172A,color:#BFDBFE
-    end
+        style Frontend & Public Access fill:#1E3A5F,color:#BFDBFE
 
+        subgraph "Application Services"
+            ArchitectAIApp[Architect AI Pro · Cloud Run]
+            PyScripts[Python Scripts · Generator, Auditor, Cleanup]
+            DrawIO[Draw.io Desktop · Headless Renderer]
+        end
+        style Application Services fill:#1E3A5F,color:#BFDBFE
+
+        subgraph "CI/CD & Automation"
+            GHActions[GitHub Actions]
+            CloudBuild[Cloud Build]
+            SecurityScanners[SAST/Dependency/Container Scanners]
+        end
+        style CI/CD & Automation fill:#1E3A5F,color:#BFDBFE
+
+        subgraph "Infrastructure as Code"
+            Terraform[Terraform]
+            GCPProject[BlueFalconInk GCP Project]
+        end
+        style Infrastructure as Code fill:#1E3A5F,color:#BFDBFE
+
+        subgraph "Data Layer"
+            ArtifactRegistry[GCP Artifact Registry]
+            GHSecurity[GitHub Security Tab]
+        end
+        style Data Layer fill:#0F172A,color:#
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
 
     %% Data Flows

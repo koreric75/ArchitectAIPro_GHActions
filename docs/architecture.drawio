@@ -1,71 +1,18 @@
-<mxfile host="app.diagrams.net" modified="2023-10-27T12:00:00.000Z" agent="Architect AI Pro" etag="unique-etag" version="22.0.8" type="device">
-  <diagram id="unique-diagram-id" name="Page-1">
-    <mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageEnabled="1" pageScale="1" pageWidth="1100" pageHeight="850" background="#FFFFFF" math="0" shadow="0">
+<mxfile host="app.diagrams.net" modified="2023-10-27T12:00:00.000Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="some-etag" version="22.0.8">
+  <diagram id="0" name="Page-1">
+    <mxGraphModel dx="1434" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageEnabled="1" pageScale="1" pageWidth="1100" pageHeight="850" background="#FFFFFF" math="0" shadow="0">
       <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-
-        <!-- Title Bar -->
-        <mxCell id="title" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;&lt;b&gt;BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture&lt;/b&gt;&lt;/font&gt;" style="shape=rectangle;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=none;fontSize=24;fontStyle=1;align=center;verticalAlign=middle;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="0" y="0" width="1100" height="60" as="geometry" />
+        <mxCell id="1" />
+        <!-- Main Title Container -->
+        <mxCell id="titleContainer" value="BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#1E40AF;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="30" width="1000" height="650" as="geometry" />
         </mxCell>
 
-        <!-- Overall Architecture Container (Logical Grouping) -->
-        <mxCell id="overallContainer" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#1E293B;strokeWidth=2;dashed=1;labelBackgroundColor=none;" parent="1" vertex="1">
-            <mxGeometry x="20" y="80" width="1060" height="680" as="geometry"/>
+        <!-- External Systems Group -->
+        <mxCell id="externalSystemsGroup" value="External Systems" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F4F8;fontColor=#1E293B;strokeColor=#BFDBFE;fontSize=16;fontStyle=1;container=1;collapsible=0;" vertex="1" parent="titleContainer">
+          <mxGeometry x="20" y="100" width="200" height="300" as="geometry" />
         </mxCell>
-
-        <!-- Subgraphs (Containers) -->
-        <!-- Frontend -->
-        <mxCell id="frontendContainer" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;Frontend&lt;/b&gt;&lt;/font&gt;" style="swimlane;startSize=30;horizontal=0;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E293B;rounded=1;align=center;verticalAlign=top;spacingTop=8;" parent="overallContainer" vertex="1">
-          <mxGeometry x="20" y="20" width="200" height="120" as="geometry" />
+        <mxCell id="user" value="GitHub User" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor=#BFDBFE;fontSize=12;" vertex="1" parent="externalSystemsGroup">
+          <mxGeometry x="20" y="40" width="160" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="user" value="User/Developer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E293B;fontSize=14;" parent="frontendContainer" vertex="1">
-          <mxGeometry x="20" y="50" width="160" height="50" as="geometry" />
-        </mxCell>
-
-        <!-- Security -->
-        <mxCell id="securityContainer" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;Security&lt;/b&gt;&lt;/font&gt;" style="swimlane;startSize=30;horizontal=0;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#1E293B;rounded=1;align=center;verticalAlign=top;spacingTop=8;" parent="overallContainer" vertex="1">
-          <mxGeometry x="240" y="20" width="300" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="cloudLoadBalancer" value="Cloud Load Balancer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;fontSize=14;" parent="securityContainer" vertex="1">
-          <mxGeometry x="20" y="40" width="260" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="cloudArmor" value="Cloud Armor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;fontSize=14;" parent="securityContainer" vertex="1">
-          <mxGeometry x="20" y="90" width="260" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="wif" value="GCP Workload Identity Federation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;fontSize=14;" parent="securityContainer" vertex="1">
-          <mxGeometry x="20" y="140" width="120" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="gcpSecretMgr" value="GCP Secret Manager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;fontSize=14;" parent="securityContainer" vertex="1">
-          <mxGeometry x="160" y="140" width="120" height="40" as="geometry" />
-        </mxCell>
-
-        <!-- Backend Services -->
-        <mxCell id="backendServicesContainer" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;Backend Services&lt;/b&gt;&lt;/font&gt;" style="swimlane;startSize=30;horizontal=0;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#1E293B;rounded=1;align=center;verticalAlign=top;spacingTop=8;" parent="overallContainer" vertex="1">
-          <mxGeometry x="240" y="240" width="300" height="120" as="geometry" />
-        </mxCell>
-        <mxCell id="chadDashboardCR" value="Cloud Run · CHAD Dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#3B82F6;fontSize=14;" parent="backendServicesContainer" vertex="1">
-          <mxGeometry x="20" y="40" width="260" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="archGalleryCR" value="Cloud Run · Architecture Gallery" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#3B82F6;fontSize=14;" parent="backendServicesContainer" vertex="1">
-          <mxGeometry x="20" y="80" width="260" height="30" as="geometry" />
-        </mxCell>
-
-        <!-- Automation & CI/CD -->
-        <mxCell id="automationCICDContainer" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;Automation &amp;amp; CI/CD&lt;/b&gt;&lt;/font&gt;" style="swimlane;startSize=30;horizontal=0;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E293B;rounded=1;align=center;verticalAlign=top;spacingTop=8;" parent="overallContainer" vertex="1">
-          <mxGeometry x="560" y="20" width="480" height="340" as="geometry" />
-        </mxCell>
-        <mxCell id="github" value="GitHub Repository" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E293B;fontSize=14;" parent="automationCICDContainer" vertex="1">
-          <mxGeometry x="20" y="40" width="120" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="ghActions" value="GitHub Actions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E293B;fontSize=14;" parent="automationCICDContainer" vertex="1">
-          <mxGeometry x="160" y="40" width="120" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="pythonScripts" value="Python Automation Scripts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E293B;fontSize=14;" parent="automationCICDContainer" vertex="1">
-          <mxGeometry x="160" y="90" width="120" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="cloudBuild" value="Cloud Build" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#1E293B;fontSize=14;" parent="automationCICDContainer" vertex="1">
-          <mxGeometry x="300" y="40" width="160" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="terraform" value="Terraform" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;fontColor=#1E2
+        <mxCell id="ghRepos" value="GitHub Repositories &amp;middot; Source Code, Docs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;fontColor=#1E293B;strokeColor
