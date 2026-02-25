@@ -67,5 +67,12 @@
     "block_non_standard_providers": true,
     "require_cloud_armor_for_public": true,
     "pci_compliance_for_payments": true
+  },
+  "secrets_policy": {
+    "source": "environment_variables_and_secret_manager",
+    "never_commit": true,
+    "allowed_stores": ["GitHub Actions Secrets", "GCP Secret Manager"],
+    "rotation_cadence_days": 90,
+    "audit_on_push": true
   }
 }

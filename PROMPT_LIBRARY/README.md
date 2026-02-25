@@ -17,7 +17,8 @@ Domain-specific prompts for generating architecture diagrams across common proje
 Pass these prompts to the diagram generator along with your `ARCHITECT_CONFIG.json`:
 
 ```bash
-export GEMINI_API_KEY="your-key-here"
+# GEMINI_API_KEY is provided via GitHub Actions Secrets or GCP Secret Manager.
+# Never hardcode API keys in source — see SECURITY.md for the secrets policy.
 
 python .github/scripts/generate_diagram.py \
   --config ARCHITECT_CONFIG.json \

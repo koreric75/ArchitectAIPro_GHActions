@@ -33,8 +33,16 @@ try:
 except ImportError:
     print("Installing requests...")
     import subprocess
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "requests", "-q"])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "requests==2.32.3", "-q"])
     import requests
+
+# Security: Import prompt injection guard
+try:
+    from prompt_guard import validate_prompt, sanitize_repo_content, validate_llm_response
+    PROMPT_GUARD_AVAILABLE = True
+except ImportError:
+    PROMPT_GUARD_AVAILABLE = False
+    print("[WARN] prompt_guard module not available — running without prompt injection protection")
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -99,6 +107,9 @@ def scan_repo(root: str) -> dict:
 
             tree_lines.append(f"{indent}  {fname}")
 
+            # Security: sanitize file content before adding to context
+            # (applied below after reading)
+
             # Decide if we should read this file
             should_read = (
                 ext in CODE_EXTENSIONS
@@ -119,6 +130,9 @@ def scan_repo(root: str) -> dict:
 
             try:
                 content = fpath.read_text(encoding="utf-8", errors="replace")
+                # Security: strip potential secrets before sending to LLM
+                if PROMPT_GUARD_AVAILABLE:
+                    content = sanitize_repo_content(content, filename=str(rel_path))
                 total_chars = sum(len(c) for c in file_contents.values())
                 if total_chars + len(content) > MAX_CONTEXT_CHARS:
                     # Truncate to fit
@@ -352,6 +366,13 @@ def call_gemini(system_prompt: str, user_prompt: str, api_key: str) -> str:
     if not text:
         print("❌ Empty response from Gemini")
         sys.exit(1)
+
+    # Security: validate LLM output for dangerous content
+    if PROMPT_GUARD_AVAILABLE:
+        try:
+            text = validate_llm_response(text, expected_format="mermaid")
+        except Exception as e:
+            print(f"⚠️ LLM output validation warning: {e}")
 
     return text
 

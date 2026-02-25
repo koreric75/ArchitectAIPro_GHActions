@@ -31,6 +31,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Least privilege: only needs read since the reusable workflow handles writes
+permissions:
+  contents: read
+
 jobs:
   architecture:
     uses: koreric75/ArchitectAIPro_GHActions/.github/workflows/arch-sync.yml@main

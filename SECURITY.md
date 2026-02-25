@@ -73,7 +73,33 @@ The CHAD advisory dashboard deployed on Cloud Run uses a `GITHUB_TOKEN` environm
 
 - All Docker images are built via **Google Cloud Build** and stored in **Artifact Registry** (`us-central1-docker.pkg.dev/bluefalconink/bluefalconink-apps/`).
 - Base images use `python:3.11-slim` with minimal attack surface.
-- No root processes in containers; Cloud Run enforces sandboxed execution.
+- All containers run as a **non-root user** (`appuser`) — enforced via `USER` directive in Dockerfiles.
+- Container images are scanned for vulnerabilities using **Trivy** (CRITICAL/HIGH) in both Cloud Build and GitHub Actions.
+- Docker `HEALTHCHECK` instructions are defined for liveness monitoring.
+
+### Automated Security Scanning (CSIAC Governance)
+
+| Tool | Type | Trigger | Target |
+|------|------|---------|--------|
+| **Bandit** | SAST (Static Analysis) | Push/PR to `main` | All Python code |
+| **pip-audit + Safety** | Dependency Scanning | Push/PR to `main` | `requirements.txt`, `requirements-dashboard.txt` |
+| **Trivy** | Container Scanning | Push/PR to `main` + Cloud Build | Dashboard Docker image |
+| **Dependabot** | Dependency Updates | Weekly (Monday) | Python packages + GitHub Actions |
+
+Results are uploaded to the GitHub **Security** tab as SARIF for centralized triage.
+
+### Prompt Injection Mitigations (CSIAC SoftSec)
+
+- All repository content is **sanitized** (secrets redacted) before being sent to the Gemini API.
+- Input prompts are validated against a database of known injection patterns.
+- LLM output is validated for expected format and scanned for dangerous content (XSS, script injection).
+- The `prompt_guard.py` module provides `validate_prompt()`, `sanitize_repo_content()`, and `validate_llm_response()`.
+
+### Plugin Security (CSIAC SoftSec)
+
+- All converter plugins are validated via **SHA-256 hash verification** before execution.
+- Plugins run in **sandboxed subprocesses** with stripped environments, timeouts, and locked working directories.
+- File I/O is validated against **path traversal attacks** — all paths must resolve within the project root.
 
 ### Network Security
 

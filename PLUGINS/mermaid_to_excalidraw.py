@@ -13,6 +13,7 @@ import argparse
 import json
 import re
 import uuid
+from pathlib import Path
 from typing import List, Tuple
 
 
@@ -149,13 +150,36 @@ def generate_excalidraw(nodes: List[dict], edges: List[Tuple[str, str, str]]) ->
     }
 
 
+# ---------------------------------------------------------------------------
+# Security: path traversal protection & input size limits
+# ---------------------------------------------------------------------------
+MAX_INPUT_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _validate_path(p: str, label: str) -> Path:
+    """Ensure *p* resolves inside PROJECT_ROOT (no traversal)."""
+    resolved = Path(p).resolve()
+    try:
+        resolved.relative_to(PROJECT_ROOT)
+    except ValueError:
+        raise SystemExit(f"❌ {label} path '{p}' resolves outside the project root.")
+    return resolved
+
+
 def main():
     parser = argparse.ArgumentParser(description="Convert Mermaid.js to Excalidraw JSON")
     parser.add_argument("--input", required=True, help="Input Mermaid markdown file")
     parser.add_argument("--output", required=True, help="Output Excalidraw JSON file")
     args = parser.parse_args()
 
-    with open(args.input, "r") as f:
+    input_path = _validate_path(args.input, "Input")
+    output_path = _validate_path(args.output, "Output")
+
+    if input_path.stat().st_size > MAX_INPUT_SIZE_BYTES:
+        raise SystemExit(f"❌ Input file exceeds {MAX_INPUT_SIZE_BYTES // (1024*1024)} MB limit.")
+
+    with open(input_path, "r") as f:
         content = f.read()
 
     mermaid = extract_mermaid(content)
@@ -163,10 +187,10 @@ def main():
     edges = parse_edges(mermaid)
     excalidraw = generate_excalidraw(nodes, edges)
 
-    with open(args.output, "w") as f:
+    with open(output_path, "w") as f:
         json.dump(excalidraw, f, indent=2)
 
-    print(f"✅ Exported {len(nodes)} nodes and {len(edges)} edges to {args.output}")
+    print(f"✅ Exported {len(nodes)} nodes and {len(edges)} edges to {output_path}")
 
 
 if __name__ == "__main__":

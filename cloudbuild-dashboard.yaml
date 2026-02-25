@@ -1,5 +1,17 @@
+# ──────────────────────────────────────────────────────────────────────
+# Cloud Build — CHAD Dashboard
+# CSIAC Governance: Includes container vulnerability scanning
+# ──────────────────────────────────────────────────────────────────────
 steps:
+  # Build the image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-f', 'Dockerfile.dashboard', '-t', 'us-central1-docker.pkg.dev/bluefalconink/bluefalconink-apps/chad-dashboard:latest', '.']
+    args: ['build', '-f', 'Dockerfile.dashboard', '-t', 'us-central1-docker.pkg.dev/bluefalconink/bluefalconink-apps/chad-dashboard:latest', '-t', 'us-central1-docker.pkg.dev/bluefalconink/bluefalconink-apps/chad-dashboard:$SHORT_SHA', '.']
+
+  # CSIAC Governance: Scan for CRITICAL/HIGH vulnerabilities before push
+  - name: 'aquasec/trivy'
+    args: ['image', '--exit-code', '1', '--severity', 'CRITICAL,HIGH', '--no-progress', 'us-central1-docker.pkg.dev/bluefalconink/bluefalconink-apps/chad-dashboard:latest']
+    allowFailure: true  # Warn but don't block deployment during initial rollout
+
 images:
   - 'us-central1-docker.pkg.dev/bluefalconink/bluefalconink-apps/chad-dashboard:latest'
+  - 'us-central1-docker.pkg.dev/bluefalconink/bluefalconink-apps/chad-dashboard:$SHORT_SHA'

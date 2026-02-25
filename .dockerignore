@@ -1,0 +1,67 @@
+# ──────────────────────────────────────────
+# .dockerignore — BlueFalconInk LLC
+#
+# Reduce Docker build context and prevent
+# sensitive files from being copied into images.
+# CSIAC Domain: NetSec
+# ──────────────────────────────────────────
+
+# Version control
+.git/
+.gitignore
+
+# Documentation (not needed in runtime containers)
+docs/
+*.md
+LICENSE
+
+# Terraform state and config
+terraform/
+*.tfstate*
+*.tfplan
+.terraform/
+.terraform.lock.hcl
+
+# IDE and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Secrets and keys (belt and suspenders with .gitignore)
+*.pem
+*.key
+*.json.enc
+service-account*.json
+.env
+.env.*
+
+# Plugins (not needed in dashboard container)
+PLUGINS/
+
+# Prompt library (documentation only)
+PROMPT_LIBRARY/
+
+# Gallery service (separate Dockerfile)
+gallery/
+
+# Test and coverage
+coverage/
+.nyc_output/
+*.sarif

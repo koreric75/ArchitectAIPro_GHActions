@@ -1,0 +1,164 @@
+# ──────────────────────────────────────────────────────────────────────
+# 🔒 Security Scan Pipeline — BlueFalconInk LLC
+#
+# CSIAC Domain: Governance
+# Integrates SAST, dependency scanning, and container scanning into CI/CD.
+#
+# Tools:
+#   - Bandit (SAST for Python)
+#   - pip-audit + Safety (dependency vulnerability scanning)
+#   - Trivy (container image scanning)
+#   - Dependabot (see .github/dependabot.yml for automated PRs)
+# ──────────────────────────────────────────────────────────────────────
+
+name: "🔒 Security Scans"
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Least-privilege permissions — only what each job needs
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # ────────────────────────────────────────────
+  # Job 1: Static Application Security Testing
+  # ────────────────────────────────────────────
+  sast:
+    name: "🔍 SAST (Bandit)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+
+      - name: Set up Python
+        uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f  # v5.1.1
+        with:
+          python-version: "3.11"
+
+      - name: Install Bandit
+        run: pip install bandit[sarif]
+
+      - name: Run Bandit SAST scan
+        run: |
+          bandit -r . \
+            --exclude "./.git,./.github/workflows,./docs,./terraform" \
+            -ll \
+            -f sarif \
+            -o bandit_report.sarif || true
+          echo "::notice::Bandit scan complete — see Security tab for results"
+
+      - name: Upload Bandit SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: bandit_report.sarif
+          category: bandit-sast
+
+  # ────────────────────────────────────────────
+  # Job 2: Dependency Vulnerability Scanning
+  # ────────────────────────────────────────────
+  dependency-scan:
+    name: "📦 Dependency Scan"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+
+      - name: Set up Python
+        uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f  # v5.1.1
+        with:
+          python-version: "3.11"
+
+      - name: Install scanning tools
+        run: pip install pip-audit safety
+
+      - name: Scan gallery dependencies (pip-audit)
+        run: |
+          echo "=== pip-audit: gallery/requirements.txt ==="
+          pip-audit -r gallery/requirements.txt --format json --output pip_audit_gallery.json || true
+          cat pip_audit_gallery.json
+
+      - name: Scan dashboard dependencies (pip-audit)
+        run: |
+          echo "=== pip-audit: requirements-dashboard.txt ==="
+          if [ -f requirements-dashboard.txt ]; then
+            pip-audit -r requirements-dashboard.txt --format json --output pip_audit_dashboard.json || true
+            cat pip_audit_dashboard.json
+          else
+            echo "No requirements-dashboard.txt found — skipping"
+          fi
+
+      - name: Scan with Safety (cross-check)
+        run: |
+          echo "=== Safety: gallery/requirements.txt ==="
+          safety check -r gallery/requirements.txt --full-report || true
+          
+          if [ -f requirements-dashboard.txt ]; then
+            echo "=== Safety: requirements-dashboard.txt ==="
+            safety check -r requirements-dashboard.txt --full-report || true
+          fi
+
+      - name: Upload scan results
+        if: always()
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08  # v4.3.1
+        with:
+          name: dependency-scan-results
+          path: |
+            pip_audit_*.json
+          retention-days: 30
+
+  # ────────────────────────────────────────────
+  # Job 3: Container Image Scanning
+  # ────────────────────────────────────────────
+  container-scan:
+    name: "🐳 Container Scan (Trivy)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+
+      - name: Build Dashboard Image
+        run: |
+          docker build -f Dockerfile.dashboard -t chad-dashboard:scan .
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: "chad-dashboard:scan"
+          format: "sarif"
+          output: "trivy-results.sarif"
+          severity: "CRITICAL,HIGH"
+
+      - name: Upload Trivy SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-container
+
+  # ────────────────────────────────────────────
+  # Job 4: DAST Placeholder
+  # ────────────────────────────────────────────
+  dast-placeholder:
+    name: "🌐 DAST (Placeholder)"
+    runs-on: ubuntu-latest
+    if: false  # Disabled until staging environment is provisioned
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+
+      - name: Note
+        run: |
+          echo "DAST scanning with OWASP ZAP will be enabled when a staging"
+          echo "environment is provisioned. See SECURITY.md for the roadmap."
+          echo ""
+          echo "Planned configuration:"
+          echo "  - Deploy dashboard to Cloud Run preview revision"
+          echo "  - Run ZAP baseline scan against the preview URL"
+          echo "  - Upload findings as SARIF to GitHub Security"

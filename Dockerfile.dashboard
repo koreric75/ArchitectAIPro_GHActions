@@ -2,12 +2,19 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install dependencies
+# CSIAC NetSec: Create non-root user and group
+RUN groupadd --system appgroup && \
+    useradd --system --gid appgroup --no-create-home appuser
+
+# Install pinned dependencies (CSIAC Governance: reproducible builds)
+COPY requirements-dashboard.txt /app/requirements-dashboard.txt
+RUN pip install --no-cache-dir -r requirements-dashboard.txt
+
+# Copy application scripts
 COPY .github/scripts/repo_auditor.py /app/repo_auditor.py
 COPY .github/scripts/dashboard_generator.py /app/dashboard_generator.py
 COPY .github/scripts/token_budget.py /app/token_budget.py
-
-RUN pip install --no-cache-dir requests flask gunicorn
+COPY .github/scripts/security_logger.py /app/security_logger.py
 
 # Copy the pre-built dashboard and audit data
 COPY docs/dashboard.html /app/static/dashboard.html
@@ -16,6 +23,13 @@ COPY docs/audit_report.json /app/static/audit_report.json
 # Server script
 COPY dashboard-server.py /app/server.py
 
+# CSIAC NetSec: Switch to non-root user
+USER appuser
+
 EXPOSE 8080
+
+# CSIAC NetSec: Container health check
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')" || exit 1
 
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "2", "--timeout", "120", "server:app"]
