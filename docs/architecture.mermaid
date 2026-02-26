@@ -2,101 +2,87 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
+    style BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture fill:#1E3A5F,color:#BFDBFE
 
-        subgraph "User Interaction"
-            User[End User / Developer]
+        User[End User]
+
+        subgraph "Security"
+        style Security fill:#1E40AF,color:#BFDBFE
+            CloudArmor[Cloud Armor]
+            GCLB[Cloud Load Balancer]
+            WIF[Workload Identity Federation]
+            SecretManager[GCP Secret Manager]
         end
 
-        subgraph "GitHub Platform"
+        subgraph "Frontend Applications (Cloud Run)"
+            ArchGallery[Architecture Gallery - FastAPI]
+            CHADDashboard[CHAD Dashboard - Flask]
+        end
+
+        subgraph "Backend & Automation"
+            GHActions[GitHub Actions Workflows]
+            ArchitectAIPro[Architect AI Pro Scripts]
+            CHADAgents[CHAD Agents]
+            Terraform[Terraform IaC]
+            CloudBuild[Cloud Build]
+        end
+
+        subgraph "Data & Storage"
+        style Data & Storage fill:#0F172A,color:#BFDBFE
             GitHubRepos[GitHub Repositories]
+            ArtifactRegistry[Artifact Registry]
+        end
+
+        subgraph "External Services"
+            GeminiAPI[Google Gemini API]
             GitHubAPI[GitHub API]
-            GitHubActions[GitHub Actions Workflows]
+            DrawIO[Draw.io CLI - headless]
         end
 
-        subgraph "BlueFalconInk LLC Platform (GCP)"
-            style BlueFalconInk LLC Platform (GCP) fill:#1E3A5F,color:#BFDBFE
+        User -->|HTTPS Requests| GCLB
+        GCLB -->|Traffic Filtering| CloudArmor
+        CloudArmor -->|Routes to Services| ArchGallery
+        CloudArmor -->|Routes to Services| CHADDashboard
 
-            subgraph "Security"
-                CloudArmor[Cloud Armor · Load Balancer]
-                WIF[Workload Identity Federation]
-                SecretManager[Secret Manager]
-            end
-            style Security fill:#1E40AF,color:#BFDBFE
+        ArchGallery -->|Fetches Repo Data| GitHubAPI
+        ArchGallery -->|Renders Diagrams| User
 
-            subgraph "Frontend Services"
-                CHADDashboard[CHAD Advisory Dashboard - Cloud Run]
-                ArchGallery[Architecture Gallery - Cloud Run]
-            end
+        CHADDashboard -->|Triggers Audit/Refresh| CHADAgents
+        CHADDashboard -->|Serves Dashboard HTML/JSON| User
+        CHADDashboard -->|Accesses GitHub Token| SecretManager
 
-            subgraph "Backend Services"
-                ArchitectAIPro[Architect AI Pro Engine - Cloud Run]
-            end
+        GHActions -->|Invokes Scripts| ArchitectAIPro
+        GHActions -->|Invokes Scripts| CHADAgents
+        GHActions -->|Deploys Infrastructure| Terraform
+        GHActions -->|Builds & Scans Images| CloudBuild
+        GHActions -->|Authenticates via| WIF
 
-            subgraph "Automation & CI/CD"
-                CloudBuild[Cloud Build]
-                PythonScripts[Python Automation Scripts]
-                Terraform[Terraform IaC]
-            end
+        ArchitectAIPro -->|Generates Diagrams| GeminiAPI
+        ArchitectAIPro -->|Audits Diagrams| GitHubRepos
+        ArchitectAIPro -->|Converts Formats| DrawIO
+        ArchitectAIPro -->|Commits Diagrams| GitHubAPI
+        ArchitectAIPro -->|Accesses Gemini Key| SecretManager
 
-            subgraph "Data & Storage"
-                style Data & Storage fill:#0F172A,color:#BFDBFE
-                ArtifactRegistry[Artifact Registry]
-                ARCHITECT_CONFIG[ARCHITECT_CONFIG.json]
-                PROMPT_LIBRARY[Prompt Library]
-            end
-        end
+        CHADAgents -->|Audits Repos| GitHubAPI
+        CHADAgents -->|Updates Dashboard Data| GitHubRepos
+        CHADAgents -->|Accesses GitHub Token| SecretManager
 
-        subgraph "External AI/ML Services"
-            GoogleGemini[Google Gemini API]
-        end
+        Terraform -->|Deploys Resources| ArtifactRegistry
+        Terraform -->|Deploys Resources| ArchGallery
+        Terraform -->|Deploys Resources| CHADDashboard
+        Terraform -->|Manages Auth| WIF
+        Terraform -->|Manages Secrets| SecretManager
 
-        subgraph "External Tools"
-            DrawIO[Draw.io Desktop - headless]
-        end
+        CloudBuild -->|Pushes Images| ArtifactRegistry
 
-        %% Data Flows
-        User -->|Code Push / PR| GitHubRepos
-        User -->|Manual Workflow Trigger| GitHubActions
-        User -->|Access Dashboard & Gallery HTTPS| CloudArmor
-        CloudArmor -->|Routes Traffic| CHADDashboard
-        CloudArmor -->|Routes Traffic| ArchGallery
+        WIF -->|Provides GCP Credentials| GHActions
+        SecretManager -->|Provides API Keys| GHActions
+        SecretManager -->|Provides API Keys| CHADDashboard
 
-        GitHubRepos -->|Triggers Workflow| GitHubActions
-        GitHubActions -->|API Calls| GitHubAPI
-        GitHubAPI -->|Fetch Repo Data| GitHubRepos
-        GitHubActions -->|Commit Generated Files| GitHubRepos
-
-        GitHubActions -->|Auth for GCP Resources| WIF
-        WIF -->|GCP Credentials| SecretManager
-        GitHubActions -->|Build & Deploy Images| CloudBuild
-        CloudBuild -->|Push Images| ArtifactRegistry
-        ArtifactRegistry -->|Deploy Container| CHADDashboard
-        ArtifactRegistry -->|Deploy Container| ArchGallery
-        ArtifactRegistry -->|Deploy Container| ArchitectAIPro
-
-        GitHubActions -->|Execute Scripts| PythonScripts
-        PythonScripts -->|Read Config| ARCHITECT_CONFIG
-        PythonScripts -->|Read Prompts| PROMPT_LIBRARY
-        PythonScripts -->|Generate Diagram Request| GoogleGemini
-        GoogleGemini -->|AI Generated Mermaid.js| PythonScripts
-        PythonScripts -->|Convert Diagram| DrawIO
-        DrawIO -->|Draw.io XML / PNG| PythonScripts
-        PythonScripts -->|Audit Diagram| ARCHITECT_CONFIG
-        PythonScripts -->|Generates Audit Report & Dashboard HTML| CHADDashboard
-
-        CHADDashboard -->|API Refresh Trigger| PythonScripts
-        CHADDashboard -->|Serve Dashboard HTML & Audit Report| User
-        ArchGallery -->|Fetch Diagrams GitHub API| GitHubAPI
-        ArchGallery -->|Render Diagrams| User
-
-        Terraform -->|Configures GCP Resources| CloudBuild
-        Terraform -->|Configures GCP Resources| ArtifactRegistry
-        Terraform -->|Configures GCP Resources| SecretManager
-        Terraform -->|Configures GCP Resources| WIF
-        Terraform -->|Configures GCP Resources| CloudArmor
-        Terraform -->|Configures Cloud Run Services| CHADDashboard
-        Terraform -->|Configures Cloud Run Services| ArchGallery
-        Terraform -->|Configures Cloud Run Services| ArchitectAIPro
+        GitHubAPI -->|Provides Repo Metadata/Content| GitHubRepos
+        GitHubRepos -->|Stores Source Code & Docs| GHActions
+        GitHubRepos -->|Stores Source Code & Docs| ArchGallery
+        GitHubRepos -->|Stores Audit Reports| CHADDashboard
 
     end
 
