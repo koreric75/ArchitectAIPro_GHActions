@@ -1,7 +1,7 @@
 # 🏗️ BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture
 
 > **Created with [Architect AI Pro](https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/)** — the flagship architecture tool by **BlueFalconInk LLC**
-> Auto-generated on 2026-02-26 23:40 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
+> Auto-generated on 2026-02-26 23:45 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
 
 ![BlueFalconInk LLC](https://img.shields.io/badge/BlueFalconInk%20LLC-Standard-1E40AF)
 ![Architect AI Pro](https://img.shields.io/badge/Created%20with-Architect%20AI%20Pro-3B82F6)
@@ -19,86 +19,108 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        subgraph "External Systems"
+        subgraph "External Users"
             User[End User]
-            GitHubRepos[GitHub Repositories]
+        end
+
+        subgraph "GitHub Platform"
+            GH_Repo[GitHub Repository]
+            GH_Actions[GitHub Actions Workflows]
+            GH_API[GitHub API]
+            GH_Secrets[GitHub Actions Secrets]
+            Dependabot[Dependabot]
+            GH_Security[GitHub Security Tab]
+        end
+
+        subgraph "GCP Infrastructure"
+            style GCPInfrastructure fill:#1E3A5F,color:#BFDBFE
+
+            subgraph "Security"
+                style Security fill:#1E40AF,color:#BFDBFE
+                CloudLB[Cloud Load Balancer]
+                CloudArmor[Cloud Armor]
+                WIF[Workload Identity Federation]
+                SecretManager[Secret Manager]
+            end
+
+            subgraph "Frontend"
+                ArchGallery[Cloud Run: Architecture Gallery]
+                CHADDashboard[Cloud Run: CHAD Dashboard]
+            end
+
+            subgraph "Backend Services"
+                ArchitectAIScripts[Architect AI Pro Scripts · Python]
+            end
+
+            subgraph "Automation & CI/CD"
+                CloudBuild[Cloud Build]
+                Terraform[Terraform IaC]
+                ArtifactRegistry[Artifact Registry]
+            end
+
+            subgraph "Data"
+                style Data fill:#0F172A,color:#BFDBFE
+                CloudStorage[Cloud Storage · Artifacts]
+            end
+        end
+
+        subgraph "External AI & Tools"
             GoogleGemini[Google Gemini API]
-            GitHubSecurity[GitHub Security Tab]
-            DrawioCLI[Draw.io CLI - headless]
+            DrawIO_CLI[Draw.io CLI · Headless]
+            SAST_Tools[SAST/Dependency Scanners]
         end
 
-        subgraph "Security"
-            CloudArmor[Cloud Armor]
-            LoadBalancer[Cloud Load Balancer]
-            WIF[Workload Identity Federation]
-            GCPSecretManager[GCP Secret Manager]
-            GCPServiceAccounts[GCP Service Accounts]
-            GitHubSecrets[GitHub Actions Secrets]
-        end
-        style Security fill:#1E40AF,color:#BFDBFE
+        %% Data Flows
+        User -->|HTTPS Request| CloudLB
+        CloudLB -->|Routes Traffic| CloudArmor
+        CloudArmor -->|Protected Access| ArchGallery
+        CloudArmor -->|Protected Access| CHADDashboard
 
-        subgraph "Application Services"
-            style Application Services fill:#1E3A5F
-            CHADDashboard[CHAD Dashboard - Flask/Cloud Run]
-            ArchGallery[Architecture Gallery - FastAPI/Cloud Run]
-            ArchitectAIPro[Architect AI Pro - Cloud Run]
-        end
+        GH_Repo -->|Push/PR Trigger| GH_Actions
+        GH_Actions -->|Executes Scripts| ArchitectAIScripts
+        ArchitectAIScripts -->|API Request| GoogleGemini
+        GoogleGemini -->|Mermaid.js Output| ArchitectAIScripts
+        ArchitectAIScripts -->|Render Diagram| DrawIO_CLI
+        DrawIO_CLI -->|PNG/Draw.io Output| ArchitectAIScripts
+        ArchitectAIScripts -->|Audit Diagram| ArchitectAIScripts
+        ArchitectAIScripts -->|Commit Diagrams| GH_API
+        GH_API -->|Updates| GH_Repo
 
-        subgraph "Automation & CI/CD"
-            GitHubActions[GitHub Actions Runner]
-            GenerateDiagramScript[.github/scripts/generate_diagram.py]
-            ForemanAuditScript[.github/scripts/foreman_audit.py]
-            RepoAuditorScript[.github/scripts/repo_auditor.py]
-            DashboardGeneratorScript[.github/scripts/dashboard_generator.py]
-            CleanupAgentScript[.github/scripts/cleanup_agent.py]
-            TerraformCLI[Terraform CLI]
-            SecurityScanners[Bandit, Pip-audit, Trivy]
-            ArtifactRegistry[Artifact Registry]
-            ArchitectConfig[ARCHITECT_CONFIG.json]
-        end
+        GH_Actions -->|Accesses Secrets| GH_Secrets
+        GH_Actions -->|Authenticates via| WIF
+        WIF -->|Grants GCP Access| GCPInfrastructure
 
-        subgraph "Data"
-            style Data fill:#0F172A
-            GeneratedDiagrams[Generated Diagrams - Mermaid, Draw.io, PNG]
-            AuditReports[Audit Reports - JSON, HTML]
-        end
+        CHADDashboard -->|On-demand Refresh Subprocess| ArchitectAIScripts
+        ArchitectAIScripts -->|Audit Repos| GH_API
+        GH_API -->|Repo Data| ArchitectAIScripts
+        ArchitectAIScripts -->|Generates Dashboard HTML/JSON| CHADDashboard
+        CHADDashboard -->|Fetches GITHUB_PAT| SecretManager
 
-        %% Data Flows and Interactions
+        ArchGallery -->|Fetches Diagram Content| GH_API
+        GH_API -->|Diagrams/Configs| ArchGallery
 
-        User -->|Accesses via HTTPS| LoadBalancer
-        LoadBalancer -->|Routes Traffic| CloudArmor
-        CloudArmor -->|Allowed Requests| CHADDashboard
-        CloudArmor -->|Allowed Requests| ArchGallery
-        CloudArmor -->|Allowed Requests| ArchitectAIPro
+        GH_Repo -->|Terraform Config Push| GH_Actions
+        GH_Actions -->|Applies IaC| Terraform
+        Terraform -->|Manages Resources| ArchGallery
+        Terraform -->|Manages Resources| CHADDashboard
+        Terraform -->|Manages Resources| SecretManager
+        Terraform -->|Manages Resources| ArtifactRegistry
 
-        %% CHAD Dashboard Flow
-        CHADDashboard -->|Triggers Audit subprocess| RepoAuditorScript
-        CHADDashboard -->|Generates Dashboard subprocess| DashboardGeneratorScript
-        CHADDashboard -->|Reads GITHUB_TOKEN| GitHubSecrets
-        RepoAuditorScript -->|Scans Repos via REST API| GitHubRepos
-        DashboardGeneratorScript -->|Outputs HTML/JSON| AuditReports
-        CHADDashboard -->|Serves Static Files| AuditReports
+        GH_Repo -->|Code Changes Trigger| CloudBuild
+        CloudBuild -->|Builds Docker Images| ArtifactRegistry
+        CloudBuild -->|Scans Images| SAST_Tools
+        SAST_Tools -->|Vulnerability Reports| GH_Security
 
-        %% Architecture Gallery Flow
-        ArchGallery -->|Fetches Repo Content via REST API| GitHubRepos
-        ArchGallery -->|Reads GITHUB_TOKEN| GitHubSecrets
+        GH_Repo -->|Security Scan Trigger| GH_Actions
+        GH_Actions -->|Runs Scanners| SAST_Tools
+        SAST_Tools -->|SARIF Reports| GH_Security
 
-        %% Architecture Generation Pipeline (GitHub Actions)
-        GitHubRepos -->|Push/PR Event| GitHubActions
-        GitHubActions -->|Auth via WIF| WIF
-        WIF -->|GCP Credentials| GCPServiceAccounts
-        GCPServiceAccounts -->|Access Secret Manager| GCPSecretManager
-        GCPSecretManager -->|Provides GEMINI_API_KEY| GenerateDiagramScript
-        GitHubActions -->|Runs| GenerateDiagramScript
-        GenerateDiagramScript -->|Reads Building Code| ArchitectConfig
-        GenerateDiagramScript -->|AI Diagram Request| GoogleGemini
-        GoogleGemini -->|Mermaid.js Output| GenerateDiagramScript
-        GenerateDiagramScript -->|Converts & Renders| DrawioCLI
-        GenerateDiagramScript -->|Outputs Diagrams| GeneratedDiagrams
-        GitHubActions -->|Runs| ForemanAuditScript
-        ForemanAuditScript -->|Audits Diagram Content| GeneratedDiagrams
-        ForemanAuditScript -->|Reads Building Code| ArchitectConfig
-        ForemanAuditScript
+        Dependabot -->|Creates PRs| GH_Repo
+
+        ArchitectAIScripts -->|Stores Artifacts| CloudStorage
+
+    end
+
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
