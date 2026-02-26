@@ -16,7 +16,7 @@ COPY .github/scripts/dashboard_generator.py /app/dashboard_generator.py
 COPY .github/scripts/token_budget.py /app/token_budget.py
 COPY .github/scripts/security_logger.py /app/security_logger.py
 
-# Create empty static dir — audit data is generated at runtime via /api/refresh
+# Create empty static dir -- audit data is generated at runtime via /api/refresh
 # (audit_report.json and dashboard.html are NOT committed to the public repo)
 RUN mkdir -p /app/static && \
     echo '{"summary":{"total_repos":0},"repos":[]}' > /app/static/audit_report.json && \
@@ -24,6 +24,9 @@ RUN mkdir -p /app/static && \
 
 # Server script
 COPY dashboard-server.py /app/server.py
+
+# CSIAC NetSec: Grant appuser write access to static dir for runtime data
+RUN chown -R appuser:appgroup /app/static
 
 # CSIAC NetSec: Switch to non-root user
 USER appuser
