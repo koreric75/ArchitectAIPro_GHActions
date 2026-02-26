@@ -45,6 +45,7 @@ permissions:
 
 env:
   GITHUB_OWNER: "koreric75"
+  EXTRA_ORGS: "bluefalconink"
   PYTHON_VERSION: "3.11"
 
 jobs:
@@ -78,6 +79,7 @@ jobs:
         run: |
           python .github/scripts/repo_auditor.py \
             --owner "${{ env.GITHUB_OWNER }}" \
+            --extra-orgs "${{ env.EXTRA_ORGS }}" \
             --output docs/audit_report.json
           
           # Extract summary for job output

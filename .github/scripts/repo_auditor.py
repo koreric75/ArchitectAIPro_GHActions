@@ -2,12 +2,13 @@
 """
 BlueFalconInk LLC — CHAD Repo Auditor Agent
 
-Scans all repos under a GitHub org/user and produces a structured audit report.
-Evaluates: branding compliance, staleness, architecture status, secrets health,
-disk usage, branch hygiene, and generates archive/delete recommendations.
+Scans all repos under a GitHub org/user (and optional extra orgs) and produces
+a structured audit report. Evaluates: branding compliance, staleness,
+architecture status, secrets health, disk usage, branch hygiene, and generates
+archive/delete recommendations.
 
 Usage:
-    python repo_auditor.py --owner koreric75 --output docs/audit_report.json
+    python repo_auditor.py --owner koreric75 --extra-orgs bluefalconink --output docs/audit_report.json
 
 Environment:
     GITHUB_TOKEN  — GitHub personal access token or GH Actions token
@@ -40,7 +41,7 @@ ORG_NAME = "BlueFalconInk LLC"
 CORE_REPOS = {
     "ArchitectAIPro", "ArchitectAIPro_GHActions", "clipstream",
     "ProposalBuddyAI", "polymath-hub", "BlueFalconInkLanding",
-    "videogamedev", "Afterword",
+    "videogamedev", "Afterword", "BlueFalconInk",
 }
 
 # Branding strings to check for
@@ -305,17 +306,16 @@ def classify_repo(repo: dict, staleness: dict) -> dict:
 # Main Auditor
 # ---------------------------------------------------------------------------
 
-def run_audit(owner: str, token: str) -> dict:
-    """Run full audit across all repos."""
-    print(f"🔍 CHAD Repo Auditor — scanning {owner}...")
+def run_audit(owner: str, token: str, extra_orgs: list = None) -> dict:
+    """Run full audit across all repos (primary owner + extra orgs)."""
+    owners_scanned = [owner] + (extra_orgs or [])
+    print(f"🔍 CHAD Repo Auditor — scanning {', '.join(owners_scanned)}...")
     print(f"   Budget: {MAX_API_CALLS} API calls max")
 
-    # Fetch all repos from BOTH endpoints and merge (dedup by name).
-    # /user/repos?affiliation=owner gets private repos but may miss forks.
-    # /users/{owner}/repos gets all public repos including forks.
-    seen = {}
+    # Fetch all repos from multiple endpoints and merge (dedup by owner/name).
+    seen = {}  # key: "owner/name" to handle cross-org repos
 
-    # 1) Authenticated endpoint — private + owned repos
+    # 1) Authenticated endpoint — private + owned repos for primary owner
     page = 1
     while True:
         url = f"{GITHUB_API}/user/repos"
@@ -324,13 +324,15 @@ def run_audit(owner: str, token: str) -> dict:
         if not batch:
             break
         for r in batch:
-            if r.get("owner", {}).get("login", "").lower() == owner.lower():
-                seen[r["name"]] = r
+            repo_login = r.get("owner", {}).get("login", "")
+            if repo_login.lower() == owner.lower():
+                key = f"{repo_login}/{r['name']}"
+                seen[key] = r
         if len(batch) < 100:
             break
         page += 1
 
-    # 2) Public endpoint — catches forks and any repos the PAT can't see via /user
+    # 2) Public endpoint for primary owner — catches forks and public repos
     page = 1
     while True:
         url = f"{GITHUB_API}/users/{owner}/repos"
@@ -339,19 +341,41 @@ def run_audit(owner: str, token: str) -> dict:
         if not batch:
             break
         for r in batch:
-            if r["name"] not in seen:
-                seen[r["name"]] = r
+            repo_login = r.get("owner", {}).get("login", owner)
+            key = f"{repo_login}/{r['name']}"
+            if key not in seen:
+                seen[key] = r
         if len(batch) < 100:
             break
         page += 1
 
+    # 3) Extra orgs — scan via /orgs/{org}/repos endpoint
+    for org in (extra_orgs or []):
+        print(f"\n🏢 Scanning org: {org}")
+        page = 1
+        while True:
+            url = f"{GITHUB_API}/orgs/{org}/repos"
+            params = {"per_page": 100, "page": page, "type": "all"}
+            batch = api_get(url, token, params)
+            if not batch:
+                break
+            for r in batch:
+                repo_login = r.get("owner", {}).get("login", org)
+                key = f"{repo_login}/{r['name']}"
+                if key not in seen:
+                    seen[key] = r
+            if len(batch) < 100:
+                break
+            page += 1
+
     repos = list(seen.values())
 
-    print(f"   Found {len(repos)} repos")
+    print(f"   Found {len(repos)} repos across {', '.join(owners_scanned)}")
 
     audit_results = []
     summary = {
         "total_repos": len(repos),
+        "owners_scanned": owners_scanned,
         "core": 0, "active": 0, "stale": 0, "dead": 0,
         "forks": 0, "archived": 0,
         "delete_candidates": [],
@@ -363,9 +387,10 @@ def run_audit(owner: str, token: str) -> dict:
 
     for repo in repos:
         name = repo["name"]
+        repo_owner = repo.get("owner", {}).get("login", owner)
         default_branch = repo.get("default_branch", "main")
         pushed_at = repo.get("pushed_at", "2000-01-01T00:00:00Z")
-        print(f"\n📦 Auditing: {name}")
+        print(f"\n📦 Auditing: {repo_owner}/{name}")
 
         # Staleness
         staleness = audit_staleness(pushed_at)
@@ -382,21 +407,23 @@ def run_audit(owner: str, token: str) -> dict:
         workflows = {"health": "UNKNOWN", "recent_runs": []}
 
         if classification["tier"] in ("CORE", "ACTIVE", "DORMANT"):
-            branding = audit_branding(owner, name, token, default_branch)
+            branding = audit_branding(repo_owner, name, token, default_branch)
             if branding["issues"]:
                 print(f"   ⚠️  Branding issues: {len(branding['issues'])}")
 
-            architecture = audit_architecture(owner, name, token, default_branch)
-            secrets = audit_secrets(owner, name, token)
-            workflows = audit_workflows(owner, name, token)
+            architecture = audit_architecture(repo_owner, name, token, default_branch)
+            secrets = audit_secrets(repo_owner, name, token)
+            workflows = audit_workflows(repo_owner, name, token)
             print(f"   🏗️  Architecture: {'✅' if architecture['fully_configured'] else '❌'}")
             print(f"   🔑 GEMINI_API_KEY: {'✅' if secrets['has_gemini_key'] else '❌'}")
             print(f"   🔄 Workflows: {workflows.get('health', 'N/A')}")
 
         result = {
             "name": name,
+            "owner": repo_owner,
+            "full_name": f"{repo_owner}/{name}",
             "description": repo.get("description", "") or "",
-            "url": repo.get("html_url", f"https://github.com/{owner}/{name}"),
+            "url": repo.get("html_url", f"https://github.com/{repo_owner}/{name}"),
             "is_private": repo.get("private", False),
             "is_fork": repo.get("fork", False),
             "is_archived": repo.get("archived", False),
@@ -430,13 +457,13 @@ def run_audit(owner: str, token: str) -> dict:
             summary["archived"] += 1
 
         if classification["action"] == "DELETE":
-            summary["delete_candidates"].append(name)
+            summary["delete_candidates"].append(f"{repo_owner}/{name}")
         elif classification["action"] in ("ARCHIVE", "ARCHIVE_OR_DELETE"):
-            summary["archive_candidates"].append(name)
+            summary["archive_candidates"].append(f"{repo_owner}/{name}")
 
         if branding["issues"]:
             summary["branding_issues"].append({
-                "repo": name,
+                "repo": f"{repo_owner}/{name}",
                 "count": len(branding["issues"]),
                 "details": branding["issues"],
             })
@@ -447,6 +474,7 @@ def run_audit(owner: str, token: str) -> dict:
     report = {
         "audit_timestamp": datetime.now(timezone.utc).isoformat(),
         "owner": owner,
+        "owners": owners_scanned,
         "org_name": ORG_NAME,
         "api_calls_used": api_call_count,
         "summary": summary,
@@ -458,7 +486,7 @@ def run_audit(owner: str, token: str) -> dict:
     }
 
     print(f"\n{'='*60}")
-    print(f"📊 CHAD Audit Complete")
+    print(f"📊 CHAD Audit Complete — {', '.join(owners_scanned)}")
     print(f"   Repos: {summary['total_repos']}")
     print(f"   Core: {summary['core']} | Active: {summary['active']} | Stale: {summary['stale']} | Dead: {summary['dead']}")
     print(f"   Forks: {summary['forks']} | Archived: {summary['archived']}")
@@ -475,6 +503,7 @@ def run_audit(owner: str, token: str) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="CHAD Repo Auditor")
     parser.add_argument("--owner", required=True, help="GitHub username or org")
+    parser.add_argument("--extra-orgs", default="", help="Comma-separated list of additional GitHub orgs to scan")
     parser.add_argument("--output", default="docs/audit_report.json", help="Output JSON path")
     args = parser.parse_args()
 
@@ -483,7 +512,8 @@ def main():
         print("❌ GITHUB_TOKEN not set")
         sys.exit(1)
 
-    report = run_audit(args.owner, token)
+    extra_orgs = [o.strip() for o in args.extra_orgs.split(",") if o.strip()] if args.extra_orgs else []
+    report = run_audit(args.owner, token, extra_orgs=extra_orgs)
 
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
