@@ -1,5 +1,4 @@
-"""
-CHAD Dashboard — Hardened Flask server for Cloud Run.
+"""CHAD Dashboard — Hardened Flask server for Cloud Run.
 
 Serves the static dashboard and provides an API endpoint to re-run
 the audit and regenerate the dashboard on-demand.
@@ -70,6 +69,9 @@ STATIC_DIR = Path(__file__).parent / "static"
 
 # CSIAC IAM: Input validation regex for GitHub usernames
 _VALID_OWNER_RE = re.compile(r"^[a-zA-Z0-9]([a-zA-Z0-9_-]{0,37}[a-zA-Z0-9])?$")
+
+# Extra orgs to scan (comma-separated)
+EXTRA_ORGS = os.environ.get("EXTRA_ORGS", "bluefalconink")
 
 
 # ---------------------------------------------------------------------------
@@ -164,7 +166,7 @@ def refresh():
 
     log_security_event(
         logger, "audit_trigger",
-        f"Audit refresh triggered for owner={owner}",
+        f"Audit refresh triggered for owner={owner} extra_orgs={EXTRA_ORGS}",
         source_ip=get_client_ip(request),
         request_id=g.get("request_id", ""),
     )
@@ -175,11 +177,18 @@ def refresh():
         env["GITHUB_TOKEN"] = token
         env["GH_TOKEN"] = token
 
+        # Build auditor command with extra orgs support
+        cmd = [
+            sys.executable, "repo_auditor.py",
+            "--owner", owner,
+            "--output", str(STATIC_DIR / "audit_report.json"),
+        ]
+        if EXTRA_ORGS:
+            cmd.extend(["--extra-orgs", EXTRA_ORGS])
+
         # Run auditor
         result = subprocess.run(
-            [sys.executable, "repo_auditor.py",
-             "--owner", owner,
-             "--output", str(STATIC_DIR / "audit_report.json")],
+            cmd,
             capture_output=True, text=True, timeout=120, env=env,
             cwd=Path(__file__).parent,
         )
