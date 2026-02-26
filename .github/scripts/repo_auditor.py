@@ -61,12 +61,17 @@ MAX_API_CALLS = 300
 api_call_count = 0
 
 
+def _check(val):
+    """Return a check/cross icon for boolean values."""
+    return "\u2705" if val else "\u274c"
+
+
 def api_get(url: str, token: str, params: dict = None) -> Optional[dict]:
     """Make an authenticated GitHub API GET request with budget tracking."""
     global api_call_count
     api_call_count += 1
     if api_call_count > MAX_API_CALLS:
-        print(f"⚠️  API budget exhausted ({MAX_API_CALLS} calls). Stopping.")
+        print(f"\u26a0\ufe0f  API budget exhausted ({MAX_API_CALLS} calls). Stopping.")
         return None
 
     headers = {
@@ -80,10 +85,10 @@ def api_get(url: str, token: str, params: dict = None) -> Optional[dict]:
         elif resp.status_code == 404:
             return None
         else:
-            print(f"  ⚠️  API {resp.status_code} for {url}")
+            print(f"  \u26a0\ufe0f  API {resp.status_code} for {url}")
             return None
     except Exception as e:
-        print(f"  ⚠️  API error: {e}")
+        print(f"  \u26a0\ufe0f  API error: {e}")
         return None
 
 
@@ -309,13 +314,13 @@ def classify_repo(repo: dict, staleness: dict) -> dict:
 def run_audit(owner: str, token: str, extra_orgs: list = None) -> dict:
     """Run full audit across all repos (primary owner + extra orgs)."""
     owners_scanned = [owner] + (extra_orgs or [])
-    print(f"🔍 CHAD Repo Auditor — scanning {', '.join(owners_scanned)}...")
+    print(f"\ud83d\udd0d CHAD Repo Auditor \u2014 scanning {', '.join(owners_scanned)}...")
     print(f"   Budget: {MAX_API_CALLS} API calls max")
 
     # Fetch all repos from multiple endpoints and merge (dedup by owner/name).
     seen = {}  # key: "owner/name" to handle cross-org repos
 
-    # 1) Authenticated endpoint — private + owned repos for primary owner
+    # 1) Authenticated endpoint \u2014 private + owned repos for primary owner
     page = 1
     while True:
         url = f"{GITHUB_API}/user/repos"
@@ -332,7 +337,7 @@ def run_audit(owner: str, token: str, extra_orgs: list = None) -> dict:
             break
         page += 1
 
-    # 2) Public endpoint for primary owner — catches forks and public repos
+    # 2) Public endpoint for primary owner \u2014 catches forks and public repos
     page = 1
     while True:
         url = f"{GITHUB_API}/users/{owner}/repos"
@@ -349,9 +354,9 @@ def run_audit(owner: str, token: str, extra_orgs: list = None) -> dict:
             break
         page += 1
 
-    # 3) Extra orgs — scan via /orgs/{org}/repos endpoint
+    # 3) Extra orgs \u2014 scan via /orgs/{org}/repos endpoint
     for org in (extra_orgs or []):
-        print(f"\n🏢 Scanning org: {org}")
+        print(f"\n\ud83c\udfe2 Scanning org: {org}")
         page = 1
         while True:
             url = f"{GITHUB_API}/orgs/{org}/repos"
@@ -390,15 +395,15 @@ def run_audit(owner: str, token: str, extra_orgs: list = None) -> dict:
         repo_owner = repo.get("owner", {}).get("login", owner)
         default_branch = repo.get("default_branch", "main")
         pushed_at = repo.get("pushed_at", "2000-01-01T00:00:00Z")
-        print(f"\n📦 Auditing: {repo_owner}/{name}")
+        print(f"\n\ud83d\udce6 Auditing: {repo_owner}/{name}")
 
         # Staleness
         staleness = audit_staleness(pushed_at)
-        print(f"   📅 {staleness['status']} ({staleness['days_since_push']}d)")
+        print(f"   \ud83d\udcc5 {staleness['status']} ({staleness['days_since_push']}d)")
 
         # Classification
         classification = classify_repo(repo, staleness)
-        print(f"   🏷️  {classification['tier']} → {classification['action']}")
+        print(f"   \ud83c\udff7\ufe0f  {classification['tier']} \u2192 {classification['action']}")
 
         # Deep audit for active/core repos only (budget conservation)
         branding = {"compliant": True, "issues": [], "files_checked": 0}
@@ -409,14 +414,16 @@ def run_audit(owner: str, token: str, extra_orgs: list = None) -> dict:
         if classification["tier"] in ("CORE", "ACTIVE", "DORMANT"):
             branding = audit_branding(repo_owner, name, token, default_branch)
             if branding["issues"]:
-                print(f"   ⚠️  Branding issues: {len(branding['issues'])}")
+                print(f"   \u26a0\ufe0f  Branding issues: {len(branding['issues'])}")
 
             architecture = audit_architecture(repo_owner, name, token, default_branch)
             secrets = audit_secrets(repo_owner, name, token)
             workflows = audit_workflows(repo_owner, name, token)
-            print(f"   🏗️  Architecture: {'✅' if architecture['fully_configured'] else '❌'}")
-            print(f"   🔑 GEMINI_API_KEY: {'✅' if secrets['has_gemini_key'] else '❌'}")
-            print(f"   🔄 Workflows: {workflows.get('health', 'N/A')}")
+            arch_icon = _check(architecture["fully_configured"])
+            key_icon = _check(secrets["has_gemini_key"])
+            print(f"   \ud83c\udfd7\ufe0f  Architecture: {arch_icon}")
+            print(f"   \ud83d\udd11 GEMINI_API_KEY: {key_icon}")
+            print(f"   \ud83d\udd04 Workflows: {workflows.get('health', 'N/A')}")
 
         result = {
             "name": name,
@@ -486,7 +493,7 @@ def run_audit(owner: str, token: str, extra_orgs: list = None) -> dict:
     }
 
     print(f"\n{'='*60}")
-    print(f"📊 CHAD Audit Complete — {', '.join(owners_scanned)}")
+    print(f"\ud83d\udcca CHAD Audit Complete \u2014 {', '.join(owners_scanned)}")
     print(f"   Repos: {summary['total_repos']}")
     print(f"   Core: {summary['core']} | Active: {summary['active']} | Stale: {summary['stale']} | Dead: {summary['dead']}")
     print(f"   Forks: {summary['forks']} | Archived: {summary['archived']}")
@@ -509,7 +516,7 @@ def main():
 
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if not token:
-        print("❌ GITHUB_TOKEN not set")
+        print("\u274c GITHUB_TOKEN not set")
         sys.exit(1)
 
     extra_orgs = [o.strip() for o in args.extra_orgs.split(",") if o.strip()] if args.extra_orgs else []
@@ -518,7 +525,7 @@ def main():
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(report, indent=2, default=str))
-    print(f"\n📄 Report written to {args.output}")
+    print(f"\n\ud83d\udcc4 Report written to {args.output}")
 
 
 if __name__ == "__main__":
