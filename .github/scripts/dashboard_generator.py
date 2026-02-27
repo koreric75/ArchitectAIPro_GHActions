@@ -128,8 +128,9 @@ def generate_dashboard(report: dict) -> str:
         else:
             svc_html = '<span style="color:var(--text-muted);font-size:11px">—</span>'
 
+        repo_owner = r.get('owner', owner)
         repo_rows += f"""
-        <tr class="repo-row" data-tier="{tier}" data-repo="{r['name']}" data-owner="{report.get('owner','koreric75')}" data-archived="{str(r.get('is_archived', False)).lower()}">
+        <tr class="repo-row" data-tier="{tier}" data-repo="{r['name']}" data-owner="{repo_owner}" data-archived="{str(r.get('is_archived', False)).lower()}">
             <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="{r['name']}" /></td>
             <td>
                 <a href="{r.get('url', '#')}" target="_blank" class="repo-link">
@@ -938,9 +939,15 @@ tr.selected {{ background: rgba(59,130,246,0.1) !important; }}
 <div class="toast" id="toast"></div>
 
 <script>
-const OWNER = '{owner}';
+const DEFAULT_OWNER = '{owner}';
 let ghToken = localStorage.getItem('chad_gh_token') || '';
 let pendingAction = null;
+
+// Look up the owner for a repo from its table row data-owner attribute
+function getRepoOwner(repoName) {{
+    const row = document.querySelector(`tr[data-repo="${{repoName}}"]`);
+    return (row && row.dataset.owner) || DEFAULT_OWNER;
+}}
 
 // ── Token Management ──
 async function connectToken() {{
@@ -1052,7 +1059,7 @@ function showModal(action) {{
     const list = document.getElementById('modalRepos');
     const warn = document.getElementById('modalWarning');
     const btn = document.getElementById('modalConfirm');
-    list.innerHTML = repos.map(r => '<div>' + r + '</div>').join('');
+    list.innerHTML = repos.map(r => '<div>' + getRepoOwner(r) + '/' + r + '</div>').join('');
     if (action === 'archive') {{
         title.textContent = '📦 Archive ' + repos.length + ' repo(s)?';
         desc.textContent = 'Archived repos become read-only. You can unarchive later.';
@@ -1151,7 +1158,7 @@ function showDeployModal(presetWorkflow) {{
 
     // Build repo list
     wfHtml += '<div style="margin-top:12px;font-size:12px;color:var(--text-muted)">Target repos:</div>';
-    list.innerHTML = repos.map(r => `<div>${{OWNER}}/${{r}}</div>`).join('');
+    list.innerHTML = repos.map(r => `<div>${{getRepoOwner(r)}}/${{r}}</div>`).join('');
 
     desc.innerHTML = '<strong>Select a workflow to deploy:</strong>' + wfHtml;
     warn.textContent = '';
@@ -1191,22 +1198,23 @@ async function executeAction() {{
 
     for (const repo of repos) {{
         try {{
+            const repoOwner = getRepoOwner(repo);
             let res;
             if (action === 'archive') {{
-                res = await fetch(`https://api.github.com/repos/${{OWNER}}/${{repo}}`, {{
+                res = await fetch(`https://api.github.com/repos/${{repoOwner}}/${{repo}}`, {{
                     method: 'PATCH',
                     headers: {{ Authorization: 'token ' + ghToken, 'Content-Type': 'application/json' }},
                     body: JSON.stringify({{ archived: true }})
                 }});
             }} else {{
-                res = await fetch(`https://api.github.com/repos/${{OWNER}}/${{repo}}`, {{
+                res = await fetch(`https://api.github.com/repos/${{repoOwner}}/${{repo}}`, {{
                     method: 'DELETE',
                     headers: {{ Authorization: 'token ' + ghToken }}
                 }});
             }}
             if (res.ok || res.status === 204) {{
                 success++;
-                addLog('ok', `${{action === 'archive' ? '📦 Archived' : '🗑️ Deleted'}}: ${{repo}}`);
+                addLog('ok', `${{action === 'archive' ? '📦 Archived' : '🗑️ Deleted'}}: ${{repoOwner}}/${{repo}}`);
                 const row = document.querySelector(`tr[data-repo="${{repo}}"]`);
                 if (row) {{
                     if (action === 'delete') {{
@@ -1222,11 +1230,11 @@ async function executeAction() {{
             }} else {{
                 const err = await res.json().catch(() => ({{}}));
                 failed++;
-                addLog('err', `Failed ${{repo}}: ${{res.status}} ${{err.message || ''}}`);
+                addLog('err', `Failed ${{repoOwner}}/${{repo}}: ${{res.status}} ${{err.message || ''}}`);
             }}
         }} catch(e) {{
             failed++;
-            addLog('err', `Error ${{repo}}: ${{e.message}}`);
+            addLog('err', `Error ${{repoOwner}}/${{repo}}: ${{e.message}}`);
         }}
     }}
 
@@ -1246,38 +1254,55 @@ async function executeDeploy(repos) {{
 
     const progress = document.getElementById('deployProgress');
 
+    // Group repos by owner so we can make one server call per owner
+    const byOwner = {{}};
+    repos.forEach(r => {{
+        const o = getRepoOwner(r);
+        if (!byOwner[o]) byOwner[o] = [];
+        byOwner[o].push(r);
+    }});
+
     try {{
         const useServer = (location.hostname !== '' && location.protocol !== 'file:');
 
         if (useServer) {{
             progress.textContent = `Deploying ${{wfInfo.label}} to ${{repos.length}} repo(s)...`;
-            const resp = await fetch('/api/deploy-workflow', {{
-                method: 'POST',
-                headers: {{
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + ghToken,
-                }},
-                body: JSON.stringify({{ owner: OWNER, repos: repos, workflow: workflowId }}),
-            }});
-            const data = await resp.json();
-            if (data.error) {{
-                progress.innerHTML = `<div class="dr-err">❌ ${{data.error}}</div>`;
-                addLog('err', `Deploy failed: ${{data.error}}`);
-                showToast('Deploy failed: ' + data.error, true);
-            }} else if (data.results) {{
-                let html = '';
-                data.results.forEach(r => {{
-                    if (r.status === 'ok') {{
-                        html += `<div class="dr-ok">✅ ${{OWNER}}/${{r.repo}} — ${{r.action || 'deployed'}}</div>`;
-                        addLog('ok', `${{wfInfo.label}} deployed to ${{OWNER}}/${{r.repo}}`);
-                    }} else {{
-                        html += `<div class="dr-err">❌ ${{OWNER}}/${{r.repo}} — ${{r.message || 'failed'}}</div>`;
-                        addLog('err', `Failed ${{OWNER}}/${{r.repo}}: ${{r.message || 'unknown'}}`);
-                    }}
+            let allResults = [];
+            let totalDeployed = 0;
+
+            for (const [ownerKey, ownerRepos] of Object.entries(byOwner)) {{
+                progress.textContent = `Deploying ${{wfInfo.label}} to ${{ownerRepos.length}} ${{ownerKey}} repo(s)...`;
+                const resp = await fetch('/api/deploy-workflow', {{
+                    method: 'POST',
+                    headers: {{
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + ghToken,
+                    }},
+                    body: JSON.stringify({{ owner: ownerKey, repos: ownerRepos, workflow: workflowId }}),
                 }});
-                progress.innerHTML = html;
-                showToast(`Deployed ${{wfInfo.label}} to ${{data.deployed}}/${{data.total}} repos`, data.status === 'failed');
+                const data = await resp.json();
+                if (data.error) {{
+                    ownerRepos.forEach(r => allResults.push({{ repo: r, owner: ownerKey, status: 'error', message: data.error }}));
+                }} else if (data.results) {{
+                    data.results.forEach(r => {{ r.owner = ownerKey; allResults.push(r); }});
+                    totalDeployed += (data.deployed || 0);
+                }}
             }}
+
+            let html = '';
+            allResults.forEach(r => {{
+                const full = `${{r.owner}}/${{r.repo}}`;
+                if (r.status === 'ok') {{
+                    html += `<div class="dr-ok">✅ ${{full}} — ${{r.action || 'deployed'}}</div>`;
+                    addLog('ok', `${{wfInfo.label}} deployed to ${{full}}`);
+                }} else {{
+                    html += `<div class="dr-err">❌ ${{full}} — ${{r.message || 'failed'}}</div>`;
+                    addLog('err', `Failed ${{full}}: ${{r.message || 'unknown'}}`);
+                }}
+            }});
+            progress.innerHTML = html;
+            const allFailed = allResults.every(r => r.status !== 'ok');
+            showToast(`Deployed ${{wfInfo.label}} to ${{totalDeployed}}/${{repos.length}} repos`, allFailed);
         }} else {{
             // Client-side fallback: direct GitHub API
             const templateMap = {{
@@ -1285,7 +1310,7 @@ async function executeDeploy(repos) {{
                 'security-scan': 'security-scan.yml',
             }};
             const templateFile = templateMap[workflowId] || 'architecture-standalone.yml';
-            const templateUrl = `https://api.github.com/repos/${{OWNER}}/ArchitectAIPro_GHActions/contents/.github/workflows/${{templateFile}}`;
+            const templateUrl = `https://api.github.com/repos/${{DEFAULT_OWNER}}/ArchitectAIPro_GHActions/contents/.github/workflows/${{templateFile}}`;
             progress.textContent = 'Fetching workflow template...';
             const tResp = await fetch(templateUrl, {{ headers: {{ Authorization: 'token ' + ghToken }} }});
             if (!tResp.ok) {{ progress.innerHTML = '<div class="dr-err">❌ Could not fetch workflow template</div>'; return; }}
@@ -1296,10 +1321,12 @@ async function executeDeploy(repos) {{
             let html = '';
             for (let i = 0; i < repos.length; i++) {{
                 const repo = repos[i];
-                progress.textContent = `Deploying to ${{OWNER}}/${{repo}} (${{i+1}}/${{repos.length}})...`;
+                const repoOwner = getRepoOwner(repo);
+                const full = `${{repoOwner}}/${{repo}}`;
+                progress.textContent = `Deploying to ${{full}} (${{i+1}}/${{repos.length}})...`;
                 try {{
                     const targetPath = wfInfo.target;
-                    const checkUrl = `https://api.github.com/repos/${{OWNER}}/${{repo}}/contents/${{targetPath}}`;
+                    const checkUrl = `https://api.github.com/repos/${{repoOwner}}/${{repo}}/contents/${{targetPath}}`;
                     const chk = await fetch(checkUrl, {{ headers: {{ Authorization: 'token ' + ghToken }} }});
                     let sha = null;
                     if (chk.ok) {{ sha = (await chk.json()).sha; }}
@@ -1317,15 +1344,15 @@ async function executeDeploy(repos) {{
                     if (putResp.ok) {{
                         deployed++;
                         const action = sha ? 'updated' : 'created';
-                        html += `<div class="dr-ok">✅ ${{OWNER}}/${{repo}} — ${{action}}</div>`;
-                        addLog('ok', `${{wfInfo.label}} deployed to ${{OWNER}}/${{repo}}`);
+                        html += `<div class="dr-ok">✅ ${{full}} — ${{action}}</div>`;
+                        addLog('ok', `${{wfInfo.label}} deployed to ${{full}}`);
                     }} else {{
                         const err = await putResp.json().catch(() => ({{}}));
-                        html += `<div class="dr-err">❌ ${{OWNER}}/${{repo}} — ${{err.message || putResp.status}}</div>`;
-                        addLog('err', `Failed ${{OWNER}}/${{repo}}: ${{err.message || putResp.status}}`);
+                        html += `<div class="dr-err">❌ ${{full}} — ${{err.message || putResp.status}}</div>`;
+                        addLog('err', `Failed ${{full}}: ${{err.message || putResp.status}}`);
                     }}
                 }} catch (e) {{
-                    html += `<div class="dr-err">❌ ${{OWNER}}/${{repo}} — ${{e.message}}</div>`;
+                    html += `<div class="dr-err">❌ ${{full}} — ${{e.message}}</div>`;
                 }}
             }}
             progress.innerHTML = html;
