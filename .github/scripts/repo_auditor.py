@@ -60,6 +60,100 @@ DEAD_DAYS = 365 * 2   # 2 years -> candidate for deletion
 MAX_API_CALLS = 300
 api_call_count = 0
 
+# ---------------------------------------------------------------------------
+# 3rd-Party Service Cost Map (monthly estimates per service)
+# ---------------------------------------------------------------------------
+# These represent typical free-tier or starter-plan costs.  The auditor
+# detects service usage by scanning dependency files, Docker configs,
+# and Terraform manifests for each repo.
+
+THIRD_PARTY_SERVICE_COSTS = {
+    # Backend / Database
+    "supabase":      {"cost": 25, "label": "Supabase",      "category": "BaaS"},
+    "firebase":      {"cost": 25, "label": "Firebase",       "category": "BaaS"},
+    "planetscale":   {"cost": 29, "label": "PlanetScale",    "category": "Database"},
+    "neon":          {"cost": 19, "label": "Neon Postgres",   "category": "Database"},
+    "upstash":       {"cost":  5, "label": "Upstash Redis",   "category": "Cache"},
+    "redis":         {"cost":  5, "label": "Redis Cloud",     "category": "Cache"},
+
+    # Hosting / Edge
+    "vercel":        {"cost": 20, "label": "Vercel",          "category": "Hosting"},
+    "netlify":       {"cost": 19, "label": "Netlify",         "category": "Hosting"},
+    "cloudflare":    {"cost":  5, "label": "Cloudflare",      "category": "CDN"},
+
+    # Media / Video
+    "mux":           {"cost": 20, "label": "Mux Video",       "category": "Media"},
+    "cloudinary":    {"cost": 10, "label": "Cloudinary",      "category": "Media"},
+    "imgix":         {"cost": 10, "label": "imgix",           "category": "Media"},
+
+    # Payments / Commerce
+    "stripe":        {"cost":  0, "label": "Stripe",          "category": "Payments"},
+
+    # Auth
+    "auth0":         {"cost":  0, "label": "Auth0",           "category": "Auth"},
+    "clerk":         {"cost": 25, "label": "Clerk",           "category": "Auth"},
+
+    # AI / ML
+    "openai":        {"cost": 20, "label": "OpenAI API",      "category": "AI"},
+    "anthropic":     {"cost": 20, "label": "Anthropic API",   "category": "AI"},
+    "gemini":        {"cost":  0, "label": "Gemini API",      "category": "AI"},
+    "replicate":     {"cost": 10, "label": "Replicate",       "category": "AI"},
+    "huggingface":   {"cost": 10, "label": "Hugging Face",    "category": "AI"},
+
+    # Monitoring / Observability
+    "sentry":        {"cost":  0, "label": "Sentry",          "category": "Observability"},
+    "datadog":       {"cost": 15, "label": "Datadog",         "category": "Observability"},
+
+    # CI / CD
+    "circleci":      {"cost": 15, "label": "CircleCI",        "category": "CI/CD"},
+
+    # Email / Notifications
+    "sendgrid":      {"cost":  0, "label": "SendGrid",        "category": "Email"},
+    "resend":        {"cost":  0, "label": "Resend",          "category": "Email"},
+    "twilio":        {"cost": 10, "label": "Twilio",          "category": "Communications"},
+
+    # Music / Audio
+    "suno":          {"cost": 10, "label": "Suno API",        "category": "Audio"},
+}
+
+# Patterns that indicate a service (case-insensitive substring matches)
+# Searched across: package.json, requirements.txt, pyproject.toml,
+#   docker-compose*.yml, Dockerfile, terraform/*.tf, .env.example
+SERVICE_DETECTION_PATTERNS = {
+    "supabase":    ["@supabase/", "supabase-py", "supabase-js", "supabase.co"],
+    "firebase":    ["firebase-admin", "@firebase/", "firebaseConfig", "google-cloud-firestore"],
+    "planetscale": ["@planetscale/", "planetscale"],
+    "neon":        ["@neondatabase/", "neon.tech"],
+    "upstash":     ["@upstash/", "upstash-redis"],
+    "redis":       ["redis", "ioredis", "aioredis", "redis-py"],
+    "vercel":      ["@vercel/", "vercel.json", "VERCEL_", "vercel.app"],
+    "netlify":     ["netlify.toml", "netlify-cli", "NETLIFY_"],
+    "cloudflare":  ["cloudflare", "wrangler", "CLOUDFLARE_"],
+    "mux":         ["@mux/", "mux-python", "mux.com", "MUX_TOKEN"],
+    "cloudinary":  ["cloudinary", "CLOUDINARY_"],
+    "imgix":       ["imgix"],
+    "stripe":      ["stripe", "@stripe/", "STRIPE_"],
+    "auth0":       ["@auth0/", "auth0-python", "AUTH0_"],
+    "clerk":       ["@clerk/", "CLERK_"],
+    "openai":      ["openai", "OPENAI_API_KEY"],
+    "anthropic":   ["anthropic", "ANTHROPIC_API_KEY"],
+    "gemini":      ["gemini", "GEMINI_API_KEY", "google-generativeai", "@google/generative-ai"],
+    "replicate":   ["replicate", "REPLICATE_"],
+    "huggingface": ["huggingface", "transformers", "huggingface_hub"],
+    "sentry":      ["@sentry/", "sentry-sdk", "SENTRY_DSN"],
+    "datadog":     ["datadog", "ddtrace"],
+    "circleci":    [".circleci"],
+    "sendgrid":    ["sendgrid", "@sendgrid/", "SENDGRID_"],
+    "resend":      ["resend"],
+    "twilio":      ["twilio", "TWILIO_"],
+    "suno":        ["suno"],
+}
+
+# Cloud Run scale-to-zero base cost (per repo with active Cloud Run service)
+CLOUD_RUN_IDLE_BASE = 0      # $0/mo when scaled to zero
+CLOUD_RUN_ACTIVE_BASE = 3    # ~$3/mo for occasional cold starts / minimum activity
+GH_ACTIONS_CI_BASE = 0       # Free tier for public repos, ~$0 for private (2000 min/mo)
+
 
 def _check(val):
     """Return a check/cross label for boolean values."""
@@ -253,12 +347,95 @@ def audit_workflows(owner: str, repo_name: str, token: str) -> dict:
     }
 
 
-def classify_repo(repo: dict, staleness: dict) -> dict:
-    """Generate classification and action recommendation."""
+def detect_third_party_services(owner: str, repo_name: str, token: str,
+                                  default_branch: str) -> dict:
+    """Detect 3rd-party services by scanning dependency/config files.
+
+    Returns a dict with:
+      - services: list of detected service keys
+      - service_details: list of {service, label, cost, category}
+      - third_party_cost: total estimated monthly 3rd-party cost
+    """
+    scan_files = [
+        "package.json",
+        "requirements.txt",
+        "pyproject.toml",
+        "Pipfile",
+        "docker-compose.yml",
+        "docker-compose.yaml",
+        "Dockerfile",
+        ".env.example",
+        ".env.sample",
+        "vercel.json",
+        "netlify.toml",
+        "wrangler.toml",
+    ]
+    # Also scan terraform directory
+    tf_files = []
+    tf_url = f"{GITHUB_API}/repos/{owner}/{repo_name}/contents/terraform?ref={default_branch}"
+    tf_listing = api_get(tf_url, token)
+    if tf_listing and isinstance(tf_listing, list):
+        for f in tf_listing:
+            if f.get("name", "").endswith(".tf"):
+                tf_files.append(f"terraform/{f['name']}")
+
+    all_files = scan_files + tf_files
+
+    # Collect all file content into a single search corpus
+    corpus = ""
+    for fpath in all_files:
+        url = f"{GITHUB_API}/repos/{owner}/{repo_name}/contents/{fpath}?ref={default_branch}"
+        content = api_get_text(url, token)
+        if content:
+            corpus += "\n" + content
+
+    if not corpus:
+        return {"services": [], "service_details": [], "third_party_cost": 0}
+
+    corpus_lower = corpus.lower()
+    detected = {}  # service_key -> True
+
+    for svc_key, patterns in SERVICE_DETECTION_PATTERNS.items():
+        for pat in patterns:
+            if pat.lower() in corpus_lower:
+                detected[svc_key] = True
+                break
+
+    # Build detailed breakdown
+    details = []
+    total_cost = 0
+    for svc_key in sorted(detected.keys()):
+        info = THIRD_PARTY_SERVICE_COSTS.get(svc_key, {})
+        cost = info.get("cost", 0)
+        details.append({
+            "service": svc_key,
+            "label": info.get("label", svc_key),
+            "cost": cost,
+            "category": info.get("category", "Other"),
+        })
+        total_cost += cost
+
+    return {
+        "services": sorted(detected.keys()),
+        "service_details": details,
+        "third_party_cost": total_cost,
+    }
+
+
+def classify_repo(repo: dict, staleness: dict, services: dict = None) -> dict:
+    """Generate classification, action recommendation, and burn rate.
+
+    Burn rate model:
+      - Cloud Run scale-to-zero: $0–$3/mo base (idle vs. occasional activity)
+      - GH Actions CI: $0 (free tier)
+      - 3rd-party services: detected dynamically from dependency files
+      - Storage: negligible for repo-level Git storage
+    """
     name = repo["name"]
     is_fork = repo.get("fork", repo.get("isFork", False))
     is_archived = repo.get("archived", repo.get("isArchived", False))
     disk_kb = repo.get("size", repo.get("diskUsage", 0))
+    services = services or {}
 
     # Priority classification
     if is_archived:
@@ -286,23 +463,41 @@ def classify_repo(repo: dict, staleness: dict) -> dict:
         tier = "ACTIVE"
         action = "MAINTAIN"
 
-    # Cost estimation (simplified GCP-aware)
-    monthly_burn = 0
-    if tier in ("CORE", "ACTIVE"):
-        if disk_kb > 10000:
-            monthly_burn = 45  # Storage-heavy
-        elif disk_kb > 1000:
-            monthly_burn = 25
+    # ------------------------------------------------------------------
+    # Burn-rate estimation  (Cloud Run scale-to-zero aware)
+    # ------------------------------------------------------------------
+    burn_breakdown = {}
+
+    if tier in ("CORE", "ACTIVE", "DORMANT"):
+        # Cloud Run: scale-to-zero means essentially free for idle services.
+        # ACTIVE/CORE repos with recent pushes get a small baseline for
+        # cold-start invocations and artifact registry storage.
+        if staleness["days_since_push"] < 30:
+            burn_breakdown["Cloud Run"] = CLOUD_RUN_ACTIVE_BASE
         else:
-            monthly_burn = 10
-        # Core products get higher burn estimates (CI, hosting, API calls)
-        if name in ("ArchitectAIPro", "clipstream", "ProposalBuddyAI", "polymath-hub"):
-            monthly_burn += 85
+            burn_breakdown["Cloud Run"] = CLOUD_RUN_IDLE_BASE
+
+        # CI minutes (GitHub Actions free tier covers most usage)
+        burn_breakdown["CI/CD"] = GH_ACTIONS_CI_BASE
+
+        # 3rd-party services — actual detected costs
+        third_party = services.get("third_party_cost", 0)
+        svc_details = services.get("service_details", [])
+        for svc in svc_details:
+            if svc["cost"] > 0:
+                burn_breakdown[svc["label"]] = svc["cost"]
+            # $0 services tracked but not added to burn
+    else:
+        # Archived / Dead / Stale / Forks incur $0
+        pass
+
+    monthly_burn = sum(burn_breakdown.values())
 
     return {
         "tier": tier,
         "action": action,
         "monthly_burn_estimate": monthly_burn,
+        "burn_breakdown": burn_breakdown,
         "disk_mb": round(disk_kb / 1024, 1),
     }
 
@@ -401,17 +596,17 @@ def run_audit(owner: str, token: str, extra_orgs: list = None) -> dict:
         staleness = audit_staleness(pushed_at)
         print(f"   [DATE] {staleness['status']} ({staleness['days_since_push']}d)")
 
-        # Classification
-        classification = classify_repo(repo, staleness)
-        print(f"   [TAG] {classification['tier']} -> {classification['action']}")
-
         # Deep audit for active/core repos only (budget conservation)
         branding = {"compliant": True, "issues": [], "files_checked": 0}
         architecture = {"fully_configured": False, "has_workflow": False, "files": {}}
         secrets = {"has_gemini_key": False}
         workflows = {"health": "UNKNOWN", "recent_runs": []}
+        services = {"services": [], "service_details": [], "third_party_cost": 0}
 
-        if classification["tier"] in ("CORE", "ACTIVE", "DORMANT"):
+        # Preliminary classification (without services) to decide scan depth
+        pre_class = classify_repo(repo, staleness)
+
+        if pre_class["tier"] in ("CORE", "ACTIVE", "DORMANT"):
             branding = audit_branding(repo_owner, name, token, default_branch)
             if branding["issues"]:
                 print(f"   [WARN] Branding issues: {len(branding['issues'])}")
@@ -419,11 +614,21 @@ def run_audit(owner: str, token: str, extra_orgs: list = None) -> dict:
             architecture = audit_architecture(repo_owner, name, token, default_branch)
             secrets = audit_secrets(repo_owner, name, token)
             workflows = audit_workflows(repo_owner, name, token)
+
+            # Detect 3rd-party service dependencies for burn rate
+            services = detect_third_party_services(repo_owner, name, token, default_branch)
+            if services["services"]:
+                print(f"   [SVC] 3rd-party: {', '.join(services['services'])} (${services['third_party_cost']}/mo)")
+
             arch_icon = _check(architecture["fully_configured"])
             key_icon = _check(secrets["has_gemini_key"])
             print(f"   [ARCH] Architecture: {arch_icon}")
             print(f"   [KEY] GEMINI_API_KEY: {key_icon}")
             print(f"   [FLOW] Workflows: {workflows.get('health', 'N/A')}")
+
+        # Final classification with service cost data
+        classification = classify_repo(repo, staleness, services)
+        print(f"   [TAG] {classification['tier']} -> {classification['action']} (${classification['monthly_burn_estimate']}/mo)")
 
         result = {
             "name": name,
@@ -443,6 +648,7 @@ def run_audit(owner: str, token: str, extra_orgs: list = None) -> dict:
             "architecture": architecture,
             "secrets": secrets,
             "workflows": workflows,
+            "services": services,
         }
 
         audit_results.append(result)

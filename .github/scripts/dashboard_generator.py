@@ -90,10 +90,43 @@ def generate_dashboard(report: dict) -> str:
         arch = r.get("architecture", {})
         sec = r.get("secrets", {})
         wf = r.get("workflows", {})
+        svc = r.get("services", {})
         tier = cls.get("tier", "UNKNOWN")
 
         visibility = "🔒" if r.get("is_private") else "🌐"
         fork_badge = ' <span class="fork-tag">FORK</span>' if r.get("is_fork") else ""
+
+        # Burn breakdown tooltip
+        burn_total = cls.get("monthly_burn_estimate", 0)
+        burn_bd = cls.get("burn_breakdown", {})
+        if burn_bd:
+            tooltip_lines = [f"{k}: ${v}" for k, v in burn_bd.items() if v > 0]
+            burn_tooltip = "&#10;".join(tooltip_lines) if tooltip_lines else "Scaled to zero"
+        else:
+            burn_tooltip = "No active services"
+
+        # Service badges
+        detected_svcs = svc.get("service_details", [])
+        svc_html = ""
+        if detected_svcs:
+            badges = []
+            for s in detected_svcs:
+                cat_color = {
+                    "BaaS": "#22c55e", "Database": "#22c55e", "Cache": "#06b6d4",
+                    "Hosting": "#8b5cf6", "CDN": "#f59e0b", "Media": "#ec4899",
+                    "Payments": "#f59e0b", "Auth": "#3b82f6", "AI": "#a78bfa",
+                    "Observability": "#6b7280", "CI/CD": "#6b7280",
+                    "Email": "#64748b", "Communications": "#64748b",
+                    "Audio": "#ec4899",
+                }.get(s.get("category", ""), "#6b7280")
+                cost_tag = f" ${s['cost']}" if s.get("cost", 0) > 0 else ""
+                badges.append(
+                    f'<span class="svc-badge" style="border-color:{cat_color};color:{cat_color}">'
+                    f'{s["label"]}{cost_tag}</span>'
+                )
+            svc_html = " ".join(badges)
+        else:
+            svc_html = '<span style="color:var(--text-muted);font-size:11px">—</span>'
 
         repo_rows += f"""
         <tr class="repo-row" data-tier="{tier}" data-repo="{r['name']}" data-owner="{report.get('owner','koreric75')}" data-archived="{str(r.get('is_archived', False)).lower()}">
@@ -109,7 +142,8 @@ def generate_dashboard(report: dict) -> str:
             <td>{r.get('language', 'N/A')}</td>
             <td class="num">{cls.get('disk_mb', 0)} MB</td>
             <td class="num">{sl.get('days_since_push', '?')}d</td>
-            <td class="num">${cls.get('monthly_burn_estimate', 0)}</td>
+            <td class="num burn-cell" title="{burn_tooltip}">${burn_total}</td>
+            <td class="svc-cell">{svc_html}</td>
             <td>{bool_icon(br.get('compliant', True))}</td>
             <td>{bool_icon(arch.get('fully_configured', False))}</td>
             <td>{bool_icon(sec.get('has_gemini_key', False))}</td>
@@ -356,6 +390,24 @@ tr:hover {{ background: var(--bg-card); }}
     vertical-align: middle;
 }}
 .bad-brand {{ color: var(--accent-red); font-family: var(--font-mono); font-size: 12px; }}
+
+/* Service Badges */
+.svc-badge {{
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    border: 1px solid;
+    margin: 1px 2px;
+    white-space: nowrap;
+    background: transparent;
+}}
+.svc-cell {{ max-width: 220px; }}
+.burn-cell {{
+    cursor: help;
+    border-bottom: 1px dashed var(--text-muted);
+}}
 
 /* Action Cards */
 .actions-grid {{
@@ -710,7 +762,7 @@ tr.selected {{ background: rgba(59,130,246,0.1) !important; }}
     <div class="stat-card stat-amber">
         <div class="label">Est. Monthly Burn</div>
         <div class="value">${monthly_burn}</div>
-        <div class="detail">GCP + CI/CD</div>
+        <div class="detail">Cloud Run + 3rd Party</div>
     </div>
     <div class="stat-card stat-red">
         <div class="label">Branding Issues</div>
@@ -744,6 +796,7 @@ tr.selected {{ background: rgba(59,130,246,0.1) !important; }}
                     <th>Size</th>
                     <th>Last Push</th>
                     <th>Burn/mo</th>
+                    <th>Services</th>
                     <th>Brand</th>
                     <th>Arch</th>
                     <th>Key</th>
