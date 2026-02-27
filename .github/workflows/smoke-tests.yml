@@ -1,0 +1,79 @@
+############################################################
+# CHAD Dashboard — Smoke Tests
+#
+# Runs after every deployment or on demand.
+# Tests all critical endpoints on the live Cloud Run service.
+#
+# Test matrix:
+#   1. /health          → 200, JSON { status: "healthy" }
+#   2. /                → 200, HTML with "CHAD"
+#   3. /audit_report.json → 200, valid JSON
+#   4. /api/refresh     → POST, 200 (with valid token)
+#   5. Response times   → all < 5s (cold start budget)
+#   6. Security headers → no sensitive info leaked
+############################################################
+name: "🧪 CHAD Smoke Tests"
+
+on:
+  workflow_run:
+    workflows: ["🚀 Deploy CHAD Dashboard"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      service_url:
+        description: "Override service URL (leave blank to use default)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  DEFAULT_URL: "https://chad-dashboard-42380604425.us-central1.run.app"
+
+jobs:
+  smoke-tests:
+    name: "🧪 Smoke Tests"
+    runs-on: ubuntu-latest
+    # Only run if deploy succeeded (or manual dispatch)
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - name: Checkout (for test script)
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4
+
+      - name: Setup Python
+        uses: actions/setup-python@39cd14951b08e74b54015e9e001cdefcf80e669f  # v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        run: pip install requests
+
+      - name: 🧪 Run smoke tests
+        env:
+          SERVICE_URL: ${{ github.event.inputs.service_url || env.DEFAULT_URL }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        run: python .github/tests/smoke_test_dashboard.py
+
+      - name: 📋 Test summary
+        if: always()
+        run: |
+          if [ -f test-results.json ]; then
+            echo "## 🧪 CHAD Smoke Test Results" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            python3 -c "
+          import json
+          r = json.load(open('test-results.json'))
+          print('| Test | Status | Duration |')
+          print('|------|--------|----------|')
+          for t in r.get('tests', []):
+              icon = '✅' if t['passed'] else '❌'
+              print(f\"| {t['name']} | {icon} {t['status']} | {t['duration_ms']}ms |\")
+          print()
+          total = r.get('summary', {})
+          print(f\"**{total.get('passed',0)}/{total.get('total',0)} passed** in {total.get('total_duration_ms',0)}ms\")
+          " >> \$GITHUB_STEP_SUMMARY
+          fi
