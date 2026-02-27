@@ -1,7 +1,7 @@
 # 🏗️ BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture
 
 > **Created with [Architect AI Pro](https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/)** — the flagship architecture tool by **BlueFalconInk LLC**
-> Auto-generated on 2026-02-27 20:03 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
+> Auto-generated on 2026-02-27 20:16 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
 
 ![BlueFalconInk LLC](https://img.shields.io/badge/BlueFalconInk%20LLC-Standard-1E40AF)
 ![Architect AI Pro](https://img.shields.io/badge/Created%20with-Architect%20AI%20Pro-3B82F6)
@@ -21,113 +21,31 @@ graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
         style BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture fill:#1E3A5F,color:#BFDBFE
 
-        subgraph "Frontend"
-            User[🧑‍💻 User / Developer]
-            CHADUI[CHAD Dashboard UI]
-            GalleryUI[Arch Gallery UI]
+        subgraph "External Systems"
+            Developer[Developer]
+            GitHub[GitHub.com]
+            GoogleGemini[Google Gemini API]
         end
 
-        subgraph "Backend Services"
-            CHADDashboard[Cloud Run - CHAD Dashboard - Flask]
-            ArchGallery[Cloud Run - Arch Gallery - FastAPI]
-            ArchitectAIProEngine[Cloud Run - Architect AI Pro Engine]
-        end
-
-        subgraph "Automation & CI/CD"
+        subgraph "CI/CD & Automation (GitHub Actions)"
             GHActions[GitHub Actions Workflows]
-            PyScripts[Python Automation Scripts]
+            DiagramGenerationLogic[Diagram Generation Logic - Python]
+            ForemanAuditLogic[Foreman Audit Logic - Python]
+            RepoAuditLogicGHA[Repo Audit Logic - Python]
+            DashboardGenerationLogicGHA[Dashboard Generation Logic - Python]
+            CleanupLogic[Cleanup Logic - Python]
             Terraform[Terraform IaC]
             CloudBuild[Cloud Build]
         end
 
-        subgraph "Data & Storage"
-            GitHubRepo[GitHub Repository]
-            ArchConfig[ARCHITECT_CONFIG.json]
-            PromptLib[PROMPT_LIBRARY/]
-            DocsOutput[docs/architecture.*]
-            ArtifactRegistry[Artifact Registry]
-            SecretManager[GCP Secret Manager]
-            GHSecrets[GitHub Actions Secrets]
-        end
-
-        subgraph "External Integrations"
-            GitHubAPI[GitHub API]
-            GeminiAPI[Google Gemini API]
-            DrawioCLI[Draw.io CLI - headless]
-        end
-
-        subgraph "Security"
-            CloudLB[Cloud Load Balancer]
-            CloudArmor[Cloud Armor]
-            WIF[Workload Identity Federation]
-        end
-        style Security fill:#1E40AF,color:#BFDBFE
-
-        %% Data Flows and Interactions
-
-        %% User to Frontend Access
-        User -->|Accesses via HTTPS| CloudLB
-        CloudLB -->|Routes Traffic| CloudArmor
-        CloudArmor -->|Protects Public Endpoints| CHADDashboard
-        CloudArmor -->|Protects Public Endpoints| ArchGallery
-
-        %% Frontend to Backend Interaction
-        CHADUI -->|Serves HTML/JS| CHADDashboard
-        GalleryUI -->|Serves HTML/JS| ArchGallery
-        CHADDashboard -->|API Calls| CHADDashboard
-        ArchGallery -->|API Calls| ArchGallery
-
-        %% Backend Service Logic
-        CHADDashboard -->|Triggers Subprocesses| PyScripts
-        CHADDashboard -->|Fetches Repo Data · Deploys Workflows| GitHubAPI
-        CHADDashboard -->|Reads GITHUB_TOKEN| GHSecrets
-        ArchGallery -->|Fetches Diagrams/Configs| GitHubAPI
-        ArchGallery -->|Reads GITHUB_TOKEN| GHSecrets
-        ArchitectAIProEngine -->|AI Model Inference| GeminiAPI
-
-        %% Automation & CI/CD Pipeline
-        GitHubRepo -->|Code Push Triggers| GHActions
-        GHActions -->|Executes Scripts| PyScripts
-        GHActions -->|Runs IaC| Terraform
-        GHActions -->|Triggers Image Builds| CloudBuild
-
-        PyScripts -->|Reads Config| ArchConfig
-        PyScripts -->|Uses Prompts| PromptLib
-        PyScripts -->|Generates Diagrams| GeminiAPI
-        PyScripts -->|Renders Images| DrawioCLI
-        PyScripts -->|Audits Code/Diagrams| GitHubAPI
-        PyScripts -->|Writes Output| DocsOutput
-        PyScripts -->|Reads Secrets| GHSecrets
-
-        Terraform -->|Provisions Resources| ArtifactRegistry
-        Terraform -->|Provisions Resources| CHADDashboard
-        Terraform -->|Provisions Resources| ArchGallery
-        Terraform -->|Configures Auth| WIF
-        Terraform -->|Manages Secrets| SecretManager
-
-        CloudBuild -->|Builds Docker Images| GitHubRepo
-        CloudBuild -->|Pushes Images| ArtifactRegistry
-
-        %% Security & Authentication
-        GHActions -->|Authenticates to GCP| WIF
-        WIF -->|Grants GCP Access| ArtifactRegistry
-        WIF -->|Grants GCP Access| CHADDashboard
-        WIF -->|Grants GCP Access| ArchGallery
-        WIF -->|Grants GCP Access| SecretManager
-        GHActions -->|Reads Secrets| GHSecrets
-
-        %% Data Storage & Access
-        GitHubAPI -->|Manages Repos/Files| GitHubRepo
-        GitHubAPI -->|Reads/Writes Workflow Files| GHActions
-        GitHubAPI -->|Reads Secrets| GHSecrets
-
-        SecretManager -->|Stores Sensitive Data| GCP Services
-        GHSecrets -->|Stores Sensitive Data| GHActions
-        GHSecrets -->|Provides GITHUB_TOKEN| CHADDashboard
-        GHSecrets -->|Provides GITHUB_TOKEN| ArchGallery
-
-    end
-
+        subgraph "Application Layer"
+            subgraph "CHAD Dashboard Service"
+                CHADDashboard[Cloud Run · Flask App]
+                RepoAuditLogicCR[Repo Audit Logic - Subprocess]
+                DashboardGenerationLogicCR[Dashboard Generation Logic - Subprocess]
+                LocalDashboardFiles[Local Dashboard Files]
+            end
+            subgraph "
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
