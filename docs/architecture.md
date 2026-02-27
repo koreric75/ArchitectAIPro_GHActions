@@ -19,104 +19,113 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
+        style BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture fill:#1E3A5F,color:#BFDBFE
 
-        subgraph "Frontend"
-            User[User/Developer]
+        subgraph "Frontend Services"
+            ArchGallery[Architecture Gallery · Cloud Run]
+            CHADDashboard[CHAD Dashboard · Cloud Run]
         end
 
-        subgraph "Backend Services"
-            style Backend Services fill:#1E3A5F,color:#BFDBFE
-            CloudRunDashboard[Cloud Run · CHAD Dashboard]
-            CloudRunGallery[Cloud Run · Architecture Gallery]
-        end
-
-        subgraph "Automation & Orchestration"
-            GitHubActions[GitHub Actions CI/CD]
-            ArchitectAIProEngine[Architect AI Pro Engine · Scripts]
-            CHADAutomationAgents[CHAD Automation Agents · Scripts]
-            Terraform[Terraform IaC]
-            CloudBuild[Cloud Build]
-            Trivy[Trivy Container Scanner]
-            SASTTools[SAST/Dependency Scanners]
+        subgraph "Architect AI Pro Engine"
+            ArchitectAIEngine[Architect AI Pro Engine · Python Scripts]
+            CHADAgents[CHAD Agents · Python Scripts]
+            IaC[Terraform IaC]
         end
 
         subgraph "Data Layer"
             style Data Layer fill:#0F172A,color:#BFDBFE
-            Repo[GitHub Repository]
             ArtifactRegistry[Artifact Registry]
-            SecretManager[Secret Manager]
-            CloudLogging[Cloud Logging]
-            CloudMonitoring[Cloud Monitoring]
+            AuditReports[Audit Reports · JSON Files]
+            DiagramFiles[Architecture Diagrams · MD/Mermaid/Draw.io/PNG]
+            PromptLibrary[Prompt Library · MD Files]
         end
 
         subgraph "Security"
             style Security fill:#1E40AF,color:#BFDBFE
-            LoadBalancer[Cloud Load Balancer]
             CloudArmor[Cloud Armor]
-            WIF[Workload Identity Federation]
-            GHSecrets[GitHub Actions Secrets]
+            LoadBalancer[Cloud Load Balancer]
+            GCPWIF[GCP Workload Identity Federation]
+            SecretManager[GCP Secret Manager]
         end
 
-        subgraph "External Integrations"
-            GeminiAPI[Google Gemini API]
-            DrawioCLI[Draw.io CLI]
-            GCPAPIs[GCP APIs]
+        subgraph "CI/CD & Build"
+            CloudBuild[Cloud Build]
+            GitHubActions[GitHub Actions Workflows]
         end
 
-        %% Flows
-        User -->|Triggers Workflows| GitHubActions
-        User -->|Accesses Dashboard/Gallery| LoadBalancer
+        % Internal connections within the application
+        CHADDashboard -->|Triggers Audit & Gen| CHADAgents
+        CHADDashboard -->|Serves| AuditReports
+        CHADDashboard -->|Retrieves GITHUB_PAT| SecretManager
+        ArchGallery -->|Retrieves GITHUB_TOKEN| SecretManager
+        ArchitectAIEngine -->|Uses| PromptLibrary
+        ArchitectAIEngine -->|Generates & Stores| DiagramFiles
+        CHADAgents -->|Generates & Stores| AuditReports
+        CHADAgents -->|Generates HTML for| CHADDashboard
 
-        GitHubActions -->|Runs Diagram Generation| ArchitectAIProEngine
-        GitHubActions -->|Runs Foreman Audit| ArchitectAIProEngine
-        GitHubActions -->|Runs CHAD Agents| CHADAutomationAgents
-        GitHubActions -->|Applies Infrastructure| Terraform
-        GitHubActions -->|Triggers Image Build| CloudBuild
-        GitHubActions -->|Runs Code Scans| SASTTools
-        GitHubActions -->|Scans Container Images| Trivy
+        % IaC deployment
+        IaC -->|Deploys Infrastructure| CHADDashboard
+        IaC -->|Deploys Infrastructure| ArchGallery
+        IaC -->|Manages| ArtifactRegistry
+        IaC -->|Manages| SecretManager
+        IaC -->|Manages| GCPWIF
+        IaC -->|Manages| CloudArmor
+        IaC -->|Manages| LoadBalancer
 
-        ArchitectAIProEngine -->|Scans Source Code| Repo
-        ArchitectAIProEngine -->|Sends Context · Receives Mermaid| GeminiAPI
-        ArchitectAIProEngine -->|Converts Diagrams| DrawioCLI
-        ArchitectAIProEngine -->|Commits Diagrams/Reports| Repo
-        ArchitectAIProEngine -->|Triggers Remediation| ArchitectAIProEngine
-
-        CHADAutomationAgents -->|Audits Repos via API| Repo
-        CHADAutomationAgents -->|Generates Reports/HTML| Repo
-        CHADAutomationAgents -->|Archives/Fixes Branding via API| Repo
-
-        Terraform -->|Provisions Resources| GCPAPIs
-        CloudBuild -->|Builds & Pushes Images| ArtifactRegistry
-        CloudBuild -->|Scans Images| Trivy
-
-        ArtifactRegistry -->|Deploys Image| CloudRunDashboard
-        ArtifactRegistry -->|Deploys Image| CloudRunGallery
-
-        LoadBalancer -->|Routes Traffic| CloudArmor
-        CloudArmor -->|Enforces Policy| CloudRunDashboard
-        CloudArmor -->|Enforces Policy| CloudRunGallery
-
-        CloudRunDashboard -->|Fetches Audit Data/Diagrams| Repo
-        CloudRunDashboard -->|Triggers Agent Refresh| CHADAutomationAgents
-        CloudRunDashboard -->|Accesses Secret| SecretManager
-        CloudRunDashboard -->|Emits Logs| CloudLogging
-        CloudRunDashboard -->|Emits Metrics| CloudMonitoring
-
-        CloudRunGallery -->|Fetches Diagrams/Configs| Repo
-        CloudRunGallery -->|Accesses Secret| SecretManager
-        CloudRunGallery -->|Emits Logs| CloudLogging
-        CloudRunGallery -->|Emits Metrics| CloudMonitoring
-
-        GitHubActions -->|Accesses Secrets| GHSecrets
-        GitHubActions -->|Authenticates to GCP| WIF
-        WIF -->|Provides Credentials| GCPAPIs
-
-        SecretManager --.->|Provides Secrets| CloudRunDashboard
-        SecretManager --.->|Provides Secrets| CloudRunGallery
-
-        SASTTools -->|Scans Codebase| Repo
+        % Build and Deploy
+        GitHubActions -->|Auth via| GCPWIF
+        GitHubActions -->|Executes| ArchitectAIEngine
+        GitHubActions -->|Executes| CHADAgents
+        GitHubActions -->|Executes| IaC
+        GitHubActions -->|Triggers Build| CloudBuild
+        CloudBuild -->|Builds Docker Images| ArtifactRegistry
+        ArtifactRegistry -->|Deploys Image| CHADDashboard
+        ArtifactRegistry -->|Deploys Image| ArchGallery
 
     end
+
+    % External Integrations
+    User[User/Developer]
+    GitHub[GitHub Platform]
+    GitHubAPI[GitHub API]
+    GitHubSecrets[GitHub Actions Secrets]
+    GeminiAPI[Google Gemini API]
+    DrawIO[Draw.io Headless CLI]
+    Trivy[Trivy Vulnerability Scanner]
+    Bandit[Bandit SAST]
+    PipAudit[pip-audit/Safety]
+
+    % External to Internal Flows
+    User -->|Accesses via HTTPS| LoadBalancer
+    LoadBalancer -->|Protects & Routes| CloudArmor
+    CloudArmor -->|Forwards Requests| CHADDashboard
+    CloudArmor -->|Forwards Requests| ArchGallery
+
+    User -->|Code Push/PR| GitHub
+    GitHub -->|Triggers Workflows| GitHubActions
+    GitHubActions -->|Accesses| GitHubSecrets
+    GitHubActions -->|Calls| GitHubAPI
+    GitHubActions -->|Uses| GeminiAPI
+    GitHubActions -->|Uses| DrawIO
+    GitHubActions -->|Scans Code| Bandit
+    GitHubActions -->|Scans Dependencies| PipAudit
+    CloudBuild -->|Scans Image| Trivy
+
+    ArchitectAIEngine -->|Sends Prompts| GeminiAPI
+    GeminiAPI -->|Returns Mermaid.js| ArchitectAIEngine
+    ArchitectAIEngine -->|Renders Diagrams| DrawIO
+    DrawIO -->|Outputs PNG/Draw.io XML| ArchitectAIEngine
+
+    CHADDashboard -->|Fetches Repo Data| GitHubAPI
+    ArchGallery -->|Fetches Repo Data & Diagrams| GitHubAPI
+    CHADAgents -->|Audits Repos & Commits| GitHubAPI
+
+    % Data flows for generated artifacts
+    ArchitectAIEngine -->|Commits Diagrams| GitHub
+    CHADAgents -->|Commits Reports via GH Actions| GitHub
+
+    FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
+    style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
 
 </details>
