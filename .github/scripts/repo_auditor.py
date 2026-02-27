@@ -720,7 +720,7 @@ def main():
     parser.add_argument("--output", default="docs/audit_report.json", help="Output JSON path")
     args = parser.parse_args()
 
-    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    token = (os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN") or "").strip()
     if not token:
         print("[ERROR] GITHUB_TOKEN not set")
         sys.exit(1)

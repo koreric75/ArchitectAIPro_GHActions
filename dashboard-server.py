@@ -133,7 +133,7 @@ def refresh():
     Client-submitted tokens are rejected to prevent token-over-wire exposure.
     """
     # CSIAC IAM: Use only server-side token — never accept from request body
-    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    token = (os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN") or "").strip() or None
 
     if not token:
         log_security_event(
