@@ -1,0 +1,170 @@
+############################################################
+# Deploy CHAD Dashboard to Cloud Run
+#
+# Triggers on:
+#   - Push to main (dashboard-related files)
+#   - Manual dispatch
+#
+# Pipeline:
+#   1. Authenticate to GCP via Workload Identity Federation
+#   2. Build Docker image with Dockerfile.dashboard
+#   3. Push to Artifact Registry
+#   4. Deploy to Cloud Run (scale-to-zero)
+#   5. Trigger /api/refresh to populate live data
+#
+# Secrets required:
+#   GCP_WIF_PROVIDER — WIF provider resource name
+#   GCP_SA_EMAIL     — Foreman service account email
+#   GH_PAT           — GitHub PAT for audit (injected into Cloud Run env)
+############################################################
+name: "🚀 Deploy CHAD Dashboard"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "dashboard-server.py"
+      - "Dockerfile.dashboard"
+      - "requirements-dashboard.txt"
+      - ".github/scripts/repo_auditor.py"
+      - ".github/scripts/dashboard_generator.py"
+      - ".github/scripts/token_budget.py"
+      - ".github/scripts/security_logger.py"
+      - ".github/workflows/deploy-dashboard.yml"
+  workflow_dispatch:
+    inputs:
+      skip_refresh:
+        description: "Skip post-deploy /api/refresh call"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: bluefalconink
+  REGION: us-central1
+  REPO: bluefalconink-apps
+  IMAGE: chad-dashboard
+  SERVICE: chad-dashboard
+  GITHUB_OWNER: koreric75
+
+jobs:
+  deploy:
+    name: "🐳 Build & Deploy"
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout ──
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4
+
+      # ── Authenticate to GCP via WIF (keyless, zero-trust) ──
+      - name: 🔐 Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@6fc4af4b145ae7821d527454aa9bd537d1f2dc5f  # v2
+        with:
+          token_format: "access_token"
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SA_EMAIL }}
+
+      # ── Configure Docker for Artifact Registry ──
+      - name: 🐳 Configure Docker
+        run: |
+          echo '${{ steps.auth.outputs.access_token }}' | \
+            docker login -u oauth2accesstoken --password-stdin \
+            https://${{ env.REGION }}-docker.pkg.dev
+
+      # ── Build image ──
+      - name: 🏗️ Build Docker image
+        run: |
+          docker build \
+            -f Dockerfile.dashboard \
+            -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:latest \
+            -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:${{ github.sha }} \
+            .
+
+      # ── CSIAC Governance: Vulnerability scan ──
+      - name: 🛡️ Security scan (Trivy)
+        uses: aquasecurity/trivy-action@18f2510ee396bbf400402947e7b4b01e007f0be0  # v0.28.0
+        with:
+          image-ref: "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:latest"
+          format: "table"
+          exit-code: "0"
+          severity: "CRITICAL,HIGH"
+
+      # ── Push to Artifact Registry ──
+      - name: 📦 Push image
+        run: |
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:latest
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:${{ github.sha }}
+
+      # ── Deploy to Cloud Run ──
+      - name: 🚀 Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@e62f655d5754bec48078a72edc015367b01ee97b  # v2
+        with:
+          service: ${{ env.SERVICE }}
+          region: ${{ env.REGION }}
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:${{ github.sha }}
+          flags: |
+            --allow-unauthenticated
+            --min-instances=0
+            --max-instances=3
+            --cpu=1
+            --memory=512Mi
+            --timeout=120
+            --concurrency=80
+            --cpu-throttling
+            --service-account=architect-ai-foreman@${{ env.PROJECT_ID }}.iam.gserviceaccount.com
+          env_vars: |
+            GITHUB_OWNER=${{ env.GITHUB_OWNER }}
+          secrets: |
+            GITHUB_TOKEN=GITHUB_PAT:latest
+
+      # ── Post-deploy: trigger audit refresh ──
+      - name: 🔄 Trigger dashboard refresh
+        if: ${{ github.event.inputs.skip_refresh != 'true' }}
+        run: |
+          SERVICE_URL="${{ steps.deploy.outputs.url }}"
+          echo "🌐 Service deployed at: ${SERVICE_URL}"
+          echo ""
+          echo "Triggering /api/refresh to populate live data..."
+          sleep 10  # Wait for new revision to stabilize
+          
+          HTTP_CODE=$(curl -s -o /tmp/refresh.json -w "%{http_code}" \
+            -X POST "${SERVICE_URL}/api/refresh" \
+            -H "Content-Type: application/json" \
+            -d '{"owner": "'"${{ env.GITHUB_OWNER }}"'"}' \
+            --max-time 180)
+          
+          echo "Response: ${HTTP_CODE}"
+          cat /tmp/refresh.json 2>/dev/null | python3 -m json.tool 2>/dev/null || cat /tmp/refresh.json 2>/dev/null || true
+          
+          if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+            echo ""
+            echo "✅ Dashboard refreshed — live at ${SERVICE_URL}"
+          else
+            echo ""
+            echo "⚠️ Refresh returned ${HTTP_CODE} — dashboard deployed but may show stale data"
+            echo "   Manually trigger: POST ${SERVICE_URL}/api/refresh"
+          fi
+
+      # ── Summary ──
+      - name: 📋 Deployment summary
+        if: always()
+        run: |
+          echo "## 🚀 CHAD Dashboard Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Detail | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Service | \`${{ env.SERVICE }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Region | \`${{ env.REGION }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Image | \`${{ env.IMAGE }}:${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| URL | ${{ steps.deploy.outputs.url }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
