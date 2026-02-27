@@ -21,131 +21,101 @@ graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
         style BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture fill:#1E3A5F,color:#BFDBFE
 
-        subgraph "External Actors"
-            User[External User/Developer]
+        subgraph "External Integrations"
+            User[User/Developer]
+            GitHubAPI[GitHub API]
+            GoogleGeminiAPI[Google Gemini API]
         end
 
         subgraph "GitHub Platform"
-            GitHub[GitHub Repositories]
-            GHActions[GitHub Actions CI/CD]
-            GHActionsSecrets[GitHub Actions Secrets]
-            GHAPI[GitHub API]
-        end
-
-        subgraph "CI/CD & Automation"
-            subgraph "Architect AI Pro Pipeline"
-                AIGenerator[AI Diagram Generator]
-                Foreman[Foreman AI Audit Engine]
-                Remediator[AI Remediation Loop]
-                DrawIO[Draw.io CLI]
-            end
-
-            subgraph "CHAD Operations"
-                CHADAgents[CHAD Audit & Cleanup Agents]
-            end
-
-            subgraph "Security Scans"
-                SASTDepScan[SAST & Dependency Scanners]
-                TrivyScan[Trivy Container Scanner]
-            end
-
-            subgraph "Infrastructure Deployment"
-                Terraform[Terraform IaC]
-            end
-        end
-
-        subgraph "AI Services"
-            GeminiAPI[Google Gemini API]
+            GitHubRepos[GitHub Repositories]
+            GHActions[GitHub Actions]
         end
 
         subgraph "GCP Infrastructure"
+            subgraph "Security"
+                style Security fill:#1E40AF,color:#BFDBFE
+                CloudArmor[Cloud Armor]
+                SecretManager[Secret Manager]
+                WIF[Workload Identity Federation]
+            end
+
+            subgraph "CI/CD & Automation"
+                CloudBuild[Cloud Build]
+                Terraform[Terraform IaC]
+                PythonScripts[Python Automation Scripts]
+            end
+
             subgraph "Application Services"
-                CHADDashboard[CHAD Dashboard - Cloud Run]
-                ArchGallery[Architecture Gallery - Cloud Run]
+                CHADDashboard[CHAD Advisory Dashboard · Cloud Run]
+                ArchGallery[Architecture Gallery · Cloud Run]
             end
-            subgraph "Data & Artifacts"
-                style Data & Artifacts fill:#0F172A,color:#BFDBFE
-                ArtifactRegistry[GCP Artifact Registry]
-                GCPSecretManager[GCP Secret Manager]
+
+            subgraph "Artifacts"
+                ArtifactRegistry[Artifact Registry]
             end
-            subgraph "Platform Services"
-                CloudBuild[GCP Cloud Build]
-                CloudRun[GCP Cloud Run Platform]
-                GCPWIF[GCP Workload Identity Federation]
-                CloudCDN[GCP Cloud CDN]
-            end
+
+            CloudCDN[Cloud CDN]
+            CloudMonitoring[Cloud Monitoring]
+            CloudLogging[Cloud Logging]
         end
 
-        subgraph "Security"
-            style Security fill:#1E40AF,color:#BFDBFE
-            CloudArmor[Cloud Armor]
-            LoadBalancer[GCP Load Balancer]
-        end
+        User -->|Code Push/PR| GitHubRepos
+        User -->|Access Dashboard HTTPS| CloudCDN
+        User -->|Access Gallery HTTPS| CloudCDN
 
-        %% Data Flows
-        User -->|Code Push/PR| GitHub
-        User -->|View Dashboard| LoadBalancer
-        User -->|View Gallery| LoadBalancer
+        CloudCDN -->|Cache/Protect Traffic| CloudArmor
+        CloudArmor -->|HTTPS| CHADDashboard
+        CloudArmor -->|HTTPS| ArchGallery
 
-        GitHub -->|Code Changes Trigger| GHActions
-        GHActions -->|Access Secrets| GHActionsSecrets
-        GHActionsSecrets -->|Provide Credentials| GCPWIF
-        GHActionsSecrets -->|Provide API Key| GeminiAPI
-        GHActionsSecrets -->|Provide Token| GHAPI
+        GitHubRepos -->|Trigger Workflows| GHActions
+        GHActions -->|Run Scripts| PythonScripts
+        GHActions -->|Auth via WIF| WIF
+        GHActions -->|Build Images| CloudBuild
+        GHActions -->|Apply Infrastructure| Terraform
 
-        %% Architect AI Pro Pipeline
-        GHActions -->|Run generate_diagram.py| AIGenerator
-        AIGenerator -->|AI Request| GeminiAPI
-        GeminiAPI -->|Mermaid.js Output| AIGenerator
-        AIGenerator -->|Render PNG/Draw.io| DrawIO
-        DrawIO -->|Rendered Files| AIGenerator
-        AIGenerator -->|Audit Request| Foreman
-        Foreman -->|Audit Report| GHActions
-        GHActions -->|Remediation Trigger| Remediator
-        Remediator -->|Remediation Prompt| GeminiAPI
-        GeminiAPI -->|Corrected Diagram| Remediator
-        Remediator -->|Update Diagram Files| GitHub
-        AIGenerator -->|Commit Diagrams| GitHub
+        PythonScripts -->|Generate Diagrams| GoogleGeminiAPI
+        PythonScripts -->|Audit/Remediate| GitHubRepos
+        PythonScripts -->|Fetch Repo Data| GitHubAPI
+        PythonScripts -->|Generate Dashboard HTML/JSON| CHADDashboard
+        PythonScripts -->|PR Comment| GHActions
 
-        %% CHAD Operations
-        GHActions -->|Run CHAD Scripts| CHADAgents
-        CHADAgents -->|Fetch Repo Data| GHAPI
-        CHADAgents -->|Audit Reports/HTML| GitHub (Artifacts)
-        CHADAgents -->|Modify Repos| GHAPI
-        CHADAgents -->|Trigger Refresh| CHADDashboard
+        GoogleGeminiAPI -->|Mermaid/Text Output| PythonScripts
+        GitHubAPI -->|Repo Metadata/Content| PythonScripts
+        GitHubAPI -->|Repo Metadata/Content| ArchGallery
 
-        %% Security Scans
-        GHActions -->|Run SAST/Dep Scan| SASTDepScan
-        SASTDepScan -->|Scan Code| GitHub
-        GHActions -->|Build Image| CloudBuild
-        CloudBuild -->|Scan Image| TrivyScan
-        TrivyScan -->|Vulnerability Report| CloudBuild
+        WIF -->|Issue GCP Credentials| CloudBuild
+        WIF -->|Issue GCP Credentials| Terraform
+        WIF -->|Issue GCP Credentials| CHADDashboard
+        WIF -->|Issue GCP Credentials| ArchGallery
 
-        %% Infrastructure Deployment
-        GHActions -->|Terraform Apply| Terraform
-        Terraform -->|Auth via WIF| GCPWIF
-        GCPWIF -->|Provision Resources| CloudRun
-        GCPWIF -->|Manage Artifacts| ArtifactRegistry
-        GCPWIF -->|Manage Secrets| GCPSecretManager
+        CloudBuild -->|Push Image| ArtifactRegistry
+        ArtifactRegistry -->|Deploy Image| CHADDashboard
+        ArtifactRegistry -->|Deploy Image| ArchGallery
 
-        %% Cloud Build & Deployment
-        CloudBuild -->|Build Docker Image| ArtifactRegistry
-        ArtifactRegistry -->|Push Image| CloudBuild
-        CloudBuild -->|Deploy Service| CloudRun
+        CHADDashboard -->|Get GITHUB_PAT| SecretManager
+        CHADDashboard -->|Trigger Self-Refresh API| CHADDashboard
+        ArchGallery -->|Get GITHUB_TOKEN| SecretManager
 
-        %% Application Services
-        LoadBalancer -->|HTTPS Traffic| CHADDashboard
-        LoadBalancer -->|HTTPS Traffic| ArchGallery
-        LoadBalancer -->|Content Delivery| CloudCDN
-        CloudCDN -->|Serves Static Assets| CHADDashboard
-        CloudCDN -->|Serves Static Assets| ArchGallery
-        CHADDashboard -->|Fetch Audit Data| GHAPI
-        CHADDashboard -->|Access Secrets| GCPSecretManager
-        ArchGallery -->|Fetch Repo Content| GHAPI
-        ArchGallery -->|Access Secrets| GCPSecretManager
+        Terraform -->|Provision GCP Resources| CloudArmor
+        Terraform -->|Provision GCP Resources| SecretManager
+        Terraform -->|Provision GCP Resources| WIF
+        Terraform -->|Provision GCP Resources| CloudBuild
+        Terraform -->|Provision GCP Resources| CHADDashboard
+        Terraform -->|Provision GCP Resources| ArchGallery
+        Terraform -->|Provision GCP Resources| ArtifactRegistry
+        Terraform -->|Provision GCP Resources| CloudCDN
+        Terraform -->|Provision GCP Resources| CloudMonitoring
+        Terraform -->|Provision GCP Resources| CloudLogging
 
-        %% Security Layer
-        CloudArmor -->|WAF/DDoS Protection| LoadBalancer
+        CHADDashboard -->|Logs/Metrics| CloudLogging
+        CHADDashboard -->|Logs/Metrics| CloudMonitoring
+        ArchGallery -->|Logs/Metrics| CloudLogging
+        ArchGallery -->|Logs/Metrics| CloudMonitoring
+        CloudBuild -->|Logs/Metrics| CloudLogging
+        CloudBuild -->|Logs/Metrics| CloudMonitoring
+        Terraform -->|Logs/Metrics| CloudLogging
+        Terraform -->|Logs/Metrics| CloudMonitoring
 
     end
 
