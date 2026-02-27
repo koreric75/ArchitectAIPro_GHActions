@@ -1,23 +1,24 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" version="22.1.11">
-  <diagram id="0" name="Page-1">
-    <mxGraphModel dx="1434" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageEnabled="1" pageScale="1" pageWidth="1100" pageHeight="850" background="#FFFFFF" math="0" shadow="0">
+<mxfile host="app.diagrams.net" modified="2023-10-27T12:00:00.000Z" agent="Architect AI Pro" etag="unique-etag" version="22.0.0">
+  <diagram id="unique-diagram-id" name="Page-1">
+    <mxGraphModel dx="1434" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageEnabled="1" pageWidth="1100" pageHeight="850" background="#FFFFFF" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
+        <!-- Overall Diagram Boundary -->
+        <mxCell id="2" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#3B82F6;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="0" y="0" width="1080" height="800" as="geometry" />
+        </mxCell>
+
         <!-- Title Bar -->
-        <mxCell id="title" value="&lt;b&gt;BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#1E293B;fontSize=24;" vertex="1" parent="1">
-          <mxGeometry x="100" y="30" width="900" height="40" as="geometry" />
+        <mxCell id="3" value="BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#1E3A5F;fontColor=#BFDBFE;fontSize=24;fontStyle=1;strokeColor=none;" vertex="1" parent="2">
+          <mxGeometry x="0" y="0" width="1080" height="60" as="geometry" />
         </mxCell>
 
-        <!-- Main Architecture Container -->
-        <mxCell id="mainArchitectureContainer" value="" style="rounded=1;whiteSpace=wrap;html=1;container=1;collapsible=0;fillColor=#F8FAFC;strokeColor=#1E3A5F;fontColor=#1E293B;fontSize=16;align=left;verticalAlign=top;spacingTop=10;spacingLeft=10;" vertex="1" parent="1">
-          <mxGeometry x="100" y="90" width="900" height="650" as="geometry" />
+        <!-- Footer -->
+        <mxCell id="4" value="Created with Architect AI Pro | BlueFalconInk LLC" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#1E40AF;fontColor=#BFDBFE;fontSize=12;strokeColor=#3B82F6;strokeWidth=1;" vertex="1" parent="2">
+          <mxGeometry x="0" y="770" width="1080" height="30" as="geometry" />
         </mxCell>
 
-        <!-- External Subgraph -->
-        <mxCell id="externalSubgraph" value="&lt;b&gt;External&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;container=1;collapsible=0;fillColor=#E0F2FE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=14;align=left;verticalAlign=top;spacingTop=10;spacingLeft=10;" vertex="1" parent="mainArchitectureContainer">
-          <mxGeometry x="20" y="50" width="200" height="580" as="geometry" />
-        </mxCell>
-
-        <mxCell
+        <!-- Subgraph: Frontend & API Services -->
+        <mxCell id="5" value="Frontend &amp; API Services" style="swimlane;rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#3
