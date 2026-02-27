@@ -2,30 +2,85 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        subgraph "User & Developer"
-            User[User/Developer]
+        subgraph "External Users"
+            User[Developer/User]
         end
 
         subgraph "GitHub Platform"
-            GitHubRepo[GitHub Repositories]
-            GHActions[GitHub Actions Workflows]
-            GHSecrets[GitHub Actions Secrets]
+            GitHubRepo[GitHub Repository]
+            GitHubActions[GitHub Actions]
+            GitHubAPI[GitHub API]
+            GitHubSecrets[GitHub Secrets]
+            PromptLibrary[Prompt Library]
         end
 
-        subgraph "CI/CD & Infrastructure"
-            style CI/CD & Infrastructure fill:#1E3A5F,color:#BFDBFE
-            ArchitectAIScripts[Architect AI Pro Scripts · Python]
-            CHADCleanupAgent[CHAD Cleanup Agent · Python]
-            DrawioCLI[Draw.io CLI - headless]
-            CloudBuild[Cloud Build]
-            Terraform[Terraform IaC]
+        subgraph "Security"
+            CloudArmor[Cloud Armor]
+            LoadBalancer[Cloud Load Balancer]
+            CloudCDN[Cloud CDN]
+            WIF[Workload Identity Federation]
+            SecretManager[GCP Secret Manager]
         end
+        style Security fill:#1E40AF,color:#BFDBFE
 
         subgraph "Application Services"
-            style Application Services fill:#1E3A5F,color:#BFDBFE
             CHADDashboard[CHAD Dashboard · Cloud Run]
             ArchGallery[Architecture Gallery · Cloud Run]
         end
+        style Application Services fill:#1E3A5F,color:#BFDBFE
+
+        subgraph "Data & AI"
+            GeminiAPI[Google Gemini API]
+            ArtifactRegistry[Artifact Registry]
+        end
+        style Data & AI fill:#0F172A,color:#BFDBFE
+
+        subgraph "CI/CD & Infrastructure"
+            CloudBuild[Cloud Build]
+            Terraform[Terraform IaC]
+            ArchitectAIProEngine[Architect AI Pro Engine · Python Scripts]
+            DrawIO[Draw.io Headless Renderer]
+        end
+
+        %% Flows
+        User -->|Code Push / PR / Workflow Dispatch| GitHubRepo
+        GitHubRepo -->|Triggers Workflows| GitHubActions
+        GitHubActions -->|Executes Scripts| ArchitectAIProEngine
+        ArchitectAIProEngine -->|Uses Prompts| PromptLibrary
+        ArchitectAIProEngine -->|API Calls| GeminiAPI
+        ArchitectAIProEngine -->|Read/Write Repo Data| GitHubAPI
+        ArchitectAIProEngine -->|Renders Diagrams| DrawIO
+        GitHubActions -->|Authenticates via OIDC| WIF
+        WIF -->|Provides GCP Credentials| CloudBuild
+        WIF -->|Provides GCP Credentials| Terraform
+        GitHubActions -->|Triggers Build| CloudBuild
+        CloudBuild -->|Pushes Images| ArtifactRegistry
+        ArtifactRegistry -->|Deploys Container| CHADDashboard
+        ArtifactRegistry -->|Deploys Container| ArchGallery
+        GitHubActions -->|Applies Config| Terraform
+        Terraform -->|Provisions| CloudBuild
+        Terraform -->|Provisions| ArtifactRegistry
+        Terraform -->|Provisions| SecretManager
+        Terraform -->|Provisions| CHADDashboard
+        Terraform -->|Provisions| ArchGallery
+        Terraform -->|Provisions| CloudArmor
+        Terraform -->|Provisions| LoadBalancer
+        Terraform -->|Provisions| CloudCDN
+        Terraform -->|Provisions| WIF
+        GitHubSecrets -->|Provides API Keys| GitHubActions
+        SecretManager -->|Provides GITHUB_TOKEN| CHADDashboard
+        SecretManager -->|Provides GITHUB_TOKEN| ArchGallery
+
+        User -->|Access via HTTPS| LoadBalancer
+        LoadBalancer -->|Caches Static Content| CloudCDN
+        CloudCDN -->|Enforces Policies| CloudArmor
+        CloudArmor -->|Routes Requests| CHADDashboard
+        CloudArmor -->|Routes Requests| ArchGallery
+
+        CHADDashboard -->|Audit Data / Deploy Workflow| GitHubAPI
+        ArchGallery -->|Fetch Diagram Content| GitHubAPI
+
+    end
 
         subgraph "Data & Storage"
             style Data & Storage fill:#0F172A,color:#BFDBFE
