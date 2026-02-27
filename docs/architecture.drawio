@@ -1,89 +1,473 @@
-<mxfile host="app.diagrams.net" modified="2023-10-27T12:00:00.000Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="ArchitectAIPro_GHActions_Architecture" version="22.0.8" type="atlas">
-  <diagram id="ArchitectAIPro_GHActions_Diagram" name="Page-1">
-    <mxGraphModel dx="1434" dy="808" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1400" background="#FFFFFF" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <!-- Diagram Title -->
-        <mxCell id="2" value="BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture" style="fill=#1E40AF;fontColor=#FFFFFF;strokeColor=#1E40AF;rounded=1;absoluteArcSize=1;arcSize=10;fontStyle=1;fontSize=24;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="50" y="30" width="1000" height="60" as="geometry" />
-        </mxCell>
+<mxfile host="app.diagrams.net" agent="ArchitectAIPro" version="23.1.5">
+  <mxGraphModel dx="2427" dy="1343" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageEnabled="1" pageScale="1" pageWidth="1100" pageHeight="850" background="#FFFFFF" math="0" shadow="0">
+    <root>
+      <mxCell id="0" />
+      <mxCell id="1" parent="0" />
 
-        <!-- Subgraph: External Users & Developers -->
-        <mxCell id="5" value="External Users &amp; Developers" style="fill=#BFDBFE;strokeColor=#1E3A5F;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontStyle=1;fontSize=16;align=center;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="50" y="120" width="1000" height="150" as="geometry" />
-        </mxCell>
-        <mxCell id="6" value="User/Developer" style="shape=mxgraph.aws3.User;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="5">
-          <mxGeometry x="400" y="60" width="200" height="60" as="geometry" />
-        </mxCell>
+      <!-- Diagram Title -->
+      <mxCell id="2" value="&lt;b style=&quot;font-size: 24px;&quot;&gt;BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#1E293B;" vertex="1" parent="1">
+        <mxGeometry x="370" y="30" width="700" height="40" as="geometry" />
+      </mxCell>
 
-        <!-- Subgraph: GitHub Ecosystem -->
-        <mxCell id="7" value="GitHub Ecosystem" style="fill=#BFDBFE;strokeColor=#1E3A5F;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontStyle=1;fontSize=16;align=center;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="50" y="300" width="1000" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="8" value="GitHub Repositories" style="shape=mxgraph.aws3.Repository;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="7">
-          <mxGeometry x="100" y="60" width="200" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="9" value="GitHub Actions Workflows" style="shape=mxgraph.github.Actions;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="7">
-          <mxGeometry x="400" y="60" width="200" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="10" value="GitHub API" style="shape=mxgraph.aws3.Cloud_API;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="7">
-          <mxGeometry x="700" y="60" width="200" height="60" as="geometry" />
-        </mxCell>
+      <!-- Footer -->
+      <mxCell id="3" value="&lt;b&gt;🏗️ Created with Architect AI Pro | BlueFalconInk LLC&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#1E40AF;fontSize=12;" vertex="1" parent="1">
+        <mxGeometry x="540" y="1450" width="300" height="20" as="geometry" />
+      </mxCell>
 
-        <!-- Subgraph: Security -->
-        <mxCell id="11" value="Security" style="fill=#1E40AF;fontColor=#BFDBFE;strokeColor=#1E40AF;rounded=1;absoluteArcSize=1;arcSize=10;fontStyle=1;fontSize=16;align=center;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="50" y="530" width="1000" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="12" value="Cloud Armor" style="shape=mxgraph.gcp2.Cloud_Armor;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="11">
-          <mxGeometry x="100" y="60" width="200" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="13" value="Cloud Load Balancer" style="shape=mxgraph.gcp2.Load_Balancing;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="11">
-          <mxGeometry x="400" y="60" width="200" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="14" value="Secret Manager" style="shape=mxgraph.gcp2.Secret_Manager;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="11">
-          <mxGeometry x="100" y="130" width="200" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="15" value="GCP Workload Identity Federation" style="shape=mxgraph.gcp2.Workload_Identity_Federation;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="11">
-          <mxGeometry x="400" y="130" width="200" height="60" as="geometry" />
-        </mxCell>
+      <!-- Containers (Subgraphs) -->
+      <mxCell id="10" value="&lt;b&gt;External Users &amp;amp; Integrations&lt;/b&gt;" style="container;collapsible=0;rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F8FF;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=14;align=left;verticalAlign=top;spacingTop=8;spacingLeft=8;" vertex="1" parent="1">
+        <mxGeometry x="80" y="100" width="400" height="250" as="geometry" />
+      </mxCell>
+      <mxCell id="11" value="&lt;b&gt;Security&lt;/b&gt;" style="container;collapsible=0;rounded=1;whiteSpace=wrap;html=1;fillColor=#1E40AF;strokeColor=#1E40AF;fontColor=#BFDBFE;fontSize=14;align=left;verticalAlign=top;spacingTop=8;spacingLeft=8;" vertex="1" parent="1">
+        <mxGeometry x="500" y="100" width="400" height="250" as="geometry" />
+      </mxCell>
+      <mxCell id="12" value="&lt;b&gt;Application Services (Cloud Run)&lt;/b&gt;" style="container;collapsible=0;rounded=1;whiteSpace=wrap;html=1;fillColor=#1E3A5F;strokeColor=#1E3A5F;fontColor=#BFDBFE;fontSize=14;align=left;verticalAlign=top;spacingTop=8;spacingLeft=8;" vertex="1" parent="1">
+        <mxGeometry x="290" y="380" width="420" height="180" as="geometry" />
+      </mxCell>
+      <mxCell id="13" value="&lt;b&gt;CI/CD &amp;amp; Automation Engine&lt;/b&gt;" style="container;collapsible=0;rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F8FF;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=14;align=left;verticalAlign=top;spacingTop=8;spacingLeft=8;" vertex="1" parent="1">
+        <mxGeometry x="80" y="600" width="600" height="750" as="geometry" />
+      </mxCell>
+      <mxCell id="14" value="&lt;b&gt;Shared Automation Scripts&lt;/b&gt;" style="container;collapsible=0;rounded=1;whiteSpace=wrap;html=1;fillColor=#E0E7FF;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=12;align=left;verticalAlign=top;spacingTop=8;spacingLeft=8;" vertex="1" parent="13">
+        <mxGeometry x="20" y="470" width="560" height="260" as="geometry" />
+      </mxCell>
+      <mxCell id="15" value="&lt;b&gt;Configuration &amp;amp; Artifacts&lt;/b&gt;" style="container;collapsible=0;rounded=1;whiteSpace=wrap;html=1;fillColor=#0F172A;strokeColor=#0F172A;fontColor=#BFDBFE;fontSize=14;align=left;verticalAlign=top;spacingTop=8;spacingLeft=8;" vertex="1" parent="1">
+        <mxGeometry x="700" y="600" width="280" height="750" as="geometry" />
 
-        <!-- Subgraph: BlueFalconInk LLC Services -->
-        <mxCell id="16" value="BlueFalconInk LLC Services" style="fill=#1E3A5F;fontColor=#BFDBFE;strokeColor=#1E3A5F;rounded=1;absoluteArcSize=1;arcSize=10;fontStyle=1;fontSize=16;align=center;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="50" y="760" width="1000" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="17" value="Cloud Run · Architect AI Pro Engine" style="shape=mxgraph.gcp2.Cloud_Run;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="16">
-          <mxGeometry x="100" y="60" width="200" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="18" value="Cloud Run · CHAD Dashboard" style="shape=mxgraph.gcp2.Cloud_Run;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="16">
-          <mxGeometry x="400" y="60" width="200" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="19" value="Cloud Run · Architecture Gallery" style="shape=mxgraph.gcp2.Cloud_Run;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="16">
-          <mxGeometry x="700" y="60" width="200" height="60" as="geometry" />
-        </mxCell>
+      </mxCell>
 
-        <!-- Subgraph: Automation & IaC -->
-        <mxCell id="20" value="Automation &amp; IaC" style="fill=#BFDBFE;strokeColor=#1E3A5F;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontStyle=1;fontSize=16;align=center;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="50" y="990" width="1000" height="200" as="geometry" />
-        </mxCell>
-        <mxCell id="21" value="Cloud Build" style="shape=mxgraph.gcp2.Cloud_Build;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="20">
-          <mxGeometry x="100" y="60" width="200" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="22" value="Artifact Registry" style="shape=mxgraph.gcp2.Artifact_Registry;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="20">
-          <mxGeometry x="400" y="60" width="200" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="23" value="Terraform IaC" style="shape=mxgraph.aws3.Terraform;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;rounded=1;absoluteArcSize=1;arcSize=10;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="20">
-          <mxGeometry x="100" y="130" width="200" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="24" value="Python Script · generate_diagram.py" style="shape=rectangle;fill=#FFFFFF;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;align=center;verticalAlign=middle;rounded=1;absoluteArcSize=1;arcSize=10;" vertex="1" parent="20">
-          <mxGeometry x="400" y="130" width="200" height="60" as="geometry" />
-        </mxCell>
+      <!-- Nodes (Components) -->
+      <!-- External Users & Integrations -->
+      <mxCell id="100" value="&lt;b&gt;End User&lt;/b&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="10">
+        <mxGeometry x="140" y="40" width="60" height="100" as="geometry" />
+      </mxCell>
+      <mxCell id="101" value="&lt;b&gt;GitHub API&lt;/b&gt;" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="10">
+        <mxGeometry x="20" y="150" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="102" value="&lt;b&gt;Google Gemini API&lt;/b&gt;" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="10">
+        <mxGeometry x="200" y="150" width="160" height="60" as="geometry" />
+      </mxCell>
 
-        <!-- Footer -->
-        <mxCell id="25" value="&lt;b&gt;🏗️ Created with Architect AI Pro | BlueFalconInk LLC&lt;/b&gt;" style="fill=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;rounded=1;absoluteArcSize=1;arcSize=10;fontStyle=0;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="50" y="1220" width="1000" height="40" as="geometry" />
-        </mxCell>
-      </root>
-    </mxGraphModel>
-  </diagram>
-</mxfile>
+      <!-- Security -->
+      <mxCell id="110" value="&lt;b&gt;Cloud Armor&lt;/b&gt;" style="shape=shield;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;" vertex="1" parent="11">
+        <mxGeometry x="120" y="150" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="111" value="&lt;b&gt;Cloud Load Balancer&lt;/b&gt;" style="shape=mxgraph.aws3.elastic_load_balancing;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;" vertex="1" parent="11">
+        <mxGeometry x="120" y="50" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="112" value="&lt;b&gt;GCP Workload Identity Federation&lt;/b&gt;" style="shape=key;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;" vertex="1" parent="11">
+        <mxGeometry x="20" y="210" width="170" height="30" as="geometry" />
+      </mxCell>
+      <mxCell id="113" value="&lt;b&gt;Secret Manager&lt;/b&gt;" style="shape=key;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;" vertex="1" parent="11">
+        <mxGeometry x="210" y="210" width="170" height="30" as="geometry" />
+      </mxCell>
+
+      <!-- Application Services (Cloud Run) -->
+      <mxCell id="120" value="&lt;b&gt;CHAD Dashboard&lt;br&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;Flask App&lt;/span&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="12">
+        <mxGeometry x="30" y="50" width="160" height="70" as="geometry" />
+      </mxCell>
+      <mxCell id="121" value="&lt;b&gt;Architecture Gallery&lt;br&gt;&lt;span style=&quot;font-size: 10px;&quot;&gt;FastAPI App&lt;/span&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="12">
+        <mxGeometry x="230" y="50" width="160" height="70" as="geometry" />
+      </mxCell>
+
+      <!-- CI/CD & Automation Engine -->
+      <mxCell id="130" value="&lt;b&gt;ArchitectAIPro_GHActions Workflows&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="13">
+        <mxGeometry x="20" y="40" width="200" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="131" value="&lt;b&gt;Cloud Build&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="13">
+        <mxGeometry x="20" y="120" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="132" value="&lt;b&gt;Artifact Registry&lt;/b&gt;" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="13">
+        <mxGeometry x="20" y="200" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="133" value="&lt;b&gt;Terraform IaC&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="13">
+        <mxGeometry x="20" y="280" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="134" value="&lt;b&gt;Draw.io CLI&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="13">
+        <mxGeometry x="20" y="360" width="160" height="60" as="geometry" />
+      </mxCell>
+
+      <!-- Shared Automation Scripts (nested in 13) -->
+      <mxCell id="140" value="&lt;b&gt;generate_diagram.py&lt;/b&gt;" style="shape=document;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="14">
+        <mxGeometry x="20" y="40" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="141" value="&lt;b&gt;foreman_audit.py&lt;/b&gt;" style="shape=document;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="14">
+        <mxGeometry x="200" y="40" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="142" value="&lt;b&gt;repo_auditor.py&lt;/b&gt;" style="shape=document;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="14">
+        <mxGeometry x="380" y="40" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="143" value="&lt;b&gt;dashboard_generator.py&lt;/b&gt;" style="shape=document;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="14">
+        <mxGeometry x="20" y="150" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="144" value="&lt;b&gt;cleanup_agent.py&lt;/b&gt;" style="shape=document;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="14">
+        <mxGeometry x="200" y="150" width="160" height="60" as="geometry" />
+      </mxCell>
+
+      <!-- Configuration & Artifacts -->
+      <mxCell id="150" value="&lt;b&gt;ARCHITECT_CONFIG.json&lt;/b&gt;" style="shape=document;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="15">
+        <mxGeometry x="60" y="40" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="151" value="&lt;b&gt;PROMPT_LIBRARY/&lt;/b&gt;" style="shape=folder;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="15">
+        <mxGeometry x="60" y="120" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="152" value="&lt;b&gt;audit_report.json&lt;/b&gt;" style="shape=document;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="15">
+        <mxGeometry x="60" y="200" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="153" value="&lt;b&gt;dashboard.html&lt;/b&gt;" style="shape=document;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="15">
+        <mxGeometry x="60" y="280" width="160" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="154" value="&lt;b&gt;docs/architecture.*&lt;/b&gt;" style="shape=document;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="15">
+        <mxGeometry x="60" y="360" width="160" height="60" as="geometry" />
+      </mxCell>
+
+      <!-- Edges (Connections) -->
+      <mxCell id="200" value="Access via HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="100" target="111">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+      <mxCell id="201" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="111" target="110">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="680" y="140" />
+            <mxPoint x="680" y="140" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="202" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.25;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="110" target="120">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+      <mxCell id="203" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.75;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="110" target="121">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+
+      <mxCell id="204" value="Trigger Deploy" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="130" target="131">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+      <mxCell id="205" value="Terraform Apply" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="130" target="133">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+      <mxCell id="206" value="Auth via OIDC" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="130" target="112">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="220" y="660" />
+            <mxPoint x="220" y="235" />
+            <mxPoint x="500" y="235" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="207" value="Access GCP Resources" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="131" target="112">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="100" y="580" />
+            <mxPoint x="100" y="260" />
+            <mxPoint x="585" y="260" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="208" value="Access GCP Resources" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="132" target="112">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="100" y="580" />
+            <mxPoint x="100" y="260" />
+            <mxPoint x="585" y="260" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="209" value="Access GCP Resources" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="133" target="112">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="100" y="580" />
+            <mxPoint x="100" y="260" />
+            <mxPoint x="585" y="260" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="210" value="Access GCP Resources" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="112" target="113">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="585" y="200" />
+            <mxPoint x="585" y="200" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+
+      <mxCell id="211" value="Build Docker Image" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="131" target="132">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+      <mxCell id="212" value="Deploy Image" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="132" target="120">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="180" y="830" />
+            <mxPoint x="180" y="485" />
+            <mxPoint x="290" y="485" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="213" value="Deploy Image" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="132" target="121">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="180" y="830" />
+            <mxPoint x="180" y="485" />
+            <mxPoint x="290" y="485" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+
+      <mxCell id="214" value="Execute" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="130" target="140">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="120" y="700" />
+            <mxPoint x="120" y="1070" />
+            <mxPoint x="100" y="1070" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="215" value="Execute" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="130" target="141">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="120" y="700" />
+            <mxPoint x="120" y="1070" />
+            <mxPoint x="280" y="1070" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="216" value="Execute" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="130" target="142">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="120" y="700" />
+            <mxPoint x="120" y="1070" />
+            <mxPoint x="460" y="1070" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="217" value="Execute" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="130" target="143">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="120" y="700" />
+            <mxPoint x="120" y="1180" />
+            <mxPoint x="100" y="1180" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="218" value="Execute" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="130" target="144">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="120" y="700" />
+            <mxPoint x="120" y="1180" />
+            <mxPoint x="280" y="1180" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="219" value="Install &amp; Use" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="130" target="134">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+
+      <mxCell id="220" value="AI Request" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="140" target="102">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="180" y="1090" />
+            <mxPoint x="180" y="200" />
+            <mxPoint x="200" y="200" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="221" value="Read Config" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="140" target="150">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="180" y="1090" />
+            <mxPoint x="680" y="1090" />
+            <mxPoint x="680" y="700" />
+            <mxPoint x="700" y="700" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="222" value="Read Prompts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="140" target="151">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="180" y="1090" />
+            <mxPoint x="680" y="1090" />
+            <mxPoint x="680" y="780" />
+            <mxPoint x="700" y="780" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="223" value="Convert Diagram" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="140" target="134">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="100" y="1130" />
+            <mxPoint x="100" y="900" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="224" value="Output" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="140" target="154">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="180" y="1090" />
+            <mxPoint x="680" y="1090" />
+            <mxPoint x="680" y="1150" />
+            <mxPoint x="700" y="1150" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+
+      <mxCell id="225" value="Read Config" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="141" target="150">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="360" y="1090" />
+            <mxPoint x="680" y="1090" />
+            <mxPoint x="680" y="700" />
+            <mxPoint x="700" y="700" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="226" value="Audit" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="141" target="154">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="360" y="1090" />
+            <mxPoint x="680" y="1090" />
+            <mxPoint x="680" y="1150" />
+            <mxPoint x="700" y="1150" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+
+      <mxCell id="227" value="Fetch Data" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="142" target="101">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="460" y="1040" />
+            <mxPoint x="460" y="240" />
+            <mxPoint x="100" y="240" />
+            <mxPoint x="100" y="210" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="228" value="Output" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="142" target="152">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="540" y="1090" />
+            <mxPoint x="680" y="1090" />
+            <mxPoint x="680" y="860" />
+            <mxPoint x="700" y="860" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+
+      <mxCell id="229" value="Read Report" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="143" target="152">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="180" y="1210" />
+            <mxPoint x="680" y="1210" />
+            <mxPoint x="680" y="860" />
+            <mxPoint x="700" y="860" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="230" value="Output" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="143" target="153">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="180" y="1210" />
+            <mxPoint x="680" y="1210" />
+            <mxPoint x="680" y="940" />
+            <mxPoint x="700" y="940" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+
+      <mxCell id="231" value="Fetch/Update Repos" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="144" target="101">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="280" y="1180" />
+            <mxPoint x="280" y="240" />
+            <mxPoint x="100" y="240" />
+            <mxPoint x="100" y="210" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="232" value="Read Report" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="144" target="152">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="360" y="1210" />
+            <mxPoint x="680" y="1210" />
+            <mxPoint x="680" y="860" />
+            <mxPoint x="700" y="860" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="233" value="Update Config" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="144" target="150">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="360" y="1210" />
+            <mxPoint x="680" y="1210" />
+            <mxPoint x="680" y="700" />
+            <mxPoint x="700" y="700" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+
+      <mxCell id="234" value="Serve HTML/JSON" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="120" target="153">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="450" y="485" />
+            <mxPoint x="450" y="940" />
+            <mxPoint x="700" y="940" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="235" value="Serve HTML/JSON" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="120" target="152">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="450" y="485" />
+            <mxPoint x="450" y="860" />
+            <mxPoint x="700" y="860" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="236" value="Trigger Execution" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="120" target="142">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="370" y="550" />
+            <mxPoint x="370" y="1040" />
+            <mxPoint x="460" y="1040" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="237" value="Trigger Execution" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="120" target="143">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="370" y="550" />
+            <mxPoint x="370" y="1180" />
+            <mxPoint x="100" y="1180" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="238" value="Deploy Workflow API" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="120" target="101">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="370" y="410" />
+            <mxPoint x="370" y="240" />
+            <mxPoint x="100" y="240" />
+            <mxPoint x="100" y="210" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="239" value="Get GITHUB_TOKEN" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="120" target="113">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="450" y="485" />
+            <mxPoint x="450" y="225" />
+            <mxPoint x="600" y="225" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+
+      <mxCell id="240" value="Fetch Diagrams" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="121" target="101">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="370" y="410" />
+            <mxPoint x="370" y="240" />
+            <mxPoint x="100" y="240" />
+            <mxPoint x="100" y="210" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="241" value="Get GITHUB_TOKEN" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="121" target="113">
+        <mxGeometry relative="1" as="geometry">

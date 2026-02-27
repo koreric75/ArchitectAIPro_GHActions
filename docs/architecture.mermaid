@@ -2,36 +2,106 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        subgraph "External Users & Developers"
-            User[User/Developer]
-        end
-
-        subgraph "GitHub Ecosystem"
-            GHRepos[GitHub Repositories]
-            GHActions[GitHub Actions Workflows]
-            GHAPI[GitHub API]
+        subgraph "External Users & Integrations"
+            User[End User]
+            GitHubAPI[GitHub API]
+            GoogleGeminiAPI[Google Gemini API]
         end
 
         subgraph "Security"
-            style Security fill:#1E40AF,color:#BFDBFE
             CloudArmor[Cloud Armor]
-            LoadBalancer[Cloud Load Balancer]
-            SecretManager[Secret Manager]
+            CloudLoadBalancer[Cloud Load Balancer]
             GCPWIF[GCP Workload Identity Federation]
+            SecretManager[Secret Manager]
         end
 
-        subgraph "BlueFalconInk LLC Services"
-            style BlueFalconInk LLC Services fill:#1E3A5F,color:#BFDBFE
-            ArchitectAIProEngine[Cloud Run · Architect AI Pro Engine]
-            CHADDashboard[Cloud Run · CHAD Dashboard]
-            ArchGallery[Cloud Run · Architecture Gallery]
+        subgraph "Application Services (Cloud Run)"
+            style Application Services (Cloud Run) fill:#1E3A5F
+            CHADDashboard[CHAD Dashboard · Flask App]
+            ArchGallery[Architecture Gallery · FastAPI App]
         end
 
-        subgraph "Automation & IaC"
+        subgraph "CI/CD & Automation Engine"
+            GHActions[ArchitectAIPro_GHActions Workflows]
             CloudBuild[Cloud Build]
             ArtifactRegistry[Artifact Registry]
             Terraform[Terraform IaC]
+            DrawioCLI[Draw.io CLI]
+            subgraph "Shared Automation Scripts"
+                GenerateDiagram[generate_diagram.py]
+                ForemanAudit[foreman_audit.py]
+                RepoAuditor[repo_auditor.py]
+                DashboardGenerator[dashboard_generator.py]
+                CleanupAgent[cleanup_agent.py]
+            end
+        end
 
-            GenerateDiagram[Python Script · generate_diagram.py]
+        subgraph "Configuration & Artifacts"
+            style Configuration & Artifacts fill:#0F172A
+            ArchitectConfig[ARCHITECT_CONFIG.json]
+            PromptLibrary[PROMPT_LIBRARY/]
+            AuditReportJSON[audit_report.json]
+            DashboardHTML[dashboard.html]
+            DiagramArtifacts[docs/architecture.*]
+        end
+
+        User -->|Access via HTTPS| CloudLoadBalancer
+        CloudLoadBalancer --> CloudArmor
+        CloudArmor -->|HTTPS| CHADDashboard
+        CloudArmor -->|HTTPS| ArchGallery
+
+        GHActions -->|Trigger Deploy| CloudBuild
+        GHActions -->|Terraform Apply| Terraform
+        GHActions -->|Auth via OIDC| GCPWIF
+        GCPWIF -->|Access GCP Resources| CloudBuild
+        GCPWIF -->|Access GCP Resources| SecretManager
+        GCPWIF -->|Access GCP Resources| ArtifactRegistry
+        GCPWIF -->|Access GCP Resources| Terraform
+
+        CloudBuild -->|Build Docker Image| ArtifactRegistry
+        ArtifactRegistry -->|Deploy Image| CHADDashboard
+        ArtifactRegistry -->|Deploy Image| ArchGallery
+
+        GHActions -->|Execute| GenerateDiagram
+        GHActions -->|Execute| ForemanAudit
+        GHActions -->|Execute| RepoAuditor
+        GHActions -->|Execute| DashboardGenerator
+        GHActions -->|Execute| CleanupAgent
+        GHActions -->|Install & Use| DrawioCLI
+
+        GenerateDiagram -->|AI Request| GoogleGeminiAPI
+        GenerateDiagram -->|Read Config| ArchitectConfig
+        GenerateDiagram -->|Read Prompts| PromptLibrary
+        GenerateDiagram -->|Convert Diagram| DrawioCLI
+        GenerateDiagram -->|Output| DiagramArtifacts
+
+        ForemanAudit -->|Read Config| ArchitectConfig
+        ForemanAudit -->|Audit| DiagramArtifacts
+
+        RepoAuditor -->|Fetch Data| GitHubAPI
+        RepoAuditor -->|Output| AuditReportJSON
+
+        DashboardGenerator -->|Read Report| AuditReportJSON
+        DashboardGenerator -->|Output| DashboardHTML
+
+        CleanupAgent -->|Fetch/Update Repos| GitHubAPI
+        CleanupAgent -->|Read Report| AuditReportJSON
+        CleanupAgent -->|Update Config| ArchitectConfig
+
+        CHADDashboard -->|Serve HTML/JSON| DashboardHTML
+        CHADDashboard -->|Serve HTML/JSON| AuditReportJSON
+        CHADDashboard -->|Trigger Execution| RepoAuditor
+        CHADDashboard -->|Trigger Execution| DashboardGenerator
+        CHADDashboard -->|Deploy Workflow API| GitHubAPI
+        CHADDashboard -->|Get GITHUB_TOKEN| SecretManager
+
+        ArchGallery -->|Fetch Diagrams| GitHubAPI
+        ArchGallery -->|Get GITHUB_TOKEN| SecretManager
+
+        GitHubAPI -->|Repo Data, File Content| ArchGallery
+        GitHubAPI -->|Repo Data, Commits| RepoAuditor
+        GitHubAPI -->|Repo Data, File Updates| CleanupAgent
+        GitHubAPI -->|Workflow Deployment| CHADDashboard
+
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
