@@ -760,6 +760,15 @@ tr.selected {{ background: rgba(59,130,246,0.1) !important; }}
 <body>
 <div class="container">
 
+<!-- Navigation -->
+<nav style="display:flex;align-items:center;gap:24px;padding:16px 0;border-bottom:1px solid var(--border);margin-bottom:16px">
+    <a href="/" style="font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--accent-blue),var(--accent-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none">⚡ CHAD</a>
+    <div style="display:flex;gap:4px">
+        <a href="/" style="padding:8px 16px;border-radius:8px;background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(139,92,246,0.15));color:var(--accent-blue);border:1px solid rgba(59,130,246,0.2);text-decoration:none;font-size:13px;font-weight:500">📊 Dashboard</a>
+        <a href="/ops" style="padding:8px 16px;border-radius:8px;color:var(--text-secondary);text-decoration:none;font-size:13px;font-weight:500;transition:all 0.2s">🛰️ Ops Center</a>
+    </div>
+</nav>
+
 <!-- Token Connect Bar -->
 <div class="token-bar" id="tokenBar">
     <label>🔑 GitHub Token:</label>

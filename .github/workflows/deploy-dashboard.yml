@@ -28,9 +28,12 @@ on:
       - "requirements-dashboard.txt"
       - ".github/scripts/repo_auditor.py"
       - ".github/scripts/dashboard_generator.py"
+      - ".github/scripts/ops_page_generator.py"
       - ".github/scripts/token_budget.py"
       - ".github/scripts/security_logger.py"
       - ".github/workflows/deploy-dashboard.yml"
+      - "docs/architecture.mermaid"
+      - "docs/architecture.md"
   workflow_dispatch:
     inputs:
       skip_refresh:

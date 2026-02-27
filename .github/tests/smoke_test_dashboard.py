@@ -226,6 +226,45 @@ def test_cors_not_wildcard():
         assert acao != "*", "CORS set to wildcard (*) — risky for token-handling API"
 
 
+def test_ops_center_page():
+    """Verify /ops returns the Ops Center page."""
+    r = requests.get(f"{SERVICE_URL}/ops", timeout=MAX_RESPONSE_TIME)
+    assert r.status_code == 200, f"Expected 200, got {r.status_code}"
+    assert len(r.text) > 500, f"Ops page too small ({len(r.text)} bytes)"
+    assert "Ops Center" in r.text, "Missing 'Ops Center' title"
+
+
+def test_ops_has_architecture():
+    """Verify Ops Center has architecture diagram section."""
+    r = requests.get(f"{SERVICE_URL}/ops", timeout=MAX_RESPONSE_TIME)
+    assert "architectureSection" in r.text, "Missing architecture section"
+    assert "mermaid" in r.text.lower(), "Missing Mermaid diagram"
+
+
+def test_ops_has_deployments():
+    """Verify Ops Center has deployment status table."""
+    r = requests.get(f"{SERVICE_URL}/ops", timeout=MAX_RESPONSE_TIME)
+    assert "deploymentsSection" in r.text, "Missing deployments section"
+    assert "deploy-table" in r.text, "Missing deployment table"
+
+
+def test_ops_has_recommendations():
+    """Verify Ops Center has recommendations section."""
+    r = requests.get(f"{SERVICE_URL}/ops", timeout=MAX_RESPONSE_TIME)
+    assert "recommendationsSection" in r.text, "Missing recommendations section"
+
+
+def test_deployments_api():
+    """Verify /api/deployments returns deployment data."""
+    r = requests.get(f"{SERVICE_URL}/api/deployments", timeout=MAX_RESPONSE_TIME)
+    assert r.status_code == 200, f"Expected 200, got {r.status_code}"
+    data = r.json()
+    assert "deployments" in data, "Missing deployments key"
+    assert "summary" in data, "Missing summary key"
+    assert "recommendations" in data, "Missing recommendations key"
+    assert isinstance(data["deployments"], list), "Deployments is not a list"
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -260,6 +299,11 @@ def main():
         ("No debug mode", test_no_debug_mode),
         ("Security headers", test_security_headers),
         ("CORS not wildcard", test_cors_not_wildcard),
+        ("Ops Center page", test_ops_center_page),
+        ("Ops has architecture", test_ops_has_architecture),
+        ("Ops has deployments", test_ops_has_deployments),
+        ("Ops has recommendations", test_ops_has_recommendations),
+        ("Deployments API", test_deployments_api),
     ]
 
     total_start = time.monotonic()

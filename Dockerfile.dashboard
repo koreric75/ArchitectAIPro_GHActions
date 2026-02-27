@@ -13,8 +13,14 @@ RUN pip install --no-cache-dir -r requirements-dashboard.txt
 # Copy application scripts
 COPY .github/scripts/repo_auditor.py /app/repo_auditor.py
 COPY .github/scripts/dashboard_generator.py /app/dashboard_generator.py
+COPY .github/scripts/ops_page_generator.py /app/ops_page_generator.py
 COPY .github/scripts/token_budget.py /app/token_budget.py
 COPY .github/scripts/security_logger.py /app/security_logger.py
+
+# Copy architecture docs for the Ops Center
+RUN mkdir -p /app/docs
+COPY docs/architecture.mermaid /app/docs/architecture.mermaid
+COPY docs/architecture.md /app/docs/architecture.md
 
 # Copy deployable workflow templates
 RUN mkdir -p /app/workflow_templates
@@ -25,7 +31,8 @@ COPY .github/workflows/security-scan.yml /app/workflow_templates/security-scan.y
 # (audit_report.json and dashboard.html are NOT committed to the public repo)
 RUN mkdir -p /app/static && \
     echo '{"summary":{"total_repos":0},"repos":[]}' > /app/static/audit_report.json && \
-    echo '<html><body><h1>CHAD Dashboard</h1><p>Run POST /api/refresh to generate.</p></body></html>' > /app/static/dashboard.html
+    echo '<html><body><h1>CHAD Dashboard</h1><p>Run POST /api/refresh to generate.</p></body></html>' > /app/static/dashboard.html && \
+    echo '<html><body><h1>CHAD Ops Center</h1><p>Run POST /api/refresh to generate.</p></body></html>' > /app/static/ops.html
 
 # Server script
 COPY dashboard-server.py /app/server.py

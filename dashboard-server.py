@@ -224,6 +224,22 @@ def refresh():
             )
             return jsonify({"error": "Dashboard generation failed"}), 500
 
+        # Generate Ops Center page
+        app_dir = Path(__file__).parent
+        mermaid_path = app_dir / "docs" / "architecture.mermaid"
+        ops_cmd = [
+            sys.executable, "ops_page_generator.py",
+            "--input", str(STATIC_DIR / "audit_report.json"),
+            "--mermaid", str(mermaid_path),
+            "--output", str(STATIC_DIR / "ops.html"),
+        ]
+        result3 = subprocess.run(
+            ops_cmd, capture_output=True, text=True, timeout=30,
+            cwd=app_dir,
+        )
+        if result3.returncode != 0:
+            logger.warning(f"Ops page generation failed (non-fatal): {result3.stderr[:300]}")
+
         # Load summary
         report = json.loads((STATIC_DIR / "audit_report.json").read_text())
 
@@ -262,6 +278,228 @@ def refresh():
 def health():
     """Health check endpoint for Cloud Run."""
     return jsonify({"status": "healthy", "service": "chad-dashboard"})
+
+
+# ---------------------------------------------------------------------------
+# Ops Center Page + API  (Architecture, Deployments, Recommendations)
+# ---------------------------------------------------------------------------
+
+@app.route("/ops")
+def ops_page():
+    """Serve the CHAD Ops Center page."""
+    ops_html = STATIC_DIR / "ops.html"
+    if ops_html.exists():
+        return send_from_directory(STATIC_DIR, "ops.html")
+    return "<html><body><h1>CHAD Ops Center</h1><p>Run POST /api/refresh to generate.</p></body></html>", 200
+
+
+@app.route("/api/architecture", methods=["GET"])
+def get_architecture():
+    """Return the BlueFalconInk LLC architecture diagram (Mermaid source)."""
+    token = (os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN") or "").strip()
+    owner = os.environ.get("GITHUB_OWNER", "koreric75")
+    repo = "ArchitectAIPro_GHActions"
+
+    mermaid_src = ""
+    arch_md = ""
+
+    # Try fetching live from GitHub first, fall back to local file
+    if token:
+        headers = _github_headers(token)
+        try:
+            url = f"https://api.github.com/repos/{owner}/{repo}/contents/docs/architecture.mermaid"
+            resp = http_requests.get(url, headers=headers, timeout=10)
+            if resp.status_code == 200:
+                import base64 as b64
+                mermaid_src = b64.b64decode(resp.json()["content"]).decode("utf-8")
+        except Exception:
+            pass
+        try:
+            url = f"https://api.github.com/repos/{owner}/{repo}/contents/docs/architecture.md"
+            resp = http_requests.get(url, headers=headers, timeout=10)
+            if resp.status_code == 200:
+                import base64 as b64
+                arch_md = b64.b64decode(resp.json()["content"]).decode("utf-8")
+        except Exception:
+            pass
+
+    # Fall back to local files in the container
+    if not mermaid_src:
+        local = Path(__file__).parent / "docs" / "architecture.mermaid"
+        if local.exists():
+            mermaid_src = local.read_text(encoding="utf-8")
+    if not arch_md:
+        local = Path(__file__).parent / "docs" / "architecture.md"
+        if local.exists():
+            arch_md = local.read_text(encoding="utf-8")
+
+    return jsonify({
+        "mermaid": mermaid_src,
+        "markdown": arch_md,
+    })
+
+
+@app.route("/api/deployments", methods=["GET"])
+def get_deployments():
+    """Fetch recent workflow runs across all audited repos.
+
+    Returns deployment status for every repo that has GitHub Actions configured.
+    Uses the cached audit_report.json to know which repos to scan.
+    """
+    token = (os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN") or "").strip()
+    if not token:
+        return jsonify({"error": "No GitHub token configured"}), 401
+
+    headers = _github_headers(token)
+
+    # Load latest audit report for repo list
+    report_path = STATIC_DIR / "audit_report.json"
+    if not report_path.exists():
+        return jsonify({"error": "No audit report available. Run /api/refresh first."}), 404
+
+    report = json.loads(report_path.read_text())
+    repos = report.get("repos", [])
+
+    deployments = []
+    for repo_data in repos:
+        repo_name = repo_data["name"]
+        repo_owner = repo_data.get("owner", report.get("owner", "koreric75"))
+        full_name = f"{repo_owner}/{repo_name}"
+
+        # Use cached workflow data from audit
+        wf_data = repo_data.get("workflows", {})
+        cached_runs = wf_data.get("recent_runs", [])
+        health = wf_data.get("health", "UNKNOWN")
+
+        # Also pull repo metadata
+        tier = repo_data.get("classification", {}).get("tier", "UNKNOWN")
+        is_archived = repo_data.get("is_archived", False)
+        url = repo_data.get("url", f"https://github.com/{full_name}")
+        has_workflow = repo_data.get("architecture", {}).get("has_workflow", False)
+        staleness = repo_data.get("staleness", {})
+        days_since_push = staleness.get("days_since_push", "?")
+
+        entry = {
+            "repo": repo_name,
+            "owner": repo_owner,
+            "full_name": full_name,
+            "url": url,
+            "tier": tier,
+            "is_archived": is_archived,
+            "has_ci": len(cached_runs) > 0 or has_workflow,
+            "health": health,
+            "days_since_push": days_since_push,
+            "recent_runs": cached_runs[:5],
+        }
+        deployments.append(entry)
+
+    # Sort: failing first, then degraded, then healthy, then unknown
+    health_order = {"FAILING": 0, "DEGRADED": 1, "HEALTHY": 2, "UNKNOWN": 3}
+    deployments.sort(key=lambda d: (health_order.get(d["health"], 9), d["full_name"]))
+
+    # Summary stats
+    total = len(deployments)
+    healthy = sum(1 for d in deployments if d["health"] == "HEALTHY")
+    degraded = sum(1 for d in deployments if d["health"] == "DEGRADED")
+    failing = sum(1 for d in deployments if d["health"] == "FAILING")
+    no_ci = sum(1 for d in deployments if not d["has_ci"])
+
+    # Build recommendations
+    recommendations = _build_recommendations(deployments, repos, report)
+
+    return jsonify({
+        "deployments": deployments,
+        "summary": {
+            "total": total,
+            "healthy": healthy,
+            "degraded": degraded,
+            "failing": failing,
+            "no_ci": no_ci,
+        },
+        "recommendations": recommendations,
+    })
+
+
+def _build_recommendations(deployments, repos, report):
+    """Generate actionable recommendations based on deployment health + audit data."""
+    recs = []
+
+    # 1. Repos with failing CI
+    failing_repos = [d for d in deployments if d["health"] == "FAILING"]
+    if failing_repos:
+        recs.append({
+            "severity": "critical",
+            "icon": "🔴",
+            "title": f"{len(failing_repos)} repo(s) have failing CI pipelines",
+            "description": "These repositories have 3+ recent workflow failures. Investigate and fix build/test issues.",
+            "repos": [d["full_name"] for d in failing_repos],
+            "action": "Inspect workflow logs and fix root causes immediately.",
+        })
+
+    # 2. Repos with degraded CI
+    degraded_repos = [d for d in deployments if d["health"] == "DEGRADED"]
+    if degraded_repos:
+        recs.append({
+            "severity": "warning",
+            "icon": "🟡",
+            "title": f"{len(degraded_repos)} repo(s) have degraded CI health",
+            "description": "Occasional failures detected. May indicate flaky tests or intermittent issues.",
+            "repos": [d["full_name"] for d in degraded_repos],
+            "action": "Review recent failure logs to identify patterns (flaky tests, timeouts, dependency issues).",
+        })
+
+    # 3. Active repos with no CI
+    no_ci_active = [d for d in deployments if not d["has_ci"] and d["tier"] in ("CORE", "ACTIVE") and not d["is_archived"]]
+    if no_ci_active:
+        recs.append({
+            "severity": "warning",
+            "icon": "⚠️",
+            "title": f"{len(no_ci_active)} active repo(s) have no CI/CD pipeline",
+            "description": "Core/Active repos without continuous integration are at risk of undetected regressions.",
+            "repos": [d["full_name"] for d in no_ci_active],
+            "action": "Deploy an architecture or security-scan workflow from the CHAD dashboard.",
+        })
+
+    # 4. Repos missing architecture workflow
+    no_arch = [r for r in repos if not r.get("architecture", {}).get("has_workflow", False)
+               and not r.get("is_archived", False)
+               and r.get("classification", {}).get("tier") in ("CORE", "ACTIVE")]
+    if no_arch:
+        recs.append({
+            "severity": "info",
+            "icon": "🏗️",
+            "title": f"{len(no_arch)} repo(s) missing architecture diagrams workflow",
+            "description": "Architecture diagrams keep documentation in sync. Deploy the workflow to auto-generate them.",
+            "repos": [f"{r.get('owner', 'unknown')}/{r['name']}" for r in no_arch],
+            "action": "Use the Deploy Workflow feature on the main dashboard.",
+        })
+
+    # 5. Stale repos that should be archived
+    stale_active = [r for r in repos if r.get("classification", {}).get("tier") in ("STALE", "DEAD", "DORMANT")
+                    and not r.get("is_archived", False)]
+    if stale_active:
+        recs.append({
+            "severity": "info",
+            "icon": "📦",
+            "title": f"{len(stale_active)} stale/dead repo(s) should be archived",
+            "description": "These repos haven't had activity in a long time. Archiving reduces security surface area.",
+            "repos": [f"{r.get('owner', 'unknown')}/{r['name']}" for r in stale_active],
+            "action": "Select these repos on the main dashboard and use Archive.",
+        })
+
+    # 6. Branding compliance
+    branding_issues = report.get("summary", {}).get("branding_issues", [])
+    if branding_issues:
+        recs.append({
+            "severity": "info",
+            "icon": "🎨",
+            "title": f"{len(branding_issues)} repo(s) have branding compliance issues",
+            "description": "Missing or incorrect LICENSE, README, or .github templates.",
+            "repos": [b["repo"] for b in branding_issues],
+            "action": "Review branding requirements and add missing files.",
+        })
+
+    return recs
 
 
 # ---------------------------------------------------------------------------
@@ -560,6 +798,19 @@ def _auto_refresh():
         if result2.returncode != 0:
             logger.error(f"Auto-refresh dashboard generation failed: {result2.stderr[:500]}")
             return
+
+        # Generate Ops Center page
+        mermaid_path = app_dir / "docs" / "architecture.mermaid"
+        result3 = subprocess.run(
+            [sys.executable, "ops_page_generator.py",
+             "--input", str(STATIC_DIR / "audit_report.json"),
+             "--mermaid", str(mermaid_path),
+             "--output", str(STATIC_DIR / "ops.html")],
+            capture_output=True, text=True, timeout=30,
+            cwd=app_dir,
+        )
+        if result3.returncode != 0:
+            logger.warning(f"Auto-refresh ops page generation failed (non-fatal): {result3.stderr[:300]}")
 
         report = json.loads((STATIC_DIR / "audit_report.json").read_text())
         total = report.get("summary", {}).get("total_repos", 0)
