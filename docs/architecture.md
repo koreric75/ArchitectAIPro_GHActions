@@ -19,32 +19,34 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        style BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture fill:#1E3A5F,color:#BFDBFE
+        subgraph "User & Developer"
+            User[User/Developer]
+        end
 
-        User[User/Developer]
+        subgraph "GitHub Platform"
+            GitHubRepo[GitHub Repositories]
+            GHActions[GitHub Actions Workflows]
+            GHSecrets[GitHub Actions Secrets]
+        end
 
-        subgraph "Frontend"
-            style Frontend fill:#E0F2FE,color:#1E40AF
-            CHADDashUI[CHAD Dashboard UI]
-            ArchGalleryUI[Architecture Gallery UI]
+        subgraph "CI/CD & Infrastructure"
+            style CI/CD & Infrastructure fill:#1E3A5F,color:#BFDBFE
+            ArchitectAIScripts[Architect AI Pro Scripts · Python]
+            CHADCleanupAgent[CHAD Cleanup Agent · Python]
+            DrawioCLI[Draw.io CLI - headless]
+            CloudBuild[Cloud Build]
+            Terraform[Terraform IaC]
         end
 
         subgraph "Application Services"
             style Application Services fill:#1E3A5F,color:#BFDBFE
-            CHADDashSvc[CHAD Dashboard Service]
-            ArchGallerySvc[Architecture Gallery Service]
-            CloudRun[Cloud Run Platform]
+            CHADDashboard[CHAD Dashboard · Cloud Run]
+            ArchGallery[Architecture Gallery · Cloud Run]
         end
 
-        subgraph "Automation & CI/CD"
-            GHActions[GitHub Actions]
-            CloudBuild[Cloud Build]
-            Terraform[Terraform IaC]
-            DiagramGen[Architect AI Pro · Diagram Generator Script]
-            ForemanAudit[Foreman Audit Engine · Python]
-            RepoAuditor[Repo Auditor Script · Python]
-            DashboardGen[Dashboard Generator Script · Python]
-            CleanupAgent[Cleanup Agent Script · Python]
+        subgraph "Data & Storage"
+            style Data & Storage fill:#0F172A,color:#BFDBFE
+            ArtifactRegistry[Artifact Registry]
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
