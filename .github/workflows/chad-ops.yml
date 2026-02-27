@@ -216,3 +216,21 @@ jobs:
           CALLS="${{ needs.audit.outputs.api_calls }}"
           echo "✅ CHAD audit complete — ${REPOS} repos, ${CALLS} API calls"
           echo "   Artifacts uploaded (not committed to public repo)"
+
+      - name: Trigger Cloud Run dashboard refresh
+        env:
+          DASHBOARD_URL: "https://chad-dashboard-42380604425.us-central1.run.app"
+        run: |
+          echo "Triggering CHAD dashboard refresh at ${DASHBOARD_URL}/api/refresh ..."
+          HTTP_CODE=$(curl -s -o /tmp/refresh_response.json -w "%{http_code}" \
+            -X POST "${DASHBOARD_URL}/api/refresh" \
+            -H "Content-Type: application/json" \
+            -d '{"owner": "'"${{ env.GITHUB_OWNER }}"'"}' \
+            --max-time 150)
+          echo "Response code: ${HTTP_CODE}"
+          cat /tmp/refresh_response.json || true
+          if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+            echo "✅ Dashboard refreshed successfully"
+          else
+            echo "⚠️ Dashboard refresh returned ${HTTP_CODE} — dashboard may use stale data"
+          fi

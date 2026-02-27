@@ -152,11 +152,19 @@ def generate_dashboard(report: dict) -> str:
     missing_arch = [r["name"] for r in repos
                     if r["classification"]["tier"] in ("CORE", "ACTIVE")
                     and not r.get("architecture", {}).get("fully_configured", False)]
+    # Build JSON list for JS deploy function
+    missing_arch_json = json.dumps(missing_arch) if missing_arch else "[]"
     if missing_arch:
-        action_items += '<div class="action-card action-arch"><h3>🏗️ Architecture Diagrams Missing</h3><ul>'
+        action_items += f'<div class="action-card action-arch" id="deployCard" data-repos=\'{missing_arch_json}\'><h3>🏗️ Architecture Diagrams Missing</h3><ul>'
         for ma in missing_arch:
             action_items += f"<li>{ma}</li>"
-        action_items += "</ul><p>Deploy the architecture workflow to these repos.</p></div>"
+        action_items += '</ul><p>Deploy the architecture workflow to these repos.</p>'
+        action_items += '<button class="btn-deploy" id="btnDeploy" onclick="deployWorkflow()">'
+        action_items += '<span class="spinner"></span>'
+        action_items += '<span class="btn-label">🚀 Deploy Workflow</span>'
+        action_items += '</button>'
+        action_items += '<div class="deploy-results" id="deployResults"></div>'
+        action_items += '</div>'
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -369,6 +377,44 @@ tr:hover {{ background: var(--bg-card); }}
 .action-archive {{ border-left-color: var(--accent-amber); }}
 .action-brand {{ border-left-color: var(--accent-purple); }}
 .action-arch {{ border-left-color: var(--accent-blue); }}
+
+/* Deploy Button */
+.btn-deploy {{
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.2s;
+    margin-top: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}}
+.btn-deploy:hover {{ filter: brightness(1.15); transform: translateY(-1px); }}
+.btn-deploy:disabled {{ opacity: 0.5; cursor: wait; filter: none; transform: none; }}
+.btn-deploy .spinner {{
+    display: none;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}}
+.btn-deploy.loading .spinner {{ display: inline-block; }}
+.btn-deploy.loading .btn-label {{ display: none; }}
+@keyframes spin {{ to {{ transform: rotate(360deg); }} }}
+.deploy-results {{
+    margin-top: 10px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+}}
+.deploy-results .dr-ok {{ color: var(--accent-green); }}
+.deploy-results .dr-err {{ color: var(--accent-red); }}
 
 /* Footer */
 .footer {{
@@ -991,6 +1037,106 @@ function showToast(msg, isError) {{
     t.textContent = msg;
     t.className = 'toast show' + (isError ? ' error' : '');
     setTimeout(() => t.className = 'toast', 4000);
+}}
+
+// ── Workflow Deployment ──
+function getDeployableRepos() {{
+    const card = document.getElementById('deployCard');
+    if (!card) return [];
+    try {{ return JSON.parse(card.dataset.repos || '[]'); }}
+    catch {{ return []; }}
+}}
+
+async function deployWorkflow() {{
+    const repos = getDeployableRepos();
+    if (!ghToken) {{ showToast('Connect a GitHub token first', true); return; }}
+    if (!repos.length) return;
+
+    const btn = document.getElementById('btnDeploy');
+    const results = document.getElementById('deployResults');
+    btn.disabled = true;
+    btn.classList.add('loading');
+    results.innerHTML = '';
+
+    try {{
+        const useServer = (location.hostname !== '' && location.protocol !== 'file:');
+
+        if (useServer) {{
+            const resp = await fetch('/api/deploy-workflow', {{
+                method: 'POST',
+                headers: {{
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + ghToken,
+                }},
+                body: JSON.stringify({{ owner: OWNER, repos: repos }}),
+            }});
+            const data = await resp.json();
+            if (data.results) {{
+                let html = '';
+                data.results.forEach(r => {{
+                    if (r.status === 'ok') {{
+                        html += `<div class="dr-ok">✅ ${{r.repo}} — ${{r.action || 'deployed'}}</div>`;
+                        addLog('ok', `🏗️ Workflow deployed to ${{r.repo}}`);
+                    }} else {{
+                        html += `<div class="dr-err">❌ ${{r.repo}} — ${{r.message || 'failed'}}</div>`;
+                        addLog('err', `Failed deploying to ${{r.repo}}: ${{r.message || 'unknown'}}`);
+                    }}
+                }});
+                results.innerHTML = html;
+            }}
+            showToast(`Deployed workflow to ${{data.deployed}}/${{data.total}} repos`, data.status === 'failed');
+        }} else {{
+            // Fallback: direct GitHub API
+            const templateUrl = `https://api.github.com/repos/${{OWNER}}/ArchitectAIPro_GHActions/contents/.github/workflows/architecture-standalone.yml`;
+            const tResp = await fetch(templateUrl, {{ headers: {{ Authorization: 'token ' + ghToken }} }});
+            if (!tResp.ok) {{ showToast('Could not fetch workflow template', true); return; }}
+            const templateData = await tResp.json();
+            const workflowContent = templateData.content;
+
+            let deployed = 0;
+            let html = '';
+            for (const repo of repos) {{
+                try {{
+                    const targetPath = '.github/workflows/architecture.yml';
+                    const checkUrl = `https://api.github.com/repos/${{OWNER}}/${{repo}}/contents/${{targetPath}}`;
+                    const chk = await fetch(checkUrl, {{ headers: {{ Authorization: 'token ' + ghToken }} }});
+                    let sha = null;
+                    if (chk.ok) {{ sha = (await chk.json()).sha; }}
+                    const putBody = {{
+                        message: 'ci: deploy architecture workflow via CHAD dashboard [skip ci]',
+                        content: workflowContent,
+                        committer: {{ name: 'CHAD Dashboard', email: 'chad-bot@bluefalconink.com' }},
+                    }};
+                    if (sha) putBody.sha = sha;
+                    const putResp = await fetch(checkUrl, {{
+                        method: 'PUT',
+                        headers: {{ Authorization: 'token ' + ghToken, 'Content-Type': 'application/json' }},
+                        body: JSON.stringify(putBody),
+                    }});
+                    if (putResp.ok) {{
+                        deployed++;
+                        const action = sha ? 'updated' : 'created';
+                        html += `<div class="dr-ok">✅ ${{repo}} — ${{action}}</div>`;
+                        addLog('ok', `🏗️ Workflow deployed to ${{repo}}`);
+                    }} else {{
+                        const err = await putResp.json().catch(() => ({{}}));
+                        html += `<div class="dr-err">❌ ${{repo}} — ${{err.message || putResp.status}}</div>`;
+                        addLog('err', `Failed deploying to ${{repo}}: ${{err.message || putResp.status}}`);
+                    }}
+                }} catch (e) {{
+                    html += `<div class="dr-err">❌ ${{repo}} — ${{e.message}}</div>`;
+                }}
+            }}
+            results.innerHTML = html;
+            showToast(`Deployed workflow to ${{deployed}}/${{repos.length}} repos`, deployed === 0);
+        }}
+    }} catch (e) {{
+        showToast('Deploy failed: ' + e.message, true);
+        addLog('err', 'Deploy error: ' + e.message);
+    }} finally {{
+        btn.disabled = false;
+        btn.classList.remove('loading');
+    }}
 }}
 </script>
 </body>

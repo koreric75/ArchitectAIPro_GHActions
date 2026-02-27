@@ -9,14 +9,17 @@ CSIAC Domains:
   - SoftSec: Input validation, no debug mode in production
 """
 
+import base64
 import json
 import os
 import re
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
+import requests as http_requests
 from flask import Flask, send_from_directory, jsonify, request, g
 
 # ---------------------------------------------------------------------------
@@ -259,6 +262,265 @@ def refresh():
 def health():
     """Health check endpoint for Cloud Run."""
     return jsonify({"status": "healthy", "service": "chad-dashboard"})
+
+
+# ---------------------------------------------------------------------------
+# Workflow Deployment API  (CSIAC IAM + SoftSec)
+# ---------------------------------------------------------------------------
+
+# Valid GitHub repo name pattern
+_VALID_REPO_RE = re.compile(r"^[a-zA-Z0-9._-]{1,100}$")
+
+# Path to the architecture-standalone workflow template
+_WORKFLOW_TEMPLATE_PATH = (
+    Path(__file__).parent / ".github" / "workflows" / "architecture-standalone.yml"
+)
+
+
+def _resolve_deploy_token():
+    """Resolve a GitHub token for workflow deployment.
+
+    Priority:
+      1. Bearer token in Authorization header  (client-initiated)
+      2. Server-side GITHUB_TOKEN / GH_TOKEN   (headless / CI)
+
+    Returns (token, source) or (None, None).
+    """
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:].strip()
+        if token:
+            return token, "bearer_header"
+
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if token:
+        return token, "server_env"
+
+    return None, None
+
+
+def _github_headers(token):
+    return {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+
+
+@app.route("/api/deploy-workflow", methods=["POST"])
+def deploy_workflow():
+    """Deploy the architecture-standalone workflow to one or more repos.
+
+    Expects JSON body:
+      { "owner": "<github-user>", "repos": ["repo1", "repo2"] }
+
+    Authentication:
+      - Bearer token in Authorization header, OR
+      - Server-side GITHUB_TOKEN environment variable
+
+    CSIAC Domains:
+      - IAM:     Token resolved from header or env, never from request body
+      - SoftSec: Input validation on owner + repo names
+      - Forensics: Structured logging for every deploy attempt
+    """
+    token, token_source = _resolve_deploy_token()
+
+    if not token:
+        log_security_event(
+            logger, "auth_failure",
+            "No GitHub token available for deploy-workflow",
+            source_ip=get_client_ip(request),
+            request_id=g.get("request_id", ""),
+        )
+        return jsonify({"error": "Authentication required. Provide a Bearer token or configure GITHUB_TOKEN on the server."}), 401
+
+    body = request.get_json(silent=True) or {}
+
+    # Validate owner
+    owner = body.get("owner", os.environ.get("GITHUB_OWNER", "koreric75"))
+    if not _VALID_OWNER_RE.match(owner):
+        log_security_event(
+            logger, "input_validation_failure",
+            f"Invalid owner for deploy-workflow: {str(owner)[:50]}",
+            source_ip=get_client_ip(request),
+            request_id=g.get("request_id", ""),
+            level=__import__("logging").WARNING,
+        )
+        return jsonify({"error": "Invalid owner parameter"}), 400
+
+    # Validate repos list
+    repos = body.get("repos", [])
+    if not isinstance(repos, list) or len(repos) == 0:
+        return jsonify({"error": "repos must be a non-empty list"}), 400
+    if len(repos) > 20:
+        return jsonify({"error": "Maximum 20 repos per request"}), 400
+
+    for repo in repos:
+        if not isinstance(repo, str) or not _VALID_REPO_RE.match(repo):
+            return jsonify({"error": f"Invalid repo name: {str(repo)[:100]}"}), 400
+
+    # Load workflow template
+    if not _WORKFLOW_TEMPLATE_PATH.exists():
+        logger.error("Workflow template not found at %s", _WORKFLOW_TEMPLATE_PATH)
+        return jsonify({"error": "Workflow template not found on server"}), 500
+
+    workflow_content = _WORKFLOW_TEMPLATE_PATH.read_text(encoding="utf-8")
+    workflow_b64 = base64.b64encode(workflow_content.encode("utf-8")).decode("ascii")
+
+    log_security_event(
+        logger, "deploy_workflow_start",
+        f"Deploying architecture workflow to {len(repos)} repo(s) for owner={owner}",
+        source_ip=get_client_ip(request),
+        request_id=g.get("request_id", ""),
+        token_source=token_source,
+        repos=repos,
+    )
+
+    headers = _github_headers(token)
+    target_path = ".github/workflows/architecture.yml"
+    results = []
+
+    for repo in repos:
+        entry = {"repo": repo, "status": "pending"}
+        try:
+            # Check if file already exists (to get the sha for update)
+            check_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{target_path}"
+            check_resp = http_requests.get(check_url, headers=headers, timeout=15)
+
+            sha = None
+            if check_resp.status_code == 200:
+                sha = check_resp.json().get("sha")
+
+            # Create or update the file
+            put_payload = {
+                "message": "ci: deploy architecture workflow via CHAD dashboard [skip ci]",
+                "content": workflow_b64,
+                "committer": {
+                    "name": "CHAD Dashboard",
+                    "email": "chad-bot@bluefalconink.com",
+                },
+            }
+            if sha:
+                put_payload["sha"] = sha
+
+            put_resp = http_requests.put(check_url, headers=headers, json=put_payload, timeout=30)
+
+            if put_resp.status_code in (200, 201):
+                entry["status"] = "ok"
+                entry["action"] = "updated" if sha else "created"
+                log_security_event(
+                    logger, "deploy_workflow_success",
+                    f"Workflow deployed to {owner}/{repo}",
+                    request_id=g.get("request_id", ""),
+                    repo=repo,
+                    action=entry["action"],
+                )
+            else:
+                entry["status"] = "error"
+                err_body = put_resp.json() if put_resp.headers.get("content-type", "").startswith("application/json") else {}
+                entry["message"] = err_body.get("message", f"HTTP {put_resp.status_code}")
+                log_security_event(
+                    logger, "deploy_workflow_failure",
+                    f"Failed to deploy to {owner}/{repo}: {entry['message']}",
+                    request_id=g.get("request_id", ""),
+                    repo=repo,
+                    http_status=put_resp.status_code,
+                    level=__import__("logging").WARNING,
+                )
+        except http_requests.Timeout:
+            entry["status"] = "error"
+            entry["message"] = "Request timed out"
+        except Exception as exc:
+            entry["status"] = "error"
+            entry["message"] = str(exc)[:200]
+            logger.exception(
+                "Unexpected error deploying workflow to %s/%s", owner, repo,
+                extra={"request_id": g.get("request_id", "")},
+            )
+
+        results.append(entry)
+
+    success_count = sum(1 for r in results if r["status"] == "ok")
+    log_security_event(
+        logger, "deploy_workflow_complete",
+        f"Deploy complete: {success_count}/{len(repos)} succeeded",
+        request_id=g.get("request_id", ""),
+    )
+
+    return jsonify({
+        "status": "ok" if success_count == len(repos) else "partial" if success_count > 0 else "failed",
+        "deployed": success_count,
+        "total": len(repos),
+        "results": results,
+    }), 200 if success_count > 0 else 500
+
+
+# ---------------------------------------------------------------------------
+# Auto-refresh on Startup
+# ---------------------------------------------------------------------------
+
+def _auto_refresh():
+    """Run audit + dashboard generation in a background thread on startup.
+
+    This ensures the dashboard is populated immediately after deployment
+    instead of showing the placeholder page. Only runs when a GITHUB_TOKEN
+    is available on the server.
+    """
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if not token:
+        logger.info("No GITHUB_TOKEN configured — skipping auto-refresh")
+        return
+
+    owner = os.environ.get("GITHUB_OWNER", "koreric75")
+    logger.info(f"Auto-refresh: starting audit for owner={owner}")
+
+    try:
+        env = os.environ.copy()
+        env["GITHUB_TOKEN"] = token
+        env["GH_TOKEN"] = token
+        app_dir = Path(__file__).parent
+
+        # Run auditor
+        result = subprocess.run(
+            [sys.executable, "repo_auditor.py",
+             "--owner", owner,
+             "--output", str(STATIC_DIR / "audit_report.json")],
+            capture_output=True, text=True, timeout=120, env=env,
+            cwd=app_dir,
+        )
+        if result.returncode != 0:
+            logger.error(f"Auto-refresh audit failed: {result.stderr[:500]}")
+            return
+
+        # Generate dashboard
+        result2 = subprocess.run(
+            [sys.executable, "dashboard_generator.py",
+             "--input", str(STATIC_DIR / "audit_report.json"),
+             "--output", str(STATIC_DIR / "dashboard.html")],
+            capture_output=True, text=True, timeout=30,
+            cwd=app_dir,
+        )
+        if result2.returncode != 0:
+            logger.error(f"Auto-refresh dashboard generation failed: {result2.stderr[:500]}")
+            return
+
+        report = json.loads((STATIC_DIR / "audit_report.json").read_text())
+        total = report.get("summary", {}).get("total_repos", 0)
+        logger.info(f"Auto-refresh complete: {total} repos audited")
+    except subprocess.TimeoutExpired:
+        logger.error("Auto-refresh timed out")
+    except Exception:
+        logger.exception("Auto-refresh failed with unexpected error")
+
+
+def _start_auto_refresh():
+    """Launch auto-refresh in a daemon thread so it doesn't block startup."""
+    t = threading.Thread(target=_auto_refresh, daemon=True, name="auto-refresh")
+    t.start()
+
+
+# Trigger auto-refresh once when the module is first loaded by gunicorn
+_start_auto_refresh()
 
 
 if __name__ == "__main__":
