@@ -271,7 +271,24 @@ def health():
 # Valid GitHub repo name pattern
 _VALID_REPO_RE = re.compile(r"^[a-zA-Z0-9._-]{1,100}$")
 
-# Path to the architecture-standalone workflow template
+# Deployable workflow templates — id → { file, target, label, description }
+_WORKFLOW_TEMPLATES_DIR = Path(__file__).parent / "workflow_templates"
+_WORKFLOW_TEMPLATES = {
+    "architecture": {
+        "file": "architecture-standalone.yml",
+        "target": ".github/workflows/architecture.yml",
+        "label": "🏗️ Architecture Diagrams",
+        "description": "Auto-generate architecture diagrams on push",
+    },
+    "security-scan": {
+        "file": "security-scan.yml",
+        "target": ".github/workflows/security-scan.yml",
+        "label": "🔒 Security Scan",
+        "description": "SAST, dependency scanning, and container scanning",
+    },
+}
+
+# Legacy fallback path (used if workflow_templates dir doesn't exist)
 _WORKFLOW_TEMPLATE_PATH = (
     Path(__file__).parent / ".github" / "workflows" / "architecture-standalone.yml"
 )
@@ -307,12 +324,49 @@ def _github_headers(token):
     }
 
 
+def _resolve_workflow_template(workflow_id: str):
+    """Resolve a workflow template file by ID. Returns (content, target_path, label) or raises."""
+    tmpl = _WORKFLOW_TEMPLATES.get(workflow_id)
+    if not tmpl:
+        return None, None, None
+
+    # Check workflow_templates dir first, then legacy path
+    tmpl_path = _WORKFLOW_TEMPLATES_DIR / tmpl["file"]
+    if not tmpl_path.exists():
+        # Legacy: try .github/workflows/
+        tmpl_path = Path(__file__).parent / ".github" / "workflows" / tmpl["file"]
+
+    if not tmpl_path.exists():
+        return None, None, None
+
+    content = tmpl_path.read_text(encoding="utf-8")
+    return content, tmpl["target"], tmpl["label"]
+
+
+@app.route("/api/workflows", methods=["GET"])
+def list_workflows():
+    """List available workflow templates that can be deployed."""
+    workflows = []
+    for wf_id, tmpl in _WORKFLOW_TEMPLATES.items():
+        tmpl_path = _WORKFLOW_TEMPLATES_DIR / tmpl["file"]
+        if not tmpl_path.exists():
+            tmpl_path = Path(__file__).parent / ".github" / "workflows" / tmpl["file"]
+        workflows.append({
+            "id": wf_id,
+            "label": tmpl["label"],
+            "description": tmpl["description"],
+            "target": tmpl["target"],
+            "available": tmpl_path.exists(),
+        })
+    return jsonify({"workflows": workflows})
+
+
 @app.route("/api/deploy-workflow", methods=["POST"])
 def deploy_workflow():
-    """Deploy the architecture-standalone workflow to one or more repos.
+    """Deploy a workflow to one or more repos.
 
     Expects JSON body:
-      { "owner": "<github-user>", "repos": ["repo1", "repo2"] }
+      { "owner": "<github-user>", "repos": ["repo1", "repo2"], "workflow": "architecture" }
 
     Authentication:
       - Bearer token in Authorization header, OR
@@ -359,17 +413,21 @@ def deploy_workflow():
         if not isinstance(repo, str) or not _VALID_REPO_RE.match(repo):
             return jsonify({"error": f"Invalid repo name: {str(repo)[:100]}"}), 400
 
-    # Load workflow template
-    if not _WORKFLOW_TEMPLATE_PATH.exists():
-        logger.error("Workflow template not found at %s", _WORKFLOW_TEMPLATE_PATH)
-        return jsonify({"error": "Workflow template not found on server"}), 500
+    # Resolve workflow template by ID (default: architecture for backward compat)
+    workflow_id = body.get("workflow", "architecture")
+    if not isinstance(workflow_id, str) or not re.match(r"^[a-zA-Z0-9_-]{1,50}$", workflow_id):
+        return jsonify({"error": "Invalid workflow parameter"}), 400
 
-    workflow_content = _WORKFLOW_TEMPLATE_PATH.read_text(encoding="utf-8")
+    workflow_content, target_path, workflow_label = _resolve_workflow_template(workflow_id)
+    if not workflow_content:
+        logger.error("Workflow template not found for id=%s", workflow_id)
+        return jsonify({"error": f"Workflow template '{workflow_id}' not found on server"}), 500
+
     workflow_b64 = base64.b64encode(workflow_content.encode("utf-8")).decode("ascii")
 
     log_security_event(
         logger, "deploy_workflow_start",
-        f"Deploying architecture workflow to {len(repos)} repo(s) for owner={owner}",
+        f"Deploying {workflow_id} workflow to {len(repos)} repo(s) for owner={owner}",
         source_ip=get_client_ip(request),
         request_id=g.get("request_id", ""),
         token_source=token_source,
@@ -377,11 +435,10 @@ def deploy_workflow():
     )
 
     headers = _github_headers(token)
-    target_path = ".github/workflows/architecture.yml"
     results = []
 
     for repo in repos:
-        entry = {"repo": repo, "status": "pending"}
+        entry = {"repo": repo, "status": "pending", "workflow": workflow_id}
         try:
             # Check if file already exists (to get the sha for update)
             check_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{target_path}"
@@ -393,7 +450,7 @@ def deploy_workflow():
 
             # Create or update the file
             put_payload = {
-                "message": "ci: deploy architecture workflow via CHAD dashboard [skip ci]",
+                "message": f"ci: deploy {workflow_id} workflow via CHAD dashboard [skip ci]",
                 "content": workflow_b64,
                 "committer": {
                     "name": "CHAD Dashboard",

@@ -16,6 +16,11 @@ COPY .github/scripts/dashboard_generator.py /app/dashboard_generator.py
 COPY .github/scripts/token_budget.py /app/token_budget.py
 COPY .github/scripts/security_logger.py /app/security_logger.py
 
+# Copy deployable workflow templates
+RUN mkdir -p /app/workflow_templates
+COPY .github/workflows/architecture-standalone.yml /app/workflow_templates/architecture-standalone.yml
+COPY .github/workflows/security-scan.yml /app/workflow_templates/security-scan.yml
+
 # Create empty static dir -- audit data is generated at runtime via /api/refresh
 # (audit_report.json and dashboard.html are NOT committed to the public repo)
 RUN mkdir -p /app/static && \

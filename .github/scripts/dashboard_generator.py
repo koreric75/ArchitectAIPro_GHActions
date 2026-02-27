@@ -186,19 +186,18 @@ def generate_dashboard(report: dict) -> str:
     missing_arch = [r["name"] for r in repos
                     if r["classification"]["tier"] in ("CORE", "ACTIVE")
                     and not r.get("architecture", {}).get("fully_configured", False)]
-    # Build JSON list for JS deploy function
     missing_arch_json = json.dumps(missing_arch) if missing_arch else "[]"
     if missing_arch:
-        action_items += f'<div class="action-card action-arch" id="deployCard" data-repos=\'{missing_arch_json}\'><h3>🏗️ Architecture Diagrams Missing</h3><ul>'
+        action_items += f'<div class="action-card action-arch" id="deployCard" data-repos=\'{missing_arch_json}\'>'
+        action_items += '<h3>🏗️ Architecture Diagrams Missing</h3><ul>'
         for ma in missing_arch:
             action_items += f"<li>{ma}</li>"
         action_items += '</ul><p>Deploy the architecture workflow to these repos.</p>'
-        action_items += '<button class="btn-deploy" id="btnDeploy" onclick="deployWorkflow()">'
-        action_items += '<span class="spinner"></span>'
-        action_items += '<span class="btn-label">🚀 Deploy Workflow</span>'
-        action_items += '</button>'
-        action_items += '<div class="deploy-results" id="deployResults"></div>'
+        action_items += '<button class="btn-deploy-sm" onclick="selectAndDeploy(\'architecture\')">🚀 Select &amp; Deploy</button>'
         action_items += '</div>'
+
+    # Build JSON map of all non-archived repo names → owner for the deploy UI
+    all_repo_names = json.dumps([r["name"] for r in repos if not r.get("is_archived")])
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -431,24 +430,24 @@ tr:hover {{ background: var(--bg-card); }}
 .action-arch {{ border-left-color: var(--accent-blue); }}
 
 /* Deploy Button */
+/* Deploy Button (toolbar) */
 .btn-deploy {{
     background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
     color: #fff;
     border: none;
-    padding: 10px 24px;
+    padding: 8px 18px;
     border-radius: 8px;
     cursor: pointer;
     font-family: var(--font-main);
     font-weight: 600;
-    font-size: 13px;
+    font-size: 12px;
     transition: all 0.2s;
-    margin-top: 12px;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }}
 .btn-deploy:hover {{ filter: brightness(1.15); transform: translateY(-1px); }}
-.btn-deploy:disabled {{ opacity: 0.5; cursor: wait; filter: none; transform: none; }}
+.btn-deploy:disabled {{ opacity: 0.5; cursor: not-allowed; filter: none; transform: none; }}
 .btn-deploy .spinner {{
     display: none;
     width: 14px; height: 14px;
@@ -460,13 +459,67 @@ tr:hover {{ background: var(--bg-card); }}
 .btn-deploy.loading .spinner {{ display: inline-block; }}
 .btn-deploy.loading .btn-label {{ display: none; }}
 @keyframes spin {{ to {{ transform: rotate(360deg); }} }}
+
+/* Small action-card deploy button */
+.btn-deploy-sm {{
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-weight: 600;
+    font-size: 12px;
+    margin-top: 10px;
+    transition: all 0.2s;
+}}
+.btn-deploy-sm:hover {{ filter: brightness(1.15); }}
+
+/* Deploy modal workflow selector */
+.wf-selector {{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 12px 0;
+}}
+.wf-option {{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--card-bg);
+}}
+.wf-option:hover {{ border-color: var(--accent-blue); }}
+.wf-option.selected {{ border-color: var(--accent-blue); background: rgba(59,130,246,0.08); }}
+.wf-option input[type="radio"] {{ accent-color: var(--accent-blue); width: 16px; height: 16px; cursor: pointer; }}
+.wf-label {{ font-weight: 600; font-size: 13px; color: var(--text-primary); }}
+.wf-desc {{ font-size: 11px; color: var(--text-muted); margin-top: 2px; }}
+.wf-target {{ font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px; }}
+
+/* Deploy results in modal */
 .deploy-results {{
     margin-top: 10px;
     font-size: 12px;
     font-family: var(--font-mono);
+    max-height: 200px;
+    overflow-y: auto;
 }}
-.deploy-results .dr-ok {{ color: var(--accent-green); }}
-.deploy-results .dr-err {{ color: var(--accent-red); }}
+.deploy-results .dr-ok {{ color: var(--accent-green); padding: 2px 0; }}
+.deploy-results .dr-err {{ color: var(--accent-red); padding: 2px 0; }}
+.deploy-progress {{
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-secondary);
+}}
 
 /* Footer */
 .footer {{
@@ -858,6 +911,10 @@ tr.selected {{ background: rgba(59,130,246,0.1) !important; }}
 <!-- Floating Action Toolbar -->
 <div class="action-toolbar" id="actionToolbar">
     <span class="sel-count" id="selCount">0 selected</span>
+    <button class="btn-deploy" id="btnDeploy" disabled onclick="showDeployModal()">
+        <span class="spinner"></span>
+        <span class="btn-label">🚀 Deploy Workflow</span>
+    </button>
     <button class="btn-archive" id="btnArchive" disabled onclick="showModal('archive')">📦 Archive</button>
     <button class="btn-delete" id="btnDelete" disabled onclick="showModal('delete')">🗑️ Delete</button>
     <button class="btn-deselect" onclick="deselectAll()">✕ Clear</button>
@@ -939,6 +996,7 @@ function updateToolbarState() {{
     const hasToken = !!ghToken;
     document.getElementById('btnArchive').disabled = !hasToken || sel.length === 0;
     document.getElementById('btnDelete').disabled = !hasToken || sel.length === 0;
+    document.getElementById('btnDeploy').disabled = !hasToken || sel.length === 0;
 }}
 
 function deselectAll() {{
@@ -1017,10 +1075,114 @@ function closeModal() {{
     pendingAction = null;
 }}
 
-// ── Execute ──
+// ── Activity Log ──
+function addLog(type, msg) {{
+    const section = document.getElementById('logSection');
+    section.style.display = '';
+    const log = document.getElementById('activityLog');
+    const time = new Date().toLocaleTimeString();
+    const cls = type === 'ok' ? 'log-ok' : type === 'err' ? 'log-err' : 'log-info';
+    log.insertAdjacentHTML('afterbegin', `<div class="log-entry"><span class="log-time">${{time}}</span><span class="${{cls}}">${{msg}}</span></div>`);
+}}
+
+// ── Toast ──
+function showToast(msg, isError) {{
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (isError ? ' error' : '');
+    setTimeout(() => t.className = 'toast', 4000);
+}}
+
+// ── Workflow Deployment ──
+const WORKFLOW_OPTIONS = [
+    {{ id: 'architecture', label: '🏗️ Architecture Diagrams', desc: 'Auto-generate architecture diagrams on push', target: '.github/workflows/architecture.yml' }},
+    {{ id: 'security-scan', label: '🔒 Security Scan', desc: 'SAST, dependency scanning, and container scanning', target: '.github/workflows/security-scan.yml' }},
+];
+
+function selectAndDeploy(presetWorkflow) {{
+    // Select the repos from the action card, then open deploy modal
+    const card = document.getElementById('deployCard');
+    if (!card) return;
+    let repos = [];
+    try {{ repos = JSON.parse(card.dataset.repos || '[]'); }} catch {{}}
+    if (!repos.length) return;
+
+    // Check/select those repos in the table
+    deselectAll();
+    repos.forEach(name => {{
+        const cb = document.querySelector(`input.repo-cb[data-repo="${{name}}"]`);
+        if (cb) {{ cb.checked = true; cb.closest('tr').classList.add('selected'); }}
+    }});
+    updateToolbarState();
+
+    // Open deploy modal with preset workflow
+    showDeployModal(presetWorkflow);
+}}
+
+function showDeployModal(presetWorkflow) {{
+    const repos = getSelected();
+    if (!repos.length) {{ showToast('Select repos first', true); return; }}
+    if (!ghToken) {{ showToast('Connect a GitHub token first', true); return; }}
+
+    pendingAction = 'deploy';
+    const overlay = document.getElementById('modalOverlay');
+    const title = document.getElementById('modalTitle');
+    const desc = document.getElementById('modalDesc');
+    const list = document.getElementById('modalRepos');
+    const warn = document.getElementById('modalWarning');
+    const btn = document.getElementById('modalConfirm');
+
+    title.textContent = '🚀 Deploy Workflow to ' + repos.length + ' repo(s)';
+    desc.innerHTML = '<strong>Select a workflow to deploy:</strong>';
+
+    // Build workflow selector
+    let wfHtml = '<div class="wf-selector" id="wfSelector">';
+    WORKFLOW_OPTIONS.forEach((wf, i) => {{
+        const checked = presetWorkflow ? (wf.id === presetWorkflow) : (i === 0);
+        const selClass = checked ? ' selected' : '';
+        wfHtml += `<label class="wf-option${{selClass}}" data-wf="${{wf.id}}" onclick="selectWorkflow(this)">`;
+        wfHtml += `<input type="radio" name="wf_choice" value="${{wf.id}}" ${{checked ? 'checked' : ''}}>`;
+        wfHtml += `<div><div class="wf-label">${{wf.label}}</div>`;
+        wfHtml += `<div class="wf-desc">${{wf.desc}}</div>`;
+        wfHtml += `<div class="wf-target">→ ${{wf.target}}</div></div>`;
+        wfHtml += '</label>';
+    }});
+    wfHtml += '</div>';
+
+    // Build repo list
+    wfHtml += '<div style="margin-top:12px;font-size:12px;color:var(--text-muted)">Target repos:</div>';
+    list.innerHTML = repos.map(r => `<div>${{OWNER}}/${{r}}</div>`).join('');
+
+    desc.innerHTML = '<strong>Select a workflow to deploy:</strong>' + wfHtml;
+    warn.textContent = '';
+    btn.className = 'btn-confirm';
+    btn.style.background = 'linear-gradient(135deg, var(--accent-blue), var(--accent-purple))';
+    btn.textContent = '🚀 Deploy Now';
+    btn.disabled = false;
+    overlay.classList.add('open');
+}}
+
+function selectWorkflow(el) {{
+    document.querySelectorAll('.wf-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    el.querySelector('input[type="radio"]').checked = true;
+}}
+
+function getSelectedWorkflow() {{
+    const radio = document.querySelector('input[name="wf_choice"]:checked');
+    return radio ? radio.value : 'architecture';
+}}
+
+// ── Execute (archive / delete / deploy) ──
 async function executeAction() {{
     const repos = getSelected();
     if (!repos.length || !ghToken || !pendingAction) return;
+
+    if (pendingAction === 'deploy') {{
+        await executeDeploy(repos);
+        return;
+    }}
+
     const btn = document.getElementById('modalConfirm');
     btn.disabled = true;
     btn.textContent = 'Working...';
@@ -1045,7 +1207,6 @@ async function executeAction() {{
             if (res.ok || res.status === 204) {{
                 success++;
                 addLog('ok', `${{action === 'archive' ? '📦 Archived' : '🗑️ Deleted'}}: ${{repo}}`);
-                // Update the row visually
                 const row = document.querySelector(`tr[data-repo="${{repo}}"]`);
                 if (row) {{
                     if (action === 'delete') {{
@@ -1074,89 +1235,76 @@ async function executeAction() {{
     showToast(`${{action === 'archive' ? 'Archived' : 'Deleted'}} ${{success}}/${{repos.length}} repos` + (failed ? ` (${{failed}} failed)` : ''), failed > 0);
 }}
 
-// ── Activity Log ──
-function addLog(type, msg) {{
-    const section = document.getElementById('logSection');
-    section.style.display = '';
-    const log = document.getElementById('activityLog');
-    const time = new Date().toLocaleTimeString();
-    const cls = type === 'ok' ? 'log-ok' : type === 'err' ? 'log-err' : 'log-info';
-    log.insertAdjacentHTML('afterbegin', `<div class="log-entry"><span class="log-time">${{time}}</span><span class="${{cls}}">${{msg}}</span></div>`);
-}}
-
-// ── Toast ──
-function showToast(msg, isError) {{
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast show' + (isError ? ' error' : '');
-    setTimeout(() => t.className = 'toast', 4000);
-}}
-
-// ── Workflow Deployment ──
-function getDeployableRepos() {{
-    const card = document.getElementById('deployCard');
-    if (!card) return [];
-    try {{ return JSON.parse(card.dataset.repos || '[]'); }}
-    catch {{ return []; }}
-}}
-
-async function deployWorkflow() {{
-    const repos = getDeployableRepos();
-    if (!ghToken) {{ showToast('Connect a GitHub token first', true); return; }}
-    if (!repos.length) return;
-
-    const btn = document.getElementById('btnDeploy');
-    const results = document.getElementById('deployResults');
+async function executeDeploy(repos) {{
+    const workflowId = getSelectedWorkflow();
+    const wfInfo = WORKFLOW_OPTIONS.find(w => w.id === workflowId) || WORKFLOW_OPTIONS[0];
+    const btn = document.getElementById('modalConfirm');
+    const warn = document.getElementById('modalWarning');
     btn.disabled = true;
-    btn.classList.add('loading');
-    results.innerHTML = '';
+    btn.textContent = 'Deploying...';
+    warn.innerHTML = '<div class="deploy-progress" id="deployProgress">Starting deploy...</div>';
+
+    const progress = document.getElementById('deployProgress');
 
     try {{
         const useServer = (location.hostname !== '' && location.protocol !== 'file:');
 
         if (useServer) {{
+            progress.textContent = `Deploying ${{wfInfo.label}} to ${{repos.length}} repo(s)...`;
             const resp = await fetch('/api/deploy-workflow', {{
                 method: 'POST',
                 headers: {{
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + ghToken,
                 }},
-                body: JSON.stringify({{ owner: OWNER, repos: repos }}),
+                body: JSON.stringify({{ owner: OWNER, repos: repos, workflow: workflowId }}),
             }});
             const data = await resp.json();
-            if (data.results) {{
+            if (data.error) {{
+                progress.innerHTML = `<div class="dr-err">❌ ${{data.error}}</div>`;
+                addLog('err', `Deploy failed: ${{data.error}}`);
+                showToast('Deploy failed: ' + data.error, true);
+            }} else if (data.results) {{
                 let html = '';
                 data.results.forEach(r => {{
                     if (r.status === 'ok') {{
-                        html += `<div class="dr-ok">✅ ${{r.repo}} — ${{r.action || 'deployed'}}</div>`;
-                        addLog('ok', `🏗️ Workflow deployed to ${{r.repo}}`);
+                        html += `<div class="dr-ok">✅ ${{OWNER}}/${{r.repo}} — ${{r.action || 'deployed'}}</div>`;
+                        addLog('ok', `${{wfInfo.label}} deployed to ${{OWNER}}/${{r.repo}}`);
                     }} else {{
-                        html += `<div class="dr-err">❌ ${{r.repo}} — ${{r.message || 'failed'}}</div>`;
-                        addLog('err', `Failed deploying to ${{r.repo}}: ${{r.message || 'unknown'}}`);
+                        html += `<div class="dr-err">❌ ${{OWNER}}/${{r.repo}} — ${{r.message || 'failed'}}</div>`;
+                        addLog('err', `Failed ${{OWNER}}/${{r.repo}}: ${{r.message || 'unknown'}}`);
                     }}
                 }});
-                results.innerHTML = html;
+                progress.innerHTML = html;
+                showToast(`Deployed ${{wfInfo.label}} to ${{data.deployed}}/${{data.total}} repos`, data.status === 'failed');
             }}
-            showToast(`Deployed workflow to ${{data.deployed}}/${{data.total}} repos`, data.status === 'failed');
         }} else {{
-            // Fallback: direct GitHub API
-            const templateUrl = `https://api.github.com/repos/${{OWNER}}/ArchitectAIPro_GHActions/contents/.github/workflows/architecture-standalone.yml`;
+            // Client-side fallback: direct GitHub API
+            const templateMap = {{
+                'architecture': 'architecture-standalone.yml',
+                'security-scan': 'security-scan.yml',
+            }};
+            const templateFile = templateMap[workflowId] || 'architecture-standalone.yml';
+            const templateUrl = `https://api.github.com/repos/${{OWNER}}/ArchitectAIPro_GHActions/contents/.github/workflows/${{templateFile}}`;
+            progress.textContent = 'Fetching workflow template...';
             const tResp = await fetch(templateUrl, {{ headers: {{ Authorization: 'token ' + ghToken }} }});
-            if (!tResp.ok) {{ showToast('Could not fetch workflow template', true); return; }}
+            if (!tResp.ok) {{ progress.innerHTML = '<div class="dr-err">❌ Could not fetch workflow template</div>'; return; }}
             const templateData = await tResp.json();
             const workflowContent = templateData.content;
 
             let deployed = 0;
             let html = '';
-            for (const repo of repos) {{
+            for (let i = 0; i < repos.length; i++) {{
+                const repo = repos[i];
+                progress.textContent = `Deploying to ${{OWNER}}/${{repo}} (${{i+1}}/${{repos.length}})...`;
                 try {{
-                    const targetPath = '.github/workflows/architecture.yml';
+                    const targetPath = wfInfo.target;
                     const checkUrl = `https://api.github.com/repos/${{OWNER}}/${{repo}}/contents/${{targetPath}}`;
                     const chk = await fetch(checkUrl, {{ headers: {{ Authorization: 'token ' + ghToken }} }});
                     let sha = null;
                     if (chk.ok) {{ sha = (await chk.json()).sha; }}
                     const putBody = {{
-                        message: 'ci: deploy architecture workflow via CHAD dashboard [skip ci]',
+                        message: `ci: deploy ${{workflowId}} workflow via CHAD dashboard [skip ci]`,
                         content: workflowContent,
                         committer: {{ name: 'CHAD Dashboard', email: 'chad-bot@bluefalconink.com' }},
                     }};
@@ -1169,26 +1317,27 @@ async function deployWorkflow() {{
                     if (putResp.ok) {{
                         deployed++;
                         const action = sha ? 'updated' : 'created';
-                        html += `<div class="dr-ok">✅ ${{repo}} — ${{action}}</div>`;
-                        addLog('ok', `🏗️ Workflow deployed to ${{repo}}`);
+                        html += `<div class="dr-ok">✅ ${{OWNER}}/${{repo}} — ${{action}}</div>`;
+                        addLog('ok', `${{wfInfo.label}} deployed to ${{OWNER}}/${{repo}}`);
                     }} else {{
                         const err = await putResp.json().catch(() => ({{}}));
-                        html += `<div class="dr-err">❌ ${{repo}} — ${{err.message || putResp.status}}</div>`;
-                        addLog('err', `Failed deploying to ${{repo}}: ${{err.message || putResp.status}}`);
+                        html += `<div class="dr-err">❌ ${{OWNER}}/${{repo}} — ${{err.message || putResp.status}}</div>`;
+                        addLog('err', `Failed ${{OWNER}}/${{repo}}: ${{err.message || putResp.status}}`);
                     }}
                 }} catch (e) {{
-                    html += `<div class="dr-err">❌ ${{repo}} — ${{e.message}}</div>`;
+                    html += `<div class="dr-err">❌ ${{OWNER}}/${{repo}} — ${{e.message}}</div>`;
                 }}
             }}
-            results.innerHTML = html;
-            showToast(`Deployed workflow to ${{deployed}}/${{repos.length}} repos`, deployed === 0);
+            progress.innerHTML = html;
+            showToast(`Deployed ${{wfInfo.label}} to ${{deployed}}/${{repos.length}} repos`, deployed === 0);
         }}
     }} catch (e) {{
+        progress.innerHTML = `<div class="dr-err">❌ ${{e.message}}</div>`;
         showToast('Deploy failed: ' + e.message, true);
         addLog('err', 'Deploy error: ' + e.message);
     }} finally {{
-        btn.disabled = false;
-        btn.classList.remove('loading');
+        btn.textContent = 'Done';
+        setTimeout(() => {{ closeModal(); deselectAll(); }}, 2000);
     }}
 }}
 </script>
