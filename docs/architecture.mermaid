@@ -2,106 +2,104 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        subgraph "External Users & Integrations"
-            User[End User]
-            GitHubAPI[GitHub API]
-            GoogleGeminiAPI[Google Gemini API]
+
+        subgraph "Frontend"
+            User[BlueFalconInk User]
+        end
+
+        subgraph "Application Layer"
+            style Application Layer fill:#1E3A5F,color:#BFDBFE
+            CloudRun_CHAD[Cloud Run: CHAD Dashboard]
+            CloudRun_Gallery[Cloud Run: Architecture Gallery]
+            CloudRun_ArchitectAI[Cloud Run: Architect AI Pro Live App]
+        end
+
+        subgraph "Automation & CI/CD"
+            GHActions[GitHub Actions Workflows]
+            CloudBuild[Cloud Build]
+            GenerateDiagramScript[Generate Diagram Script]
+            ForemanAuditScript[Foreman Audit Script]
+            RepoAuditorScript[Repo Auditor Script]
+            DashboardGeneratorScript[Dashboard Generator Script]
+            CleanupAgentScript[Cleanup Agent Script]
+            DrawioCLI[Draw.io CLI - headless]
+        end
+
+        subgraph "Data Layer"
+            style Data Layer fill:#0F172A,color:#BFDBFE
+            GitHub[GitHub Repositories & API]
+            ArtifactRegistry[Artifact Registry]
         end
 
         subgraph "Security"
+            style Security fill:#1E40AF,color:#BFDBFE
+            CloudLB[Cloud Load Balancer]
             CloudArmor[Cloud Armor]
-            CloudLoadBalancer[Cloud Load Balancer]
-            GCPWIF[GCP Workload Identity Federation]
             SecretManager[Secret Manager]
+            GCP_SA[GCP Service Account]
+            WIF[Workload Identity Federation]
         end
 
-        subgraph "Application Services (Cloud Run)"
-            style Application Services (Cloud Run) fill:#1E3A5F
-            CHADDashboard[CHAD Dashboard · Flask App]
-            ArchGallery[Architecture Gallery · FastAPI App]
-        end
-
-        subgraph "CI/CD & Automation Engine"
-            GHActions[ArchitectAIPro_GHActions Workflows]
-            CloudBuild[Cloud Build]
-            ArtifactRegistry[Artifact Registry]
+        subgraph "Infrastructure as Code"
             Terraform[Terraform IaC]
-            DrawioCLI[Draw.io CLI]
-            subgraph "Shared Automation Scripts"
-                GenerateDiagram[generate_diagram.py]
-                ForemanAudit[foreman_audit.py]
-                RepoAuditor[repo_auditor.py]
-                DashboardGenerator[dashboard_generator.py]
-                CleanupAgent[cleanup_agent.py]
-            end
         end
 
-        subgraph "Configuration & Artifacts"
-            style Configuration & Artifacts fill:#0F172A
-            ArchitectConfig[ARCHITECT_CONFIG.json]
-            PromptLibrary[PROMPT_LIBRARY/]
-            AuditReportJSON[audit_report.json]
-            DashboardHTML[dashboard.html]
-            DiagramArtifacts[docs/architecture.*]
-        end
+        GoogleGeminiAPI[Google Gemini API]
 
-        User -->|Access via HTTPS| CloudLoadBalancer
-        CloudLoadBalancer --> CloudArmor
-        CloudArmor -->|HTTPS| CHADDashboard
-        CloudArmor -->|HTTPS| ArchGallery
+        %% Data Flows
+        User -->|HTTPS| CloudLB
+        CloudLB -->|Traffic Filtering| CloudArmor
+        CloudArmor -->|HTTPS| CloudRun_CHAD
+        CloudArmor -->|HTTPS| CloudRun_Gallery
+        CloudArmor -->|HTTPS| CloudRun_ArchitectAI
 
-        GHActions -->|Trigger Deploy| CloudBuild
-        GHActions -->|Terraform Apply| Terraform
-        GHActions -->|Auth via OIDC| GCPWIF
-        GCPWIF -->|Access GCP Resources| CloudBuild
-        GCPWIF -->|Access GCP Resources| SecretManager
-        GCPWIF -->|Access GCP Resources| ArtifactRegistry
-        GCPWIF -->|Access GCP Resources| Terraform
+        CloudRun_CHAD -->|GitHub API Calls via subprocess| GitHub
+        CloudRun_Gallery -->|GitHub API Calls| GitHub
 
-        CloudBuild -->|Build Docker Image| ArtifactRegistry
-        ArtifactRegistry -->|Deploy Image| CHADDashboard
-        ArtifactRegistry -->|Deploy Image| ArchGallery
+        GitHub -->|Push/PR Trigger| GHActions
+        GHActions -->|Executes| GenerateDiagramScript
+        GenerateDiagramScript -->|API Request| GoogleGeminiAPI
+        GenerateDiagramScript -->|Generates| DrawioCLI
+        GenerateDiagramScript -->|Commits Diagrams| GitHub
 
-        GHActions -->|Execute| GenerateDiagram
-        GHActions -->|Execute| ForemanAudit
-        GHActions -->|Execute| RepoAuditor
-        GHActions -->|Execute| DashboardGenerator
-        GHActions -->|Execute| CleanupAgent
-        GHActions -->|Install & Use| DrawioCLI
+        GHActions -->|Executes| ForemanAuditScript
+        ForemanAuditScript -->|Audits Diagram| GitHub
 
-        GenerateDiagram -->|AI Request| GoogleGeminiAPI
-        GenerateDiagram -->|Read Config| ArchitectConfig
-        GenerateDiagram -->|Read Prompts| PromptLibrary
-        GenerateDiagram -->|Convert Diagram| DrawioCLI
-        GenerateDiagram -->|Output| DiagramArtifacts
+        GHActions -->|Executes| RepoAuditorScript
+        RepoAuditorScript -->|Scans Repos| GitHub
 
-        ForemanAudit -->|Read Config| ArchitectConfig
-        ForemanAudit -->|Audit| DiagramArtifacts
+        GHActions -->|Executes| DashboardGeneratorScript
+        DashboardGeneratorScript -->|Generates HTML/JSON| CloudRun_CHAD
 
-        RepoAuditor -->|Fetch Data| GitHubAPI
-        RepoAuditor -->|Output| AuditReportJSON
+        GHActions -->|Executes| CleanupAgentScript
+        CleanupAgentScript -->|GitHub API Calls| GitHub
 
-        DashboardGenerator -->|Read Report| AuditReportJSON
-        DashboardGenerator -->|Output| DashboardHTML
+        GHActions -->|Build Request| CloudBuild
+        CloudBuild -->|Pulls/Pushes Images| ArtifactRegistry
+        CloudBuild -->|Deploys Service| CloudRun_CHAD
+        CloudBuild -->|Deploys Service| CloudRun_Gallery
+        CloudBuild -->|Deploys Service| CloudRun_ArchitectAI
 
-        CleanupAgent -->|Fetch/Update Repos| GitHubAPI
-        CleanupAgent -->|Read Report| AuditReportJSON
-        CleanupAgent -->|Update Config| ArchitectConfig
+        GHActions -->|Authenticates via OIDC| WIF
+        WIF -->|Grants Access| GCP_SA
+        GCP_SA -->|Accesses| SecretManager
+        GCP_SA -->|Manages Resources| CloudBuild
+        GCP_SA -->|Manages Resources| CloudRun_CHAD
+        GCP_SA -->|Manages Resources| CloudRun_Gallery
+        GCP_SA -->|Manages Resources| CloudRun_ArchitectAI
 
-        CHADDashboard -->|Serve HTML/JSON| DashboardHTML
-        CHADDashboard -->|Serve HTML/JSON| AuditReportJSON
-        CHADDashboard -->|Trigger Execution| RepoAuditor
-        CHADDashboard -->|Trigger Execution| DashboardGenerator
-        CHADDashboard -->|Deploy Workflow API| GitHubAPI
-        CHADDashboard -->|Get GITHUB_TOKEN| SecretManager
+        GHActions -->|Executes| Terraform
+        Terraform -->|Provisions/Manages| GCP_SA
+        Terraform -->|Provisions/Manages| WIF
+        Terraform -->|Provisions/Manages| ArtifactRegistry
+        Terraform -->|Provisions/Manages| CloudRun_CHAD
+        Terraform -->|Provisions/Manages| CloudRun_Gallery
+        Terraform -->|Provisions/Manages| CloudRun_ArchitectAI
+        Terraform -->|Provisions/Manages| SecretManager
 
-        ArchGallery -->|Fetch Diagrams| GitHubAPI
-        ArchGallery -->|Get GITHUB_TOKEN| SecretManager
+        GHActions -->|Triggers Refresh API| CloudRun_CHAD
 
-        GitHubAPI -->|Repo Data, File Content| ArchGallery
-        GitHubAPI -->|Repo Data, Commits| RepoAuditor
-        GitHubAPI -->|Repo Data, File Updates| CleanupAgent
-        GitHubAPI -->|Workflow Deployment| CHADDashboard
+    end
 
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
