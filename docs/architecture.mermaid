@@ -2,32 +2,40 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        style BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture fill:#1E3A5F,color:#BFDBFE
 
-        subgraph "External Systems"
-            Developer[Developer]
-            GitHub[GitHub.com]
-            GoogleGemini[Google Gemini API]
+        subgraph "Frontend"
+            User[Client/Developer]
         end
 
-        subgraph "CI/CD & Automation (GitHub Actions)"
+        subgraph "Security"
+            CloudArmor[Cloud Armor]
+            CLB[Cloud Load Balancer]
+            WIF[Workload Identity Federation]
+        end
+        style Security fill:#1E40AF,color:#BFDBFE
+
+        subgraph "Backend Services"
+            style Backend Services fill:#1E3A5F
+            CHADDashboard[CHAD Dashboard Service · Cloud Run]
+            ArchGallery[Architecture Gallery Service · Cloud Run]
+        end
+
+        subgraph "CI/CD & Automation"
             GHActions[GitHub Actions Workflows]
-            DiagramGenerationLogic[Diagram Generation Logic - Python]
-            ForemanAuditLogic[Foreman Audit Logic - Python]
-            RepoAuditLogicGHA[Repo Audit Logic - Python]
-            DashboardGenerationLogicGHA[Dashboard Generation Logic - Python]
-            CleanupLogic[Cleanup Logic - Python]
-            Terraform[Terraform IaC]
+            AAScripts[Architect AI Pro Scripts]
             CloudBuild[Cloud Build]
+            Terraform[Terraform IaC]
         end
 
-        subgraph "Application Layer"
-            subgraph "CHAD Dashboard Service"
-                CHADDashboard[Cloud Run · Flask App]
-                RepoAuditLogicCR[Repo Audit Logic - Subprocess]
-                DashboardGenerationLogicCR[Dashboard Generation Logic - Subprocess]
-                LocalDashboardFiles[Local Dashboard Files]
-            end
-            subgraph "
+        subgraph "Data & Storage"
+            style Data & Storage fill:#0F172A
+            ArtifactRegistry[Artifact Registry]
+            SecretManager[Secret Manager]
+        end
+
+        subgraph "External Integrations"
+            GitHub[GitHub Platform]
+            GeminiAPI[Google Gemini API]
+            DrawIOC
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
