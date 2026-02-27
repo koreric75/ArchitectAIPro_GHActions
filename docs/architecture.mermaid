@@ -2,87 +2,37 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
-        subgraph "External Users & Integrations"
-            Dev[Developer/User]
-            GitHub[GitHub.com]
+        style BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture fill:#1E3A5F,color:#BFDBFE
+
+        subgraph "User & External Systems"
+            User[User/Developer]
+            GitHubRepo[GitHub Repositories]
             GeminiAPI[Google Gemini API]
-            DrawIO[Draw.io Desktop - headless]
+            GitHubAPI[GitHub API]
+        end
+
+        subgraph "Frontend"
+            LoadBalancer[Cloud Load Balancer]
+            CloudArmor[Cloud Armor]
+            CloudCDN[Cloud CDN]
+            GalleryApp[Architecture Gallery · Cloud Run]
+            DashboardApp[CHAD Dashboard · Cloud Run]
+        end
+
+        subgraph "CI/CD & Automation"
+            GHActions[GitHub Actions]
+            ArchitectAIScripts[Architect AI Pro Scripts · Python]
+            DrawioCLI[Draw.io CLI · Headless]
+            CloudBuild[Cloud Build]
+            Terraform[Terraform]
+        end
+
+        subgraph "Data & Storage"
+            ArtifactRegistry[Artifact Registry]
+            SecretManager[Secret Manager]
         end
 
         subgraph "Security"
-            CloudArmor[Cloud Armor]
-            LoadBalancer[Cloud Load Balancer]
-            WIF[GCP Workload Identity Federation]
-            GCPSecretManager[GCP Secret Manager]
-            GitHubSecrets[GitHub Actions Secrets]
-        end
-        style Security fill:#1E40AF,color:#BFDBFE
-
-        subgraph "CI/CD & Automation (GitHub Actions)"
-            GHActions[GitHub Actions Workflows]
-            GHAScripts[Architect AI Pro Scripts]
-            Terraform[Terraform IaC]
-            CloudBuild[Cloud Build]
-        end
-
-        subgraph "Application Services"
-            style Application Services fill:#1E3A5F
-            CloudCDN[Cloud CDN]
-            CHADDashboard[CHAD Dashboard - Cloud Run]
-            ArchGallery[Architecture Gallery - Cloud Run]
-        end
-
-        subgraph "Data & Artifacts"
-            style Data & Artifacts fill:#0F172A
-            GitHubRepos[GitHub Repositories]
-            ArtifactRegistry[GCP Artifact Registry]
-        end
-
-        Dev -->|Accesses via HTTPS| LoadBalancer
-        LoadBalancer -->|Routes traffic| CloudArmor
-        CloudArmor -->|Protects| CloudCDN
-        CloudCDN -->|Caches & Delivers| CHADDashboard
-        CloudCDN -->|Caches & Delivers| ArchGallery
-
-        Dev -->|Interacts with| GitHub
-        GitHub -->|Triggers| GHActions
-        GHActions -->|Checks out code from| GitHubRepos
-        GHActions -->|Authenticates to GCP via| WIF
-        GHActions -->|Retrieves secrets from| GitHubSecrets
-        GHActions -->|Executes Python scripts| GHAScripts
-        GHAScripts -->|Calls AI model| GeminiAPI
-        GHAScripts -->|Interacts with| GitHubAPI[GitHub API]
-        GHAScripts -->|Generates diagrams to| GitHubRepos
-        GHAScripts -->|Renders PNGs via| DrawIO
-
-        GHActions -->|Builds Docker images via| CloudBuild
-        CloudBuild -->|Pushes images to| ArtifactRegistry
-        GHActions -->|Deploys services to| CHADDashboard
-        GHActions -->|Deploys services to| ArchGallery
-        GHActions -->|Manages GCP infra via| Terraform
-        Terraform -->|Deploys/Configures| WIF
-        Terraform -->|Deploys/Configures| GCPSecretManager
-        Terraform -->|Deploys/Configures| ArtifactRegistry
-        Terraform -->|Deploys/Configures| CloudBuild
-        Terraform -->|Deploys/Configures| CHADDashboard
-        Terraform -->|Deploys/Configures| ArchGallery
-        Terraform -->|Deploys/Configures| LoadBalancer
-        Terraform -->|Deploys/Configures| CloudArmor
-        Terraform -->|Deploys/Configures| CloudCDN
-
-        CHADDashboard -->|Triggers audit/gen internal| GitHubAPI
-        CHADDashboard -->|Retrieves `GITHUB_PAT` from| GCPSecretManager
-        CHADDashboard -->|Deploys workflows to| GitHubAPI
-        CHADDashboard -->|Serves dashboard from| GitHubRepos
-
-        ArchGallery -->|Fetches diagrams from| GitHubAPI
-        ArchGallery -->|Retrieves `GITHUB_TOKEN` from| GCPSecretManager
-
-        GitHubSecrets -->|Provides `GEMINI_API_KEY` to| GHAScripts
-        GitHubSecrets -->|Provides `GH_PAT` to| GHActions
-
-        WIF -->|Authenticates| GHActions
-
-    end
+            style Security fill:#1E40AF,
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
