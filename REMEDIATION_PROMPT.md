@@ -28,14 +28,15 @@ Rewrite the Mermaid.js code to resolve **all** violations listed above. Follow t
 
 1. Do **not** remove existing logic unless it directly conflicts with the BlueFalconInk LLC standards.
 2. Ensure the updated diagram is **valid Mermaid syntax** that renders correctly on GitHub.
-3. Add a `subgraph Security` block if one is missing.
+3. Add a `subgraph SecuritySG ["Security"]` block with an explicit ID if one is missing.
 4. Replace any non-standard cloud provider references with the mandated provider's equivalents.
 5. Ensure all public-facing endpoints pass through Cloud Armor and a Load Balancer before reaching application services.
 6. Include BlueFalconInk LLC branding in the diagram title.
-7. For subscription services, ensure a clear `subgraph Payment` boundary separates Stripe logic from core application logic.
+7. For subscription services, ensure a clear `subgraph PaymentSG ["Payment"]` boundary separates Stripe logic from core application logic.
 8. Ensure a CDN (Cloud CDN) is present for any content delivery paths.
-9. Apply brand color `#1E40AF` to the Security subgraph: `style Security fill:#1E40AF,color:#BFDBFE`
-10. Include a footer node: `FOOTER["🏗️ Created with Architect AI Pro | BlueFalconInk LLC"]` with `style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6`
+9. Apply brand color `#1E40AF` to the Security subgraph: `style SecuritySG fill:#1E40AF,color:#BFDBFE`
+10. Include a footer node: `FOOTER["\ud83c\udfd7\ufe0f Created with Architect AI Pro \u00b7 BlueFalconInk LLC"]` with `style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6`
+11. CRITICAL \u2014 Every subgraph MUST have an explicit single-word ID: `subgraph SecuritySG ["Security"]` NOT `subgraph "Security"`. Multi-word names without IDs break `style` directives.
 
 ---
 
@@ -55,12 +56,12 @@ Rewrite the Mermaid.js code to resolve **all** violations listed above. Follow t
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 
 graph TB
-    subgraph Security["🛡️ Security Boundary"]
+    subgraph SecuritySG ["🛡️ Security Boundary"]
         ARMOR[Cloud Armor]
         LB[Cloud Load Balancer]
     end
 
-    subgraph Application["BlueFalconInk LLC Service"]
+    subgraph ApplicationSG ["BlueFalconInk LLC Service"]
         API[FastAPI Backend on Cloud Run]
         DB[(Cloud SQL PostgreSQL)]
     end
@@ -72,7 +73,7 @@ graph TB
 
     FOOTER["🏗️ Created with Architect AI Pro | BlueFalconInk LLC"]
 
-    style Security fill:#1E40AF,color:#BFDBFE
-    style Application fill:#1E3A5F,color:#BFDBFE
+    style SecuritySG fill:#1E40AF,color:#BFDBFE
+    style ApplicationSG fill:#1E3A5F,color:#BFDBFE
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```

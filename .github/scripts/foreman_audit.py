@@ -97,7 +97,7 @@ def check_security_layer(diagram: str, config: dict) -> List[Violation]:
                     Violation.CRITICAL,
                     "Security",
                     "No explicit 'Security' boundary found in architecture.",
-                    "Add a 'subgraph Security' block containing Cloud Armor, Load Balancer, or firewall components.",
+                    "Add a 'subgraph SecuritySG [\"Security\"]' block containing Cloud Armor, Load Balancer, or firewall components.",
                 )
             )
 
@@ -156,7 +156,7 @@ def check_branding(diagram: str, config: dict) -> List[Violation]:
                     Violation.WARNING,
                     "Branding — Color Identity",
                     f"Diagram is missing the {org_name} brand color (#1E40AF — Blue Falcon Blue).",
-                    "Apply 'style Security fill:#1E40AF,color:#BFDBFE' to the Security subgraph.",
+                    "Apply 'style SecuritySG fill:#1E40AF,color:#BFDBFE' to the Security subgraph.",
                 )
             )
 
@@ -217,7 +217,7 @@ def check_subscription_compliance(diagram: str, config: dict) -> List[Violation]
                             Violation.WARNING,
                             "PCI Compliance",
                             f"Payment provider '{subscription['provider']}' found without security boundary.",
-                            "Wrap payment components in a dedicated 'subgraph Payment' boundary.",
+                            "Wrap payment components in a dedicated 'subgraph PaymentSG [\"Payment\"]' boundary.",
                         )
                     )
 

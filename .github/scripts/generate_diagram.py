@@ -173,11 +173,11 @@ def build_system_prompt(config: dict) -> str:
     compliance = config.get("compliance", {})
     compliance_rules = ""
     if compliance.get("require_security_subgraph"):
-        compliance_rules += "  - MUST include a `subgraph Security` block.\n"
+        compliance_rules += "  - MUST include a `subgraph SecuritySG [\"Security\"]` block with explicit ID.\n"
     if compliance.get("require_cloud_armor_for_public") or compliance.get("require_waf_alb_for_public"):
         compliance_rules += "  - All public endpoints MUST be protected by Cloud Armor, Load Balancer, or API Gateway.\n"
     if compliance.get("pci_compliance_for_payments"):
-        compliance_rules += "  - Payment flows MUST be in an isolated `subgraph Payment` boundary.\n"
+        compliance_rules += "  - Payment flows MUST be in an isolated `subgraph PaymentSG [\"Payment\"]` boundary with explicit ID.\n"
     if compliance.get("require_branding"):
         compliance_rules += f"  - Diagram title MUST include '{org}'.\n"
     if compliance.get("block_non_standard_providers"):
@@ -227,11 +227,11 @@ def build_system_prompt(config: dict) -> str:
 
         BRANDING & STYLING REQUIREMENTS:
         12. Apply the {org} brand color `#1E40AF` (Blue Falcon Blue) to the Security subgraph:
-            `style Security fill:#1E40AF,color:#BFDBFE`
-        13. Apply `#1E3A5F` to the main Application subgraph.
-        14. Apply `#0F172A` to the Data layer subgraph.
-        15. The top-level subgraph containing the entire application MUST be titled:
-            `"{org} - <RepoName> Architecture"`
+            `style SecuritySG fill:#1E40AF,color:#BFDBFE`
+        13. Apply `#1E3A5F` to the main Application subgraph (e.g. `style ApplicationSG fill:#1E3A5F,color:#BFDBFE`).
+        14. Apply `#0F172A` to the Data layer subgraph (e.g. `style DataSG fill:#0F172A,color:#BFDBFE`).
+        15. The top-level subgraph containing the entire application MUST use an explicit ID and be titled:
+            `subgraph BFI_Arch ["{org} - <RepoName> Architecture"]`
             Use a plain hyphen `-`, NEVER use em dash `—` or en dash `–` — they cause lexical errors.
         16. Include a footer note node at the bottom of the diagram:
             `FOOTER["🏗️ Created with Architect AI Pro · {org}"]`
@@ -244,10 +244,14 @@ def build_system_prompt(config: dict) -> str:
             Do NOT use stadium shapes `([...])`, cylindrical `[(...)`, or `["..."]` — they break GitHub rendering.
         19. Do NOT use `<br>` or HTML tags in node labels — use short plain-text labels instead.
         20. Do NOT put parentheses in node labels — e.g. use `NodeApp[Node.js Express Proxy]` not `NodeApp[Node.js (Express) Proxy]`.
-        21. Prefer plain quoted subgraph names: `subgraph "Security"` not `subgraph Security Layer`.
+        21. CRITICAL — Every subgraph MUST have an explicit single-word ID followed by the display name in brackets:
+            `subgraph SecuritySG ["Security"]` NOT `subgraph "Security"`
+            `subgraph FrontendApp ["Frontend Application"]` NOT `subgraph "Frontend Application"`
+            This is required because `style` directives reference the ID, and multi-word names break parsing.
+            Use short PascalCase IDs with a suffix like SG: SecuritySG, ApplicationSG, DataSG, ExternalSG, DevOpsSG, etc.
         22. Every node must be on its own line. Never place two statements on the same line.
         23. Use `---` (solid link), `-->` (arrow), or `-.->` (dotted) for edges. Do not use `~~~` or unusual link types.
-        24. In `style` directives, use bare unquoted identifiers: `style Security fill:...` NOT `style "Security" fill:...`. Quoted strings in style lines cause parse errors.
+        24. In `style` directives, reference the explicit subgraph ID: `style SecuritySG fill:...` NOT `style "Security" fill:...` or `style Security fill:...`. The ID must match the subgraph definition exactly.
         25. For link/edge labels, use the pipe syntax `A -->|label text| B`. NEVER use colon syntax `A --> B : label text` — that is sequence diagram syntax and causes parse errors in flowcharts.
         26. NEVER put parentheses inside link/edge labels — e.g. use `-->|API Calls via HTTPS| B` NOT `-->|API Calls (HTTPS)| B`. Parentheses inside pipe labels are parsed as node shape delimiters.
         27. Do NOT use parallelogram shapes `[/text/]` or `[\text\]`. Do NOT start node labels with `/` — e.g. use `Webhook[api stripe webhook]` NOT `Webhook[/api/stripe/webhook]`.
