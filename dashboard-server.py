@@ -280,6 +280,36 @@ def health():
     return jsonify({"status": "healthy", "service": "chad-dashboard"})
 
 
+@app.route("/api/status", methods=["GET"])
+def api_status():
+    """Return CHAD refresh status — useful for debugging staleness."""
+    import datetime
+    report_path = STATIC_DIR / "audit_report.json"
+    report_age = None
+    total_repos = 0
+    if report_path.exists():
+        stat = report_path.stat()
+        report_age = time.time() - stat.st_mtime
+        try:
+            rpt = json.loads(report_path.read_text())
+            total_repos = rpt.get("summary", {}).get("total_repos", 0)
+        except Exception:
+            pass
+
+    last_dt = (
+        datetime.datetime.fromtimestamp(_last_refresh_time, tz=datetime.timezone.utc).isoformat()
+        if _last_refresh_time > 0 else None
+    )
+    return jsonify({
+        "last_refresh_utc": last_dt,
+        "refresh_interval_hours": REFRESH_INTERVAL / 3600,
+        "report_age_seconds": round(report_age) if report_age is not None else None,
+        "total_repos": total_repos,
+        "dashboard_exists": (STATIC_DIR / "dashboard.html").exists(),
+        "ops_exists": (STATIC_DIR / "ops.html").exists(),
+    })
+
+
 # ---------------------------------------------------------------------------
 # Ops Center Page + API  (Architecture, Deployments, Recommendations)
 # ---------------------------------------------------------------------------
@@ -754,17 +784,25 @@ def deploy_workflow():
 # Auto-refresh on Startup
 # ---------------------------------------------------------------------------
 
-def _auto_refresh():
-    """Run audit + dashboard generation in a background thread on startup.
+# ---------------------------------------------------------------------------
+# Periodic auto-refresh interval in seconds (default: 4 hours).
+# Override with CHAD_REFRESH_INTERVAL env var.
+# ---------------------------------------------------------------------------
+REFRESH_INTERVAL = int(os.environ.get("CHAD_REFRESH_INTERVAL", 4 * 3600))
+_last_refresh_time: float = 0.0
+_refresh_lock = threading.Lock()
 
-    This ensures the dashboard is populated immediately after deployment
-    instead of showing the placeholder page. Only runs when a GITHUB_TOKEN
-    is available on the server.
+
+def _run_refresh_cycle():
+    """Execute one audit + dashboard + ops page generation cycle.
+
+    Returns True on success, False on failure.
     """
-    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    global _last_refresh_time
+    token = (os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN") or "").strip()
     if not token:
         logger.info("No GITHUB_TOKEN configured — skipping auto-refresh")
-        return
+        return False
 
     owner = os.environ.get("GITHUB_OWNER", "koreric75")
     logger.info(f"Auto-refresh: starting audit for owner={owner}")
@@ -775,29 +813,36 @@ def _auto_refresh():
         env["GH_TOKEN"] = token
         app_dir = Path(__file__).parent
 
+        # Build auditor command with extra orgs support
+        cmd = [
+            sys.executable, "repo_auditor.py",
+            "--owner", owner,
+            "--output", str(STATIC_DIR / "audit_report.json"),
+        ]
+        if EXTRA_ORGS:
+            cmd.extend(["--extra-orgs", EXTRA_ORGS])
+
         # Run auditor
         result = subprocess.run(
-            [sys.executable, "repo_auditor.py",
-             "--owner", owner,
-             "--output", str(STATIC_DIR / "audit_report.json")],
-            capture_output=True, text=True, timeout=120, env=env,
+            cmd,
+            capture_output=True, text=True, timeout=180, env=env,
             cwd=app_dir,
         )
         if result.returncode != 0:
             logger.error(f"Auto-refresh audit failed: {result.stderr[:500]}")
-            return
+            return False
 
         # Generate dashboard
         result2 = subprocess.run(
             [sys.executable, "dashboard_generator.py",
              "--input", str(STATIC_DIR / "audit_report.json"),
              "--output", str(STATIC_DIR / "dashboard.html")],
-            capture_output=True, text=True, timeout=30,
+            capture_output=True, text=True, timeout=60,
             cwd=app_dir,
         )
         if result2.returncode != 0:
             logger.error(f"Auto-refresh dashboard generation failed: {result2.stderr[:500]}")
-            return
+            return False
 
         # Generate Ops Center page
         mermaid_path = app_dir / "docs" / "architecture.mermaid"
@@ -806,7 +851,7 @@ def _auto_refresh():
              "--input", str(STATIC_DIR / "audit_report.json"),
              "--mermaid", str(mermaid_path),
              "--output", str(STATIC_DIR / "ops.html")],
-            capture_output=True, text=True, timeout=30,
+            capture_output=True, text=True, timeout=60,
             cwd=app_dir,
         )
         if result3.returncode != 0:
@@ -814,20 +859,51 @@ def _auto_refresh():
 
         report = json.loads((STATIC_DIR / "audit_report.json").read_text())
         total = report.get("summary", {}).get("total_repos", 0)
+        _last_refresh_time = time.time()
         logger.info(f"Auto-refresh complete: {total} repos audited")
+        return True
     except subprocess.TimeoutExpired:
         logger.error("Auto-refresh timed out")
+        return False
     except Exception:
         logger.exception("Auto-refresh failed with unexpected error")
+        return False
+
+
+def _auto_refresh_loop():
+    """Run refresh immediately on startup, then repeat every REFRESH_INTERVAL.
+
+    This ensures:
+      1. Dashboard is populated right after a cold-start.
+      2. Data stays fresh even if the container stays alive for days.
+    """
+    # Initial refresh — retry up to 3 times on failure (token may not be
+    # available instantly on Cloud Run cold-start).
+    for attempt in range(1, 4):
+        with _refresh_lock:
+            ok = _run_refresh_cycle()
+        if ok:
+            break
+        wait = 15 * attempt
+        logger.warning(f"Auto-refresh attempt {attempt}/3 failed, retrying in {wait}s")
+        time.sleep(wait)
+
+    # Periodic loop
+    logger.info(f"Scheduled periodic refresh every {REFRESH_INTERVAL}s ({REFRESH_INTERVAL / 3600:.1f}h)")
+    while True:
+        time.sleep(REFRESH_INTERVAL)
+        logger.info("Periodic auto-refresh triggered")
+        with _refresh_lock:
+            _run_refresh_cycle()
 
 
 def _start_auto_refresh():
-    """Launch auto-refresh in a daemon thread so it doesn't block startup."""
-    t = threading.Thread(target=_auto_refresh, daemon=True, name="auto-refresh")
+    """Launch the auto-refresh loop in a daemon thread so it doesn't block startup."""
+    t = threading.Thread(target=_auto_refresh_loop, daemon=True, name="auto-refresh")
     t.start()
 
 
-# Trigger auto-refresh once when the module is first loaded by gunicorn
+# Trigger auto-refresh loop when the module is first loaded by gunicorn
 _start_auto_refresh()
 
 
