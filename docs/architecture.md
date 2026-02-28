@@ -1,7 +1,7 @@
 # 🏗️ BlueFalconInk LLC — ArchitectAIPro_GHActions Architecture
 
 > **Created with [Architect AI Pro](https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/)** — the flagship architecture tool by **BlueFalconInk LLC**
-> Auto-generated on 2026-02-28 20:45 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
+> Auto-generated on 2026-02-28 23:54 UTC | [GitHub Action source](https://github.com/koreric75/ArchitectAIPro_GHActions)
 
 ![BlueFalconInk LLC](https://img.shields.io/badge/BlueFalconInk%20LLC-Standard-1E40AF)
 ![Architect AI Pro](https://img.shields.io/badge/Created%20with-Architect%20AI%20Pro-3B82F6)
@@ -19,42 +19,90 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph BFI_Arch [BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture]
+        User[External Users/Developers]
+
         subgraph SecuritySG [Security]
+            CloudLB[Cloud Load Balancer]
             CloudArmor[Cloud Armor]
-            LoadBalancer[Cloud Load Balancer]
-            CloudCDN[Cloud CDN]
         end
-        style SecuritySG fill:#1E40AF,color:#BFDBFE
 
         subgraph ApplicationSG [Application Services]
-            GHActions[GitHub Actions CI/CD]
+            CHADDashboard[CHAD Dashboard - Cloud Run]
+            ArchGallery[Architecture Gallery - Cloud Run]
+        end
+
+        subgraph CICDSG [CI/CD & Automation]
+            GitHubActions[GitHub Actions]
             CloudBuild[Cloud Build]
             Terraform[Terraform IaC]
-            CHADDashCR[CHAD Dashboard · Cloud Run]
-            ArchGalleryCR[Arch Gallery · Cloud Run]
-            GenDiagramScript[Diagram Generator Script]
-            ForemanAudit[Foreman Audit Engine]
-            RepoAuditor[Repo Auditor Agent]
-            DashboardGen[Dashboard Generator]
-            OpsPageGen[Ops Page Generator]
-            CleanupAgent[Cleanup Agent]
         end
-        style ApplicationSG fill:#1E3A5F,color:#BFDBFE
 
-        subgraph DataSG [Data & Secrets]
+        subgraph DataAISG [Data & AI Services]
+            GitHubAPI[GitHub API]
+            GoogleGeminiAPI[Google Gemini API]
             ArtifactRegistry[Artifact Registry]
-            SecretManager[Secret Manager]
-            ArchitectConfig[ARCHITECT_CONFIG.json]
+            GCPSecretManager[GCP Secret Manager]
         end
-        style DataSG fill:#0F172A,color:#BFDBFE
 
-        subgraph AISG [AI Services]
-            GeminiAPI[Google Gemini API]
+        subgraph InternalScriptsSG [Internal Scripts & Tools]
+            GenDiagramPy[.github/scripts/generate_diagram.py]
+            ForemanAuditPy[.github/scripts/foreman_audit.py]
+            RepoAuditorPy[.github/scripts/repo_auditor.py]
+            DashboardGenPy[.github/scripts/dashboard_generator.py]
+            CleanupAgentPy[.github/scripts/cleanup_agent.py]
+            OpsPageGenPy[.github/scripts/ops_page_generator.py]
+            MermaidToDrawioPy[PLUGINS/mermaid_to_drawio.py]
         end
-        style
-    style Security fill:#1E40AF,color:#BFDBFE
-    style Data fill:#0F172A,color:#BFDBFE
+
+        User -->|HTTPS| CloudLB
+        CloudLB -->|Traffic Filtering| CloudArmor
+        CloudArmor -->|HTTPS| CHADDashboard
+        CloudArmor -->|HTTPS| ArchGallery
+
+        CHADDashboard -->|Triggers Refresh POST /api/refresh| CHADDashboard
+        CHADDashboard -->|Fetches Repo Data| GitHubAPI
+        CHADDashboard -->|Retrieves GH_PAT| GCPSecretManager
+        ArchGallery -->|Fetches Repo Content & Diagrams| GitHubAPI
+        ArchGallery -->|Retrieves GITHUB_TOKEN| GCPSecretManager
+
+        GitHubPush[GitHub Push/PR] -->|Code Changes| GitHubActions
+        GitHubActions -->|Executes Workflows| GenDiagramPy
+        GitHubActions -->|Executes Workflows| ForemanAuditPy
+        GitHubActions -->|Executes Workflows| RepoAuditorPy
+        GitHubActions -->|Executes Workflows| DashboardGenPy
+        GitHubActions -->|Executes Workflows| CleanupAgentPy
+        GitHubActions -->|Executes Workflows| OpsPageGenPy
+        GitHubActions -->|Deploys Infra| Terraform
+        GitHubActions -->|Builds & Scans Docker| CloudBuild
+
+        GenDiagramPy -->|AI Generation Request| GoogleGeminiAPI
+        GenDiagramPy -->|Converts Mermaid| MermaidToDrawioPy
+        RepoAuditorPy -->|Fetches Repo Metadata| GitHubAPI
+        DashboardGenPy -->|Generates HTML| CHADDashboard
+        OpsPageGenPy -->|Generates HTML| CHADDashboard
+        CleanupAgentPy -->|Modifies Repos| GitHubAPI
+
+        CloudBuild -->|Pushes Images| ArtifactRegistry
+        ArtifactRegistry -->|Container Images| CHADDashboard
+        ArtifactRegistry -->|Container Images| ArchGallery
+
+        Terraform -->|Provisions Resources| GCPSecretManager
+        Terraform -->|Provisions Resources| CloudRunServices[Cloud Run Services]
+        CloudRunServices -.->|Deploys| CHADDashboard
+        CloudRunServices -.->|Deploys| ArchGallery
+
+        GitHubActions -->|Accesses Secrets via WIF| GCPSecretManager
+
+    end
+
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
+
+    style SecuritySG fill:#1E40AF,color:#BFDBFE
+    style ApplicationSG fill:#1E3A5F,color:#BFDBFE
+    style CICDSG fill:#1E3A5F,color:#BFDBFE
+    style DataAISG fill:#0F172A,color:#BFDBFE
+    style InternalScriptsSG fill:#0F172A,color:#BFDBFE
+    style BFI_Arch fill:#FFFFFF,color:#000000
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
 
