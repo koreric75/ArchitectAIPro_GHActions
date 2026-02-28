@@ -56,8 +56,10 @@ BRAND_INCORRECT = [
 STALE_DAYS = 180      # 6 months -> candidate for archive
 DEAD_DAYS = 365 * 2   # 2 years -> candidate for deletion
 
-# Token budget per audit run (prevents runaway API calls)
-MAX_API_CALLS = 300
+# Token budget per audit run (prevents runaway API calls).
+# ~26 API calls per deep-audited repo, so budget = 30 * max_expected_repos.
+# Override with CHAD_API_BUDGET env var.
+MAX_API_CALLS = int(os.environ.get("CHAD_API_BUDGET", "600"))
 api_call_count = 0
 
 # ---------------------------------------------------------------------------
@@ -709,6 +711,13 @@ def run_audit(owner: str, token: str, extra_orgs: list = None) -> dict:
     print(f"   Total disk: {summary['total_disk_mb']:.1f} MB")
     print(f"   Est. monthly burn: ${summary['total_monthly_burn']}")
     print(f"   API calls used: {api_call_count}/{MAX_API_CALLS}")
+    if api_call_count >= MAX_API_CALLS:
+        print(f"   [WARN] Budget exhausted! Some repos may have incomplete data.")
+        incomplete = [r["full_name"] for r in audit_results
+                      if r["classification"]["tier"] in ("CORE", "ACTIVE", "DORMANT")
+                      and not r["architecture"].get("files")]
+        if incomplete:
+            print(f"   [WARN] Repos with missing architecture data: {incomplete}")
 
     return report
 
