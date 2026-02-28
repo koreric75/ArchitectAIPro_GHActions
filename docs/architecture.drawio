@@ -1,507 +1,141 @@
-<mxfile host="app.diagrams.net" agent="ArchitectAIPro_GHActions" etag="unique-etag-12345" version="23.1.5">
-  <diagram id="diagram1" name="Page-1">
-    <mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1800" background="#FFFFFF" math="0" shadow="0">
+<mxfile host="app.diagrams.net" modified="2023-10-27T12:00:00.000Z" agent="ArchitectAIPro" etag="some_etag" version="22.0.8">
+  <diagram id="0" name="Page-1">
+    <mxGraphModel dx="1434" dy="1017" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageEnabled="1" pageScale="1" pageWidth="1100" pageHeight="850" background="#FFFFFF" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <!-- Title Bar -->
-        <mxCell id="titleBar" value="BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#1E40AF;fontSize=24;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="0" y="0" width="1200" height="80" as="geometry" />
+        <mxCell id="title" value="BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#1E293B;fontSize=24;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="30" width="700" height="40" as="geometry" />
         </mxCell>
 
-        <!-- User / Developer -->
-        <mxCell id="UserDev" value="User / Developer" style="shape=umlActor;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=14;" vertex="1" parent="1">
-          <mxGeometry x="100" y="150" width="100" height="120" as="geometry" />
+        <!-- External User -->
+        <mxCell id="user" value="External User" style="shape=umlActor;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="50" y="200" width="100" height="120" as="geometry" />
         </mxCell>
 
         <!-- Security Subgraph -->
-        <mxCell id="SecuritySG" value="Security" style="swimlane;startSize=30;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#1E40AF;fontSize=16;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="250" y="100" width="850" height="200" as="geometry" />
+        <mxCell id="security_sg" value="Security" style="swimlane;fillColor=#1E40AF;strokeColor=#1E293B;fontColor=#BFDBFE;rounded=1;startSize=30;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="100" width="700" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="CloudArmor" value="Cloud Armor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="SecuritySG">
-          <mxGeometry x="20" y="50" width="120" height="50" as="geometry" />
+        <mxCell id="load_balancer" value="Cloud Load Balancer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="security_sg">
+          <mxGeometry x="50" y="50" width="140" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="LoadBalancer" value="Cloud Load Balancer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="SecuritySG">
-          <mxGeometry x="160" y="50" width="140" height="50" as="geometry" />
+        <mxCell id="cloud_armor" value="Cloud Armor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="security_sg">
+          <mxGeometry x="250" y="50" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="SecretManager" value="Secret Manager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="SecuritySG">
-          <mxGeometry x="320" y="50" width="120" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="WorkloadIdentity" value="Workload Identity Federation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="SecuritySG">
-          <mxGeometry x="460" y="50" width="160" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="GCPServiceAccount" value="GCP Service Account" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="SecuritySG">
-          <mxGeometry x="640" y="50" width="150" height="50" as="geometry" />
-        </mxCell>
-
-        <!-- DevOps & Automation Subgraph -->
-        <mxCell id="DevOpsSG" value="DevOps &amp; Automation" style="swimlane;startSize=30;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#1E3A5F;fontSize=16;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="250" y="320" width="850" height="250" as="geometry" />
-        </mxCell>
-        <mxCell id="GitHubActions" value="GitHub Actions Workflows" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="DevOpsSG">
-          <mxGeometry x="20" y="50" width="160" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="ArchitectScripts" value="Architect AI Pro Scripts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="DevOpsSG">
-          <mxGeometry x="20" y="120" width="160" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="CHADScripts" value="CHAD Agent Scripts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="DevOpsSG">
-          <mxGeometry x="200" y="120" width="140" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="TerraformIaC" value="Terraform IaC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="DevOpsSG">
-          <mxGeometry x="360" y="120" width="120" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="CloudBuild" value="Cloud Build" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="DevOpsSG">
-          <mxGeometry x="500" y="120" width="100" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="SecurityScanningTools" value="Security Scanning Tools" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="DevOpsSG">
-          <mxGeometry x="620" y="120" width="150" height="50" as="geometry" />
+        <mxCell id="cloud_cdn" value="Cloud CDN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="security_sg">
+          <mxGeometry x="450" y="50" width="120" height="60" as="geometry" />
         </mxCell>
 
         <!-- Application Subgraph -->
-        <mxCell id="ApplicationSG" value="BlueFalconInk Applications" style="swimlane;startSize=30;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#1E3A5F;fontSize=16;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="250" y="590" width="850" height="150" as="geometry" />
+        <mxCell id="application_sg" value="Application Layer" style="swimlane;fillColor=#1E3A5F;strokeColor=#1E293B;fontColor=#BFDBFE;rounded=1;startSize=30;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="280" width="700" height="300" as="geometry" />
         </mxCell>
-        <mxCell id="CloudRunDashboard" value="Cloud Run · CHAD Dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="ApplicationSG">
-          <mxGeometry x="20" y="50" width="180" height="50" as="geometry" />
+        <mxCell id="chad_dash" value="CHAD Dashboard - Cloud Run" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="application_sg">
+          <mxGeometry x="50" y="50" width="160" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="CloudRunGallery" value="Cloud Run · Architecture Gallery" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="ApplicationSG">
-          <mxGeometry x="220" y="50" width="190" height="50" as="geometry" />
+        <mxCell id="arch_gallery" value="Architecture Gallery - Cloud Run" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="application_sg">
+          <mxGeometry x="50" y="150" width="160" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="CloudCDN" value="Cloud CDN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="ApplicationSG">
-          <mxGeometry x="430" y="50" width="100" height="50" as="geometry" />
+        <mxCell id="gh_actions" value="GitHub Actions Workflows" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="application_sg">
+          <mxGeometry x="250" y="50" width="160" height="60" as="geometry" />
         </mxCell>
-
-        <!-- Data & Storage Subgraph -->
-        <mxCell id="DataSG" value="Data &amp; Storage" style="swimlane;startSize=30;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#1E3A5F;fontSize=16;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="250" y="760" width="850" height="150" as="geometry" />
+        <mxCell id="architect_ai_scripts" value="Architect AI Pro Scripts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="application_sg">
+          <mxGeometry x="250" y="150" width="160" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="GitHubRepos" value="GitHub Repositories" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="DataSG">
-          <mxGeometry x="20" y="50" width="140" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="ArtifactRegistry" value="Artifact Registry" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="DataSG">
-          <mxGeometry x="180" y="50" width="120" height="50" as="geometry" />
+        <mxCell id="chad_agents" value="CHAD Agent Scripts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="application_sg">
+          <mxGeometry x="250" y="230" width="160" height="60" as="geometry" />
         </mxCell>
 
-        <!-- External Integrations Subgraph -->
-        <mxCell id="ExternalSG" value="External Integrations" style="swimlane;startSize=30;fillColor=#1E3A5F;fontColor=#BFDBFE;strokeColor=#1E3A5F;fontSize=16;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="250" y="930" width="850" height="150" as="geometry" />
+        <!-- Data Subgraph -->
+        <mxCell id="data_sg" value="Data Layer" style="swimlane;fillColor=#1E3A5F;strokeColor=#1E293B;fontColor=#BFDBFE;rounded=1;startSize=30;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="600" width="350" height="220" as="geometry" />
         </mxCell>
-        <mxCell id="GoogleGemini" value="Google Gemini API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="ExternalSG">
-          <mxGeometry x="20" y="50" width="130" height="50" as="geometry" />
+        <mxCell id="github_repos" value="GitHub Repositories" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="data_sg">
+          <mxGeometry x="50" y="50" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="GitHubAPI" value="GitHub API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="ExternalSG">
-          <mxGeometry x="170" y="50" width="100" height="50" as="geometry" />
+        <mxCell id="artifact_registry" value="GCP Artifact Registry" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="data_sg">
+          <mxGeometry x="190" y="50" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="DrawioCLI" value="Draw.io Desktop CLI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#3B82F6;fontColor=#1E293B;fontSize=12;" vertex="1" parent="ExternalSG">
-          <mxGeometry x="290" y="50" width="140" height="50" as="geometry" />
-        </mxCell>
-
-        <!-- Data Flows -->
-        <mxCell id="e-UserDev-GitHubActions" value="Code Push / PR" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="UserDev" target="GitHubActions">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="200" y="200" as="sourcePoint" />
-            <mxPoint x="250" y="200" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="200" y="345" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-UserDev-LoadBalancer-Dashboard" value="View Dashboard" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="UserDev" target="LoadBalancer">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="200" y="220" as="sourcePoint" />
-            <mxPoint x="250" y="220" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="200" y="200" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-UserDev-LoadBalancer-Gallery" value="View Gallery" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="UserDev" target="LoadBalancer">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="200" y="240" as="sourcePoint" />
-            <mxPoint x="250" y="240" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="200" y="210" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="secret_manager" value="GCP Secret Manager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="data_sg">
+          <mxGeometry x="190" y="130" width="120" height="60" as="geometry" />
         </mxCell>
 
-        <mxCell id="e-GitHubActions-ArchitectScripts" value="Triggers Arch Sync" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="GitHubActions" target="ArchitectScripts">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="330" y="370" as="sourcePoint" />
-            <mxPoint x="330" y="440" as="targetPoint" />
-          </mxGeometry>
+        <!-- External Services Subgraph -->
+        <mxCell id="external_sg" value="External Services" style="swimlane;fillColor=#1E3A5F;strokeColor=#1E293B;fontColor=#BFDBFE;rounded=1;startSize=30;html=1;" vertex="1" parent="1">
+          <mxGeometry x="570" y="600" width="330" height="220" as="geometry" />
         </mxCell>
-        <mxCell id="e-GitHubActions-CHADScripts" value="Triggers CHAD Ops" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="GitHubActions" target="CHADScripts">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="340" y="370" as="sourcePoint" />
-            <mxPoint x="340" y="440" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="300" y="375" />
-              <mxPoint x="300" y="445" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="gemini_api" value="Google Gemini API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="external_sg">
+          <mxGeometry x="50" y="50" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="e-GitHubActions-CloudBuild" value="Triggers Deploy Dashboard" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="GitHubActions" target="CloudBuild">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="350" y="370" as="sourcePoint" />
-            <mxPoint x="350" y="440" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="550" y="375" />
-              <mxPoint x="550" y="445" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-GitHubActions-TerraformIaC" value="Triggers Deploy Infra" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="GitHubActions" target="TerraformIaC">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="360" y="370" as="sourcePoint" />
-            <mxPoint x="360" y="440" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="420" y="375" />
-              <mxPoint x="420" y="445" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-GitHubActions-SecurityScanningTools" value="Triggers Security Scan" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="GitHubActions" target="SecurityScanningTools">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="370" y="370" as="sourcePoint" />
-            <mxPoint x="370" y="440" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="700" y="375" />
-              <mxPoint x="700" y="445" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="github_api" value="GitHub API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="external_sg">
+          <mxGeometry x="190" y="50" width="120" height="60" as="geometry" />
         </mxCell>
 
-        <mxCell id="e-ArchitectScripts-GoogleGemini" value="AI Generation Request" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="ArchitectScripts" target="GoogleGemini">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="100" y="480" as="sourcePoint" />
-            <mxPoint x="100" y="980" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="100" y="980" />
-            </Array>
-          </mxGeometry>
+        <!-- DevOps & Governance Subgraph -->
+        <mxCell id="devops_sg" value="DevOps &amp; Governance" style="swimlane;fillColor=#1E3A5F;strokeColor=#1E293B;fontColor=#BFDBFE;rounded=1;startSize=30;html=1;" vertex="1" parent="1">
+          <mxGeometry x="920" y="100" width="200" height="720" as="geometry" />
         </mxCell>
-        <mxCell id="e-GoogleGemini-ArchitectScripts" value="Mermaid.js Code" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="GoogleGemini" target="ArchitectScripts">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="110" y="980" as="sourcePoint" />
-            <mxPoint x="110" y="480" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="110" y="480" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="terraform" value="Terraform IaC" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="devops_sg">
+          <mxGeometry x="40" y="50" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="e-ArchitectScripts-DrawioCLI" value="Generates Draw.io/PNG" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="ArchitectScripts" target="DrawioCLI">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="120" y="480" as="sourcePoint" />
-            <mxPoint x="120" y="980" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="120" y="990" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="cloud_build" value="Cloud Build" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="devops_sg">
+          <mxGeometry x="40" y="130" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="e-ArchitectScripts-GitHubRepos" value="Commits Docs" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="ArchitectScripts" target="GitHubRepos">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="130" y="480" as="sourcePoint" />
-            <mxPoint x="130" y="810" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="130" y="810" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="gcp_wif" value="Workload Identity Federation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="devops_sg">
+          <mxGeometry x="40" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="gcp_sa" value="GCP Service Accounts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="devops_sg">
+          <mxGeometry x="40" y="290" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="trivy" value="Trivy Vulnerability Scanner" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="devops_sg">
+          <mxGeometry x="40" y="370" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="bandit" value="Bandit SAST" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="devops_sg">
+          <mxGeometry x="40" y="450" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pip_audit" value="Pip-Audit/Safety Scan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;strokeColor=#1E40AF;fontColor=#1E293B;" vertex="1" parent="devops_sg">
+          <mxGeometry x="40" y="530" width="120" height="60" as="geometry" />
         </mxCell>
 
-        <mxCell id="e-CHADScripts-GitHubAPI-Scan" value="Scans Repos" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="CHADScripts" target="GitHubAPI">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="270" y="470" as="sourcePoint" />
-            <mxPoint x="270" y="980" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="270" y="980" />
-            </Array>
-          </mxGeometry>
+
+        <!-- Connections -->
+        <!-- User to Security -->
+        <mxCell id="user_to_lb" value="Access via HTTPS" style="edge;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="user" target="load_balancer">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-GitHubAPI-CHADScripts-Metadata" value="Repo Metadata, Workflows" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="GitHubAPI" target="CHADScripts">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="280" y="980" as="sourcePoint" />
-            <mxPoint x="280" y="470" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="280" y="470" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="lb_to_armor" value="Traffic Routing" style="edge;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="load_balancer" target="cloud_armor">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-CHADScripts-CloudRunDashboard" value="Audit Report JSON" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="CHADScripts" target="CloudRunDashboard">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="290" y="470" as="sourcePoint" />
-            <mxPoint x="290" y="640" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="290" y="640" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-CHADScripts-GitHubAPI-Deploy" value="Deploys Workflows" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="CHADScripts" target="GitHubAPI">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="300" y="470" as="sourcePoint" />
-            <mxPoint x="300" y="980" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="300" y="980" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="lb_to_cdn" value="Caches Content" style="edge;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="load_balancer" target="cloud_cdn">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <mxCell id="e-TerraformIaC-CloudRunDashboard" value="Provisions Resources" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="TerraformIaC" target="CloudRunDashboard">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="420" y="470" as="sourcePoint" />
-            <mxPoint x="420" y="640" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="420" y="640" />
-            </Array>
-          </mxGeometry>
+        <!-- Security to Application -->
+        <mxCell id="armor_to_chad" value="Protects Endpoint" style="edge;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cloud_armor" target="chad_dash">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-TerraformIaC-CloudRunGallery" value="Provisions Resources" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="TerraformIaC" target="CloudRunGallery">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="430" y="470" as="sourcePoint" />
-            <mxPoint x="430" y="640" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="430" y="640" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="armor_to_gallery" value="Protects Endpoint" style="edge;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cloud_armor" target="arch_gallery">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-TerraformIaC-SecretManager" value="Provisions Resources" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="TerraformIaC" target="SecretManager">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="440" y="470" as="sourcePoint" />
-            <mxPoint x="440" y="180" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="440" y="180" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="cdn_to_chad" value="Serves Cached Content" style="edge;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cloud_cdn" target="chad_dash">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-TerraformIaC-CloudArmor" value="Provisions Resources" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="TerraformIaC" target="CloudArmor">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="450" y="470" as="sourcePoint" />
-            <mxPoint x="450" y="180" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="450" y="180" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-TerraformIaC-LoadBalancer" value="Provisions Resources" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="TerraformIaC" target="LoadBalancer">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="460" y="470" as="sourcePoint" />
-            <mxPoint x="460" y="180" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="460" y="180" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-TerraformIaC-WorkloadIdentity" value="Provisions Resources" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="TerraformIaC" target="WorkloadIdentity">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="470" y="470" as="sourcePoint" />
-            <mxPoint x="470" y="180" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="470" y="180" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-TerraformIaC-GCPServiceAccount" value="Provisions Resources" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="TerraformIaC" target="GCPServiceAccount">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="480" y="470" as="sourcePoint" />
-            <mxPoint x="480" y="180" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="480" y="180" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-TerraformIaC-ArtifactRegistry" value="Provisions Resources" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="TerraformIaC" target="ArtifactRegistry">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="490" y="470" as="sourcePoint" />
-            <mxPoint x="490" y="810" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="490" y="810" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="cdn_to_gallery" value="Serves Cached Content" style="edge;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cloud_cdn" target="arch_gallery">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <mxCell id="e-CloudBuild-ArtifactRegistry" value="Builds Docker Image" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="CloudBuild" target="ArtifactRegistry">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="550" y="470" as="sourcePoint" />
-            <mxPoint x="550" y="810" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="550" y="810" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-ArtifactRegistry-CloudRunDashboard" value="Pushes Image" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="ArtifactRegistry" target="CloudRunDashboard">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="240" y="810" as="sourcePoint" />
-            <mxPoint x="240" y="640" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="240" y="640" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-ArtifactRegistry-CloudRunGallery" value="Pushes Image" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="ArtifactRegistry" target="CloudRunGallery">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="250" y="810" as="sourcePoint" />
-            <mxPoint x="250" y="640" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="250" y="640" />
-            </Array>
-          </mxGeometry>
+        <!-- User to GHActions -->
+        <mxCell id="user_to_gh_actions" value="Triggers Workflows" style="edge;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="user" target="gh_actions">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <mxCell id="e-LoadBalancer-CloudArmor" value="Routes Traffic" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="LoadBalancer" target="CloudArmor">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="230" y="180" as="sourcePoint" />
-            <mxPoint x="230" y="180" as="targetPoint" />
-          </mxGeometry>
+        <!-- GHActions to Application/DevOps -->
+        <mxCell id="gh_actions_to_architect_ai_scripts" value="Executes Scripts" style="edge;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="gh_actions" target="architect_ai_scripts">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-CloudArmor-CloudRunDashboard" value="Protects Endpoints" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="CloudArmor" target="CloudRunDashboard">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="80" y="180" as="sourcePoint" />
-            <mxPoint x="80" y="640" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="80" y="640" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="gh_actions_to_chad_agents" value="Executes Scripts" style="edge;html=1;rounded=0;endArrow=block;endFill=1;strokeColor=#3B82F6;fontColor=#1E293B;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="gh_actions" target="chad_agents">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-CloudArmor-CloudRunGallery" value="Protects Endpoints" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="CloudArmor" target="CloudRunGallery">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="90" y="180" as="sourcePoint" />
-            <mxPoint x="90" y="640" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="90" y="640" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-
-        <mxCell id="e-CloudRunDashboard-SecretManager" value="Fetches Secrets" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="CloudRunDashboard" target="SecretManager">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="110" y="640" as="sourcePoint" />
-            <mxPoint x="110" y="180" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="110" y="180" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-CloudRunDashboard-CloudRunDashboard-Refresh" value="Triggers Refresh" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="CloudRunDashboard" target="CloudRunDashboard">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="120" y="640" as="sourcePoint" />
-            <mxPoint x="120" y="640" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="120" y="640" />
-              <mxPoint x="120" y="620" />
-              <mxPoint x="150" y="620" />
-              <mxPoint x="150" y="640" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-CloudRunDashboard-GitHubRepos" value="Fetches Audit Report" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="CloudRunDashboard" target="GitHubRepos">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="130" y="640" as="sourcePoint" />
-            <mxPoint x="130" y="810" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="130" y="810" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-CloudRunDashboard-GitHubAPI" value="Deploys Workflows" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="CloudRunDashboard" target="GitHubAPI">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="140" y="640" as="sourcePoint" />
-            <mxPoint x="140" y="980" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="140" y="980" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-
-        <mxCell id="e-CloudRunGallery-GitHubAPI" value="Fetches Diagrams/Configs" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="CloudRunGallery" target="GitHubAPI">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="310" y="640" as="sourcePoint" />
-            <mxPoint x="310" y="980" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="310" y="980" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-GitHubAPI-CloudRunGallery" value="Diagrams, Configs" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="GitHubAPI" target="CloudRunGallery">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="320" y="980" as="sourcePoint" />
-            <mxPoint x="320" y="640" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="320" y="640" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-
-        <mxCell id="e-CloudRunDashboard-CloudCDN" value="Serves Content" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="CloudRunDashboard" target="CloudCDN">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="150" y="640" as="sourcePoint" />
-            <mxPoint x="150" y="640" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="150" y="640" />
-              <mxPoint x="480" y="640" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-CloudRunGallery-CloudCDN" value="Serves Content" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="CloudRunGallery" target="CloudCDN">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="330" y="640" as="sourcePoint" />
-            <mxPoint x="330" y="640" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="330" y="640" />
-              <mxPoint x="490" y="640" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-
-        <mxCell id="e-GitHubActions-SecretManager" value="Uses Secrets" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="GitHubActions" target="SecretManager">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="380" y="370" as="sourcePoint" />
-            <mxPoint x="380" y="180" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="380" y="180" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-GitHubActions-WorkloadIdentity" value="Uses Identity" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="GitHubActions" target="WorkloadIdentity">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="390" y="370" as="sourcePoint" />
-            <mxPoint x="390" y="180" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="390" y="180" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-WorkloadIdentity-GCPServiceAccount" value="Authenticates" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="WorkloadIdentity" target="GCPServiceAccount">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="540" y="180" as="sourcePoint" />
-            <mxPoint x="540" y="180" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-
-        <mxCell id="e-SecurityScanningTools-GitHubRepos" value="Scans Code" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="SecurityScanningTools" target="GitHubRepos">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="700" y="470" as="sourcePoint" />
-            <mxPoint x="700" y="810" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="700" y="810" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e-SecurityScanningTools-ArtifactRegistry" value="Scans Image" style="endArrow=classic;html=1;rounded=0;strokeColor=#1E40AF;fontColor=#1E293B;fontSize=11;" edge="1" parent="1" source="SecurityScanningTools" target="ArtifactRegistry">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="710" y="470" as="sourcePoint" />
-            <mxPoint x="710" y="810" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="710" y="810" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-
-        <!-- Footer -->
-        <mxCell id="footerBar" value="Created with Architect AI Pro | BlueFalconInk LLC" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="0" y="1100" width="1200" height="40" as="geometry" />
-        </mxCell>
-
-      </root>
-    </mxGraphModel>
-  </diagram>
-</mxfile>
+        <mxCell id="gh_actions_to_terraform" value="Deploys IaC" style="edge;html=1
