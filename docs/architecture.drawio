@@ -1,20 +1,19 @@
-<mxfile host="app.diagrams.net" modified="2023-10-27T12:00:00.000Z" agent="ArchitectAIPro" etag="unique-etag" version="22.0.8" type="atlas">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" version="24.0.3">
   <diagram id="0" name="Page-1">
-    <mxGraphModel dx="1434" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="#FFFFFF" math="0" shadow="0">
+    <mxGraphModel dx="1434" dy="776" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageEnabled="1" pageScale="1" pageWidth="1100" pageHeight="850" background="#FFFFFF" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
         <!-- Title Bar -->
-        <mxCell id="2" value="BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#FFFFFF;fontSize=24;align=center;verticalAlign=middle;strokeColor=#1E40AF;" vertex="1" parent="1">
-          <mxGeometry x="0" y="0" width="1080" height="60" as="geometry" />
+        <mxCell id="titleBar" value="BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1E40AF;fontColor=#BFDBFE;strokeColor=#3B82F6;fontSize=24;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="30" width="900" height="60" as="geometry" />
         </mxCell>
-
-        <!-- Main Architecture Container -->
-        <mxCell id="3" value="&lt;b&gt;BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;rounded=1;shadow=0;strokeColor=#1E40AF;fillColor=none;fontColor=#1E293B;fontSize=16;" vertex="1" parent="1">
-          <mxGeometry x="0" y="60" width="1080" height="700" as="geometry" />
+        <!-- User Interfaces Swimlane -->
+        <mxCell id="UserInterfaceSG" value="User Interfaces" style="swimlane;rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#3B82F6;fontSize=16;align=center;verticalAlign=top;startSize=30;" vertex="1" parent="1">
+          <mxGeometry x="100" y="120" width="200" height="200" as="geometry" />
         </mxCell>
-
-        <!-- External Services -->
-        <mxCell id="4" value="&lt;b&gt;External Services&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;rounded=1;shadow=0;strokeColor=#1E40AF;fillColor=#6B7280;fontColor=#F3F4F6;" vertex="1" parent="3">
-          <mxGeometry x="20" y="30
+        <mxCell id="User" value="User/Developer" style="shape=umlActor;rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="UserInterfaceSG">
+          <mxGeometry x="35" y="50" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CHADDash" value="CHAD Dashboard - Cloud Run" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BFDBFE;fontColor=#1E293B;strokeColor=#3B82F6;" vertex="1" parent="UserInterfaceSG">
+          <

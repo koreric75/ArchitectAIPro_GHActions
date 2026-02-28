@@ -2,131 +2,113 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph BFI_Arch [BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture]
-        subgraph ExternalSG [External Services]
+        subgraph UserInterfaceSG [User Interfaces]
             User[User/Developer]
-            GitHub[GitHub - Repos, API, Actions]
-            GoogleGemini[Google Gemini API]
-            DrawioCLI[Draw.io CLI - headless]
+            CHADDash[CHAD Dashboard - Cloud Run]
+            ArchGallery[Architecture Gallery - Cloud Run]
         end
 
         subgraph SecuritySG [Security]
-            CloudArmor[GCP Cloud Armor]
-            GCPWIF[GCP Workload Identity Federation]
-            SecretManager[GCP Secret Manager]
-            ServiceAccount[GCP Service Account - Foreman]
-        end
-
-        subgraph NetworkSG [Network & Entry Point]
-            LoadBalancer[GCP Load Balancer]
+            style SecuritySG fill:#1E40AF,color:#BFDBFE
+            CloudLB[Cloud Load Balancer]
+            CloudArmor[Cloud Armor]
+            SecretMan[Secret Manager]
+            WIF[Workload Identity Federation]
+            GitHubSecrets[GitHub Actions Secrets]
         end
 
         subgraph ApplicationSG [Application Services]
-            subgraph CHADDashboardSG [CHAD Dashboard - Cloud Run]
-                CHADFrontend[CHAD Dashboard Frontend · HTML/JS]
-                CHADBackend[CHAD Dashboard Backend · Flask App]
-                CHADScripts[CHAD Agents - Python Scripts]
-            end
-
-            subgraph ArchGallerySG [Architecture Gallery - Cloud Run]
-                GalleryFrontend[Gallery Frontend · HTML/JS]
-                GalleryBackend[Gallery Backend · FastAPI App]
-            end
-
-            subgraph ArchitectAIEngineSG [Architect AI Pro Engine - GitHub Actions]
-                GenerateDiagram[generate_diagram.py]
-                ForemanAudit[foreman_audit.py]
-                SecurityScripts[Security Scripts - Bandit, Trivy, Safety]
-            end
+            style ApplicationSG fill:#1E3A5F,color:#BFDBFE
+            CHADDashApp[Flask Server · Python]
+            ArchGalleryApp[FastAPI Server · Python]
+            Scripts[Python Automation Scripts]
+            PromptLib[Prompt Library]
+            Plugins[Plugins - Mermaid Converters]
         end
 
-        subgraph CI_CDSG [CI/CD & Automation]
-            CloudBuild[GCP Cloud Build]
-            ArtifactRegistry[GCP Artifact Registry]
-            GHActions[GitHub Actions Workflows]
+        subgraph CI_CD_SG [CI/CD & Automation]
+            GitHubActions[GitHub Actions]
+            CloudBuild[Cloud Build]
+            Terraform[Terraform IaC]
+            SecurityTools[Security Scanners - Trivy, Bandit, pip-audit]
+            DrawioCLI[Draw.io CLI - headless]
         end
 
         subgraph DataSG [Data & Storage]
+            style DataSG fill:#0F172A,color:#BFDBFE
+            ArtifactReg[Artifact Registry]
             GitHubRepos[GitHub Repositories]
-            AuditReports[Audit Reports - Artifacts]
-            ContainerImages[Container Images]
-            DiagramFiles[Diagram Files - Mermaid, Drawio, PNG]
+            AuditReports[Audit Reports - JSON]
+            DiagramFiles[Architecture Diagrams - Mermaid, Draw.io, PNG]
         end
 
-        subgraph IaCSG [Infrastructure as Code]
-            Terraform[Terraform Modules]
+        subgraph ExternalSG [External APIs]
+            GoogleGemini[Google Gemini API]
+            GitHubAPI[GitHub API]
         end
 
         %% Data Flows and Interactions
+        User -->|Access via HTTPS| CloudLB
+        CloudLB -->|HTTPS Traffic| CloudArmor
+        CloudArmor -->|Protected Requests| CHADDash
+        CloudArmor -->|Protected Requests| ArchGallery
 
-        User -->|Access Dashboard/Gallery| LoadBalancer
-        User -->|Code/Push/PR| GitHub
+        CHADDash -->|Serves HTML/API| CHADDashApp
+        ArchGallery -->|Serves HTML/API| ArchGalleryApp
 
-        LoadBalancer -->|HTTPS| CloudArmor
-        CloudArmor -->|HTTPS| CHADBackend
-        CloudArmor -->|HTTPS| GalleryBackend
+        CHADDashApp -->|Reads/Writes| AuditReports
+        CHADDashApp -->|Fetches Architecture| DiagramFiles
+        CHADDashApp -->|Triggers Audit/Deploy| Scripts
 
-        CHADBackend -->|API Calls| CHADScripts
-        CHADBackend -->|Read/Write Audit Data| AuditReports
-        CHADBackend -->|Fetch Arch Diagram| GitHubRepos
-        CHADBackend -->|Deploy Workflow API| GitHub
+        ArchGalleryApp -->|Fetches Repo List & Content| GitHubAPI
+        ArchGalleryApp -->|Renders Diagrams from| DiagramFiles
 
-        GalleryBackend -->|Fetch Repo Data & Diagrams| GitHub
+        GitHubActions -->|Triggers Workflows| CI_CD_SG
+        GitHubActions -->|Authenticates via| WIF
+        GitHubActions -->|Uses secrets from| GitHubSecrets
 
-        GitHub -->|Workflow Trigger| GHActions
-        GHActions -->|Authenticate via WIF| GCPWIF
-        GCPWIF -->|Assume Role| ServiceAccount
-        ServiceAccount -->|Access GCP Resources| ArtifactRegistry
-        ServiceAccount -->|Access GCP Resources| SecretManager
-        ServiceAccount -->|Deploy to Cloud Run| CHADDashboardSG
-        ServiceAccount -->|Deploy to Cloud Run| ArchGallerySG
-        ServiceAccount -->|Manage Infra| Terraform
+        CI_CD_SG -->|Deploys Infrastructure| Terraform
+        Terraform -->|Manages GCP Resources| CloudRunServices[Cloud Run Services]
+        Terraform -->|Manages GCP Resources| SecretMan
+        Terraform -->|Manages GCP Resources| ArtifactReg
+        Terraform -->|Manages GCP Resources| WIF
 
-        GHActions -->|Run Scripts| ArchitectAIEngineSG
-        GHActions -->|Build Images| CloudBuild
-        GHActions -->|Run Tests| CHADDashboardSG
-        GHActions -->|Store Secrets| SecretManager
+        GitHubActions -->|Builds & Scans Docker Images| CloudBuild
+        CloudBuild -->|Builds `Dockerfile.dashboard`| CHADDashApp
+        CloudBuild -->|Builds `gallery/Dockerfile`| ArchGalleryApp
+        CloudBuild -->|Scans Images| SecurityTools
+        CloudBuild -->|Pushes Images to| ArtifactReg
 
-        ArchitectAIEngineSG -->|Generate Diagrams| GoogleGemini
-        ArchitectAIEngineSG -->|Render Diagrams| DrawioCLI
-        ArchitectAIEngineSG -->|Commit Diagrams| GitHubRepos
-        ArchitectAIEngineSG -->|Audit Results| AuditReports
+        GitHubActions -->|Runs Python Scripts| Scripts
+        Scripts -->|Interacts with| GoogleGemini
+        Scripts -->|Interacts with| GitHubAPI
+        Scripts -->|Uses prompts from| PromptLib
+        Scripts -->|Generates/Audits| DiagramFiles
+        Scripts -->|Converts diagrams via| Plugins
+        Scripts -->|Renders diagrams via| DrawioCLI
+        Scripts -->|Scans code via| SecurityTools
+        Scripts -->|Reads/Writes| AuditReports
+        Scripts -->|Scans| GitHubRepos
 
-        CloudBuild -->|Build & Scan Dockerfile.dashboard| ContainerImages
-        CloudBuild -->|Push Image| ArtifactRegistry
+        SecretMan -->|Provides `GITHUB_PAT` to| CloudRunServices
+        GitHubSecrets -->|Provides `GEMINI_API_KEY` to| GitHubActions
+        GitHubSecrets -->|Provides `GH_PAT` to| GitHubActions
 
-        ArtifactRegistry -->|Deploy Image| CHADDashboardSG
-        ArtifactRegistry -->|Deploy Image| ArchGallerySG
+        GitHubAPI -->|Provides Repo Metadata/Content| GitHubRepos
+        GitHubAPI -->|Manages Repo Content/Workflows| Scripts
+        GitHubAPI -->|Provides Repo Metadata/Content| ArchGalleryApp
 
-        SecretManager -->|Provide GITHUB_TOKEN| CHADBackend
-        SecretManager -->|Provide GITHUB_TOKEN| GalleryBackend
-        SecretManager -->|Provide GEMINI_API_KEY| ArchitectAIEngineSG
-        SecretManager -->|Provide GCP_WIF_PROVIDER, GCP_SA_EMAIL| GHActions
+        GoogleGemini -->|Returns Architecture JSON/Mermaid| Scripts
 
-        GitHubRepos -->|Source Code| GHActions
-        GitHubRepos -->|Diagrams, Configs| ArchitectAIEngineSG
-        GitHubRepos -->|Audit Data| CHADScripts
-        GitHubRepos -->|Gallery Data| GalleryBackend
+        ArtifactReg -->|Stores Docker Images for| CHADDash
+        ArtifactReg -->|Stores Docker Images for| ArchGallery
 
-        Terraform -->|Provision Infra| ServiceAccount
-
-        CHADScripts -->|Audit Repos| GitHub
-        CHADScripts -->|Generate HTML| CHADFrontend
-        CHADScripts -->|Generate Ops HTML| CHADFrontend
-
-        CHADFrontend -.->|Serves| CHADBackend
-        GalleryFrontend -.->|Serves| GalleryBackend
+        CloudRunServices -->|Hosts| CHADDash
+        CloudRunServices -->|Hosts| ArchGallery
 
     end
 
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
-
-    style SecuritySG fill:#1E40AF,color:#BFDBFE
-    style ApplicationSG fill:#1E3A5F,color:#BFDBFE
-    style DataSG fill:#0F172A,color:#BFDBFE
-    style ExternalSG fill:#6B7280,color:#F3F4F6
-    style CI_CDSG fill:#374151,color:#F3F4F6
-    style NetworkSG fill:#4B5563,color:#F3F4F6
-    style IaCSG fill:#374151,color:#F3F4F6
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
     style Security fill:#1E40AF,color:#BFDBFE
     style Application fill:#1E3A5F,color:#BFDBFE
