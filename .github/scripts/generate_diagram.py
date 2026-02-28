@@ -518,19 +518,36 @@ def ensure_branding(mermaid_code: str, repo_name: str, config: dict) -> str:
 
     joined = "\n".join(lines)
 
-    # --- 2. Ensure brand-color styles for known subgraphs ---
-    brand_styles = {
-        "Security": "style Security fill:#1E40AF,color:#BFDBFE",
-        "Application": "style Application fill:#1E3A5F,color:#BFDBFE",
-        "Data": "style Data fill:#0F172A,color:#BFDBFE",
-        "CDN": "style CDN fill:#1E3A5F,color:#BFDBFE",
-        "Payment": "style Payment fill:#7C3AED,color:#BFDBFE",
+    # --- 2. Ensure brand-color styles for known subgraph categories ---
+    # Map display-name keywords to their brand colors.
+    # Detects the actual subgraph ID (e.g. SecuritySG) from the diagram text
+    # rather than assuming the display name IS the ID.
+    brand_colors = {
+        "Security":    "fill:#1E40AF,color:#BFDBFE",
+        "Application": "fill:#1E3A5F,color:#BFDBFE",
+        "Data":        "fill:#0F172A,color:#BFDBFE",
+        "CDN":         "fill:#1E3A5F,color:#BFDBFE",
+        "Payment":     "fill:#7C3AED,color:#BFDBFE",
     }
 
-    for subgraph_name, style_line in brand_styles.items():
-        # Only inject if the subgraph actually exists and the style line is missing
-        if f'subgraph {subgraph_name}' in joined and style_line not in joined:
-            joined += f"\n    {style_line}"
+    import re as _re
+    for category, colors in brand_colors.items():
+        # Find the actual subgraph ID for this category.
+        # Matches: subgraph SecuritySG ["Security"]  OR  subgraph Security [Security]
+        # Captures the ID token (first word after 'subgraph').
+        sg_match = _re.search(
+            rf'subgraph\s+(\S+)\s+\[.*?{_re.escape(category)}.*?\]', joined
+        )
+        if not sg_match:
+            # Fallback: plain subgraph without brackets (e.g. "subgraph Security")
+            sg_match = _re.search(
+                rf'subgraph\s+({_re.escape(category)})\b', joined
+            )
+        if sg_match:
+            sg_id = sg_match.group(1)
+            style_line = f"style {sg_id} {colors}"
+            if style_line not in joined:
+                joined += f"\n    {style_line}"
 
     # --- 3. Ensure footer attribution node ---
     footer_id = "FOOTER"
@@ -538,6 +555,26 @@ def ensure_branding(mermaid_code: str, repo_name: str, config: dict) -> str:
         footer_node = f'    {footer_id}[🏗️ Created with Architect AI Pro · {org}]'
         footer_style = f"    style {footer_id} fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6"
         joined += f"\n{footer_node}\n{footer_style}"
+
+    # --- 4. Basic mermaid structural validation ---
+    final_lines = joined.split("\n")
+    subgraph_count = sum(1 for l in final_lines if _re.match(r'\s*subgraph\s', l))
+    end_count = sum(1 for l in final_lines if _re.match(r'\s*end\s*$', l))
+    if subgraph_count != end_count:
+        print(f"  [WARN] Mermaid structural issue: {subgraph_count} subgraphs but {end_count} end statements — auto-fixing")
+        for _ in range(subgraph_count - end_count):
+            # Insert missing 'end' before the style lines at the bottom
+            joined += "\n    end"
+
+    # Remove any bare 'style' lines (no target) that Gemini sometimes emits
+    joined = _re.sub(r'^\s*style\s*$', '', joined, flags=_re.MULTILINE)
+
+    # Remove duplicate FOOTER nodes (keep first only)
+    footer_matches = list(_re.finditer(rf'^\s*{footer_id}\[', joined, _re.MULTILINE))
+    if len(footer_matches) > 1:
+        # Remove all but the first occurrence
+        for m in reversed(footer_matches[1:]):
+            joined = joined[:m.start()] + joined[m.end():]
 
     return joined
 
