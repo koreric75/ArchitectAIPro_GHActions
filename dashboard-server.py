@@ -113,10 +113,107 @@ def after_request_hook(response):
 # Routes
 # ---------------------------------------------------------------------------
 
+_LOADING_PAGE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CHAD Dashboard — Loading</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+         background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);
+         color:#e2e8f0;min-height:100vh;display:flex;align-items:center;
+         justify-content:center;flex-direction:column}
+    .card{background:rgba(30,41,59,.85);border:1px solid rgba(100,116,139,.3);
+          border-radius:16px;padding:3rem;text-align:center;max-width:480px;
+          box-shadow:0 25px 50px rgba(0,0,0,.3)}
+    h1{font-size:1.6rem;margin-bottom:.5rem;letter-spacing:-.02em}
+    .subtitle{color:#94a3b8;font-size:.9rem;margin-bottom:2rem}
+    .spinner{width:48px;height:48px;border:4px solid rgba(56,189,248,.15);
+             border-top-color:#38bdf8;border-radius:50%;
+             animation:spin .8s linear infinite;margin:0 auto 1.5rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .status{color:#94a3b8;font-size:.85rem;min-height:2.4rem;line-height:1.4}
+    .status.ok{color:#4ade80}
+    .status.err{color:#f87171}
+    .badge{display:inline-block;background:rgba(56,189,248,.15);color:#38bdf8;
+           font-size:.75rem;padding:.2rem .6rem;border-radius:999px;margin-top:1rem}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>CHAD Dashboard</h1>
+    <p class="subtitle">Compliance & Health Audit Dashboard</p>
+    <div class="spinner" id="spinner"></div>
+    <p class="status" id="msg">Initializing audit of all repositories&hellip;</p>
+    <span class="badge" id="badge" style="display:none"></span>
+  </div>
+  <script>
+    const PAGE = "%%PAGE%%";          // "dashboard" or "ops"
+    let triggered = false;
+    let polls = 0;
+
+    async function kickoff() {
+      if (triggered) return;
+      triggered = true;
+      try {
+        const r = await fetch("/api/refresh", {method:"POST",
+                    headers:{"Content-Type":"application/json"},body:"{}"});
+        if (!r.ok) setMsg("Refresh returned " + r.status + " — retrying…","err");
+      } catch(e) { setMsg("Network error triggering refresh — will retry","err"); }
+    }
+
+    async function poll() {
+      polls++;
+      try {
+        const r = await fetch("/api/status");
+        const d = await r.json();
+        if (d.total_repos > 0 && (PAGE === "ops" ? d.ops_exists : d.dashboard_exists)) {
+          setMsg("Ready — loading " + d.total_repos + " repos","ok");
+          document.getElementById("spinner").style.borderTopColor = "#4ade80";
+          setTimeout(()=> location.reload(), 800);
+          return;
+        }
+        if (d.refresh_in_progress) {
+          setMsg("Auditing repositories… please wait (" + polls*5 + "s)","");
+          if (d.total_repos > 0) {
+            document.getElementById("badge").textContent = d.total_repos + " repos so far";
+            document.getElementById("badge").style.display = "inline-block";
+          }
+        } else if (!triggered) {
+          kickoff();
+        } else if (polls > 2 && !d.refresh_in_progress && d.total_repos === 0) {
+          // Refresh finished but failed — retrigger
+          triggered = false;
+          setMsg("Refresh completed without data — retrying…","err");
+          kickoff();
+        }
+      } catch(e) { setMsg("Polling status…",""); }
+      setTimeout(poll, 5000);
+    }
+
+    function setMsg(txt,cls) {
+      const el = document.getElementById("msg");
+      el.textContent = txt;
+      el.className = "status" + (cls ? " "+cls : "");
+    }
+
+    // Start: trigger refresh immediately, then poll
+    kickoff();
+    setTimeout(poll, 3000);
+  </script>
+</body>
+</html>"""
+
+
 @app.route("/")
 def index():
-    """Serve the CHAD dashboard."""
-    return send_from_directory(STATIC_DIR, "dashboard.html")
+    """Serve the CHAD dashboard, or a self-healing loading page on cold-start."""
+    if _dashboard_has_data():
+        return send_from_directory(STATIC_DIR, "dashboard.html")
+    # Serve smart loading page that triggers & polls refresh automatically
+    return _LOADING_PAGE.replace("%%PAGE%%", "dashboard"), 200
 
 
 @app.route("/audit_report.json")
@@ -174,6 +271,8 @@ def refresh():
         request_id=g.get("request_id", ""),
     )
 
+    global _refresh_in_progress, _last_refresh_time
+    _refresh_in_progress = True
     try:
         # Set token for subprocess
         env = os.environ.copy()
@@ -249,12 +348,15 @@ def refresh():
             request_id=g.get("request_id", ""),
         )
 
+        _last_refresh_time = time.time()
+        _refresh_in_progress = False
         return jsonify({
             "status": "ok",
             "total_repos": report.get("summary", {}).get("total_repos", 0),
             "api_calls": report.get("api_calls_used", 0),
         })
     except subprocess.TimeoutExpired:
+        _refresh_in_progress = False
         log_security_event(
             logger, "audit_timeout", "Audit subprocess timed out",
             source_ip=get_client_ip(request),
@@ -263,6 +365,7 @@ def refresh():
         )
         return jsonify({"error": "Audit timed out"}), 504
     except Exception as e:
+        _refresh_in_progress = False
         logger.exception(
             "Unexpected error in /api/refresh",
             extra={
@@ -303,6 +406,7 @@ def api_status():
     return jsonify({
         "last_refresh_utc": last_dt,
         "refresh_interval_hours": REFRESH_INTERVAL / 3600,
+        "refresh_in_progress": _refresh_in_progress,
         "report_age_seconds": round(report_age) if report_age is not None else None,
         "total_repos": total_repos,
         "dashboard_exists": (STATIC_DIR / "dashboard.html").exists(),
@@ -316,11 +420,13 @@ def api_status():
 
 @app.route("/ops")
 def ops_page():
-    """Serve the CHAD Ops Center page."""
-    ops_html = STATIC_DIR / "ops.html"
-    if ops_html.exists():
-        return send_from_directory(STATIC_DIR, "ops.html")
-    return "<html><body><h1>CHAD Ops Center</h1><p>Run POST /api/refresh to generate.</p></body></html>", 200
+    """Serve the CHAD Ops Center page, or a self-healing loading page on cold-start."""
+    if _dashboard_has_data():
+        ops_html = STATIC_DIR / "ops.html"
+        if ops_html.exists():
+            return send_from_directory(STATIC_DIR, "ops.html")
+    # Serve smart loading page that triggers & polls refresh automatically
+    return _LOADING_PAGE.replace("%%PAGE%%", "ops"), 200
 
 
 @app.route("/api/architecture", methods=["GET"])
@@ -791,6 +897,19 @@ def deploy_workflow():
 REFRESH_INTERVAL = int(os.environ.get("CHAD_REFRESH_INTERVAL", 4 * 3600))
 _last_refresh_time: float = 0.0
 _refresh_lock = threading.Lock()
+_refresh_in_progress: bool = False
+
+
+def _dashboard_has_data() -> bool:
+    """Return True if the dashboard has real audit data (not a placeholder)."""
+    report_path = STATIC_DIR / "audit_report.json"
+    if not report_path.exists():
+        return False
+    try:
+        rpt = json.loads(report_path.read_text())
+        return rpt.get("summary", {}).get("total_repos", 0) > 0
+    except Exception:
+        return False
 
 
 def _run_refresh_cycle():
@@ -798,13 +917,14 @@ def _run_refresh_cycle():
 
     Returns True on success, False on failure.
     """
-    global _last_refresh_time
+    global _last_refresh_time, _refresh_in_progress
     token = (os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN") or "").strip()
     if not token:
         logger.info("No GITHUB_TOKEN configured — skipping auto-refresh")
         return False
 
     owner = os.environ.get("GITHUB_OWNER", "koreric75")
+    _refresh_in_progress = True
     logger.info(f"Auto-refresh: starting audit for owner={owner}")
 
     try:
@@ -823,16 +943,19 @@ def _run_refresh_cycle():
             cmd.extend(["--extra-orgs", EXTRA_ORGS])
 
         # Run auditor
+        logger.info(f"Auto-refresh: running auditor cmd={cmd}")
         result = subprocess.run(
             cmd,
             capture_output=True, text=True, timeout=180, env=env,
             cwd=app_dir,
         )
         if result.returncode != 0:
-            logger.error(f"Auto-refresh audit failed: {result.stderr[:500]}")
+            logger.error(f"Auto-refresh audit failed (rc={result.returncode}): "
+                         f"stderr={result.stderr[:500]} stdout={result.stdout[:300]}")
             return False
 
         # Generate dashboard
+        logger.info("Auto-refresh: generating dashboard HTML")
         result2 = subprocess.run(
             [sys.executable, "dashboard_generator.py",
              "--input", str(STATIC_DIR / "audit_report.json"),
@@ -846,6 +969,7 @@ def _run_refresh_cycle():
 
         # Generate Ops Center page
         mermaid_path = app_dir / "docs" / "architecture.mermaid"
+        logger.info("Auto-refresh: generating ops page")
         result3 = subprocess.run(
             [sys.executable, "ops_page_generator.py",
              "--input", str(STATIC_DIR / "audit_report.json"),
@@ -868,15 +992,34 @@ def _run_refresh_cycle():
     except Exception:
         logger.exception("Auto-refresh failed with unexpected error")
         return False
+    finally:
+        _refresh_in_progress = False
 
 
 def _auto_refresh_loop():
     """Run refresh immediately on startup, then repeat every REFRESH_INTERVAL.
 
-    This ensures:
-      1. Dashboard is populated right after a cold-start.
-      2. Data stays fresh even if the container stays alive for days.
+    Uses a file lock so only one gunicorn worker runs the refresh — prevents
+    duplicate concurrent audits when multiple workers import this module.
     """
+    lock_path = STATIC_DIR / ".refresh_lock"
+
+    # Try to acquire file lock — if another worker already holds it, skip.
+    try:
+        lock_fd = open(lock_path, "w")
+        import fcntl
+        fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        logger.info("Auto-refresh: acquired file lock — this worker owns refresh")
+    except (ImportError, OSError):
+        # ImportError: Windows (no fcntl). OSError: another worker holds lock.
+        # On Windows, just run anyway (dev mode). On Linux, skip.
+        try:
+            import fcntl  # noqa: F811
+            logger.info("Auto-refresh: another worker owns refresh — skipping in this worker")
+            return
+        except ImportError:
+            logger.info("Auto-refresh: fcntl unavailable (Windows dev) — proceeding")
+
     # Initial refresh — retry up to 3 times on failure (token may not be
     # available instantly on Cloud Run cold-start).
     for attempt in range(1, 4):
