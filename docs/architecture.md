@@ -26,42 +26,98 @@ graph TD
     subgraph "BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture"
         style BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture fill:#1E3A5F,color:#BFDBFE
 
-        subgraph "Frontend Applications"
-            CloudCDN[GCP Cloud CDN]
-            ArchGallery[Architecture Gallery - Cloud Run]
-            CHADDashboard[CHAD Advisory Dashboard - Cloud Run]
+        subgraph "External Systems"
+            User[GitHub User]
+            GHActions[GitHub Actions]
+            GeminiAPI[Google Gemini API]
+            GH_API[GitHub API]
+            GH_Security[GitHub Security Tab]
         end
 
-        subgraph "Backend Services"
-            ArchitectAIEngine[Architect AI Pro Engine - Python Scripts]
-            CHADAgents[CHAD Automation Agents - Python Scripts]
+        subgraph "Application Layer"
+            ArchGalleryCR[Architecture Gallery - Cloud Run]
+            CHADDashboardCR[CHAD Dashboard - Cloud Run]
+            style Application Layer fill:#1E3A5F,color:#BFDBFE
         end
 
-        subgraph "Data Storage"
-            style Data Storage fill:#0F172A,color:#BFDBFE
-            GitHubRepos[GitHub Repositories]
-            ArtifactRegistry[GCP Artifact Registry]
-            SecretManager[GCP Secret Manager]
-        end
-
-        subgraph "CI/CD & Governance"
-            GHARunner[GitHub Actions Runner]
-            CloudBuild[GCP Cloud Build]
+        subgraph "Automation & Pipelines"
+            ArchGenScript[Architect AI Pro Generator]
+            ForemanAudit[Foreman Compliance Audit]
+            CHADAuditor[CHAD Repo Auditor]
+            CHADGen[CHAD Dashboard Generator]
+            CHADCleanup[CHAD Cleanup Agent]
             Terraform[Terraform IaC]
+            SecurityScanner[Security Scan Tools]
+        end
+
+        subgraph "Data Layer"
+            GitHubRepo[GitHub Repositories]
+            GCP_AR[GCP Artifact Registry]
+            GCP_SM[GCP Secret Manager]
+            style Data Layer fill:#0F172A,color:#BFDBFE
         end
 
         subgraph "Security"
+            GCP_LB[GCP Cloud Load Balancer]
+            GCP_CA[GCP Cloud Armor]
+            GCP_WIF[GCP Workload Identity Federation]
+            GCP_SA[GCP Service Account]
             style Security fill:#1E40AF,color:#BFDBFE
-            CloudArmor[GCP Cloud Armor]
-            WIF[GCP Workload Identity Federation]
-            GCP_IAM[GCP IAM]
-            SASTTools[SAST · Dependency Scanners]
-            Trivy[Trivy Container Scanner]
         end
-    end
 
-    subgraph "External Integrations"
-        GoogleGemini[Google Gemini API]
+        %% Data Flows
+        User -->|Access UI via HTTPS| GCP_LB
+        GCP_LB -->|Filter Traffic| GCP_CA
+        GCP_CA -->|Route Requests| ArchGalleryCR
+        GCP_CA -->|Route Requests| CHADDashboardCR
+
+        User -->|Trigger Workflows| GHActions
+        GHActions -->|Run Scripts| ArchGenScript
+        GHActions -->|Run Scripts| ForemanAudit
+        GHActions -->|Run Scripts| CHADAuditor
+        GHActions -->|Run Scripts| CHADGen
+        GHActions -->|Run Scripts| CHADCleanup
+        GHActions -->|Run Scripts| Terraform
+        GHActions -->|Run Scripts| SecurityScanner
+
+        ArchGenScript -->|AI Prompt| GeminiAPI
+        ArchGenScript -->|Read Code, Write Docs| GitHubRepo
+        ForemanAudit -->|Read Docs, Config| GitHubRepo
+        CHADAuditor -->|Read Repo Metadata| GH_API
+        CHADAuditor -->|AI Analysis| GeminiAPI
+        CHADAuditor -->|Write Audit Report| GitHubRepo
+        CHADGen -->|Read Audit Report| GitHubRepo
+        CHADCleanup -->|Read Audit Report| GitHubRepo
+        CHADCleanup -->|Modify Repos| GH_API
+
+        CHADDashboardCR -->|Fetch Repo Data| GH_API
+        CHADDashboardCR -->|Trigger Audit subprocess| CHADAuditor
+        CHADDashboardCR -->|Serve Dashboard HTML/JSON| User
+        CHADDashboardCR -->|Deploy Workflows| GH_API
+
+        ArchGalleryCR -->|Fetch Diagrams| GH_API
+        ArchGalleryCR -->|Serve Gallery HTML| User
+
+        Terraform -->|Manage GCP Resources| GCP_WIF
+        GCP_WIF -->|Assume Identity| GCP_SA
+        GCP_SA -->|Provision/Configure| GCP_AR
+        GCP_SA -->|Provision/Configure| GCP_SM
+        GCP_SA -->|Deploy to| ArchGalleryCR
+        GCP_SA -->|Deploy to| CHADDashboardCR
+
+        GHActions -->|Build & Push Image| GCP_AR
+        GCP_AR -->|Pull Image| ArchGalleryCR
+        GCP_AR -->|Pull Image| CHADDashboardCR
+
+        GCP_SM -->|Retrieve GITHUB_PAT| ArchGalleryCR
+        GCP_SM -->|Retrieve GITHUB_PAT| CHADDashboardCR
+        GCP_SM -->|Retrieve GITHUB_PAT| GHActions
+
+        SecurityScanner -->|Scan Code| GitHubRepo
+        SecurityScanner -->|Upload SARIF| GH_Security
+
+        CHADDashboardCR -->|Internal Refresh Trigger| CHADDashboardCR
+
     end
 
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
