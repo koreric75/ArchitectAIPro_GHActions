@@ -19,124 +19,43 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph BFI_Arch [BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture]
-
-        subgraph ExternalSG [External Services]
-            GitHub[GitHub Repositories · API]
-            GeminiAPI[Google Gemini API]
-            DrawIO_CLI[Draw.io CLI - headless]
-        end
-
         subgraph SecuritySG [Security]
             CloudArmor[Cloud Armor]
             LoadBalancer[Cloud Load Balancer]
-            WIF[Workload Identity Federation]
+            CloudCDN[Cloud CDN]
         end
+        style SecuritySG fill:#1E40AF,color:#BFDBFE
 
-        subgraph FrontendSG [User Interfaces]
-            CHADDash[CHAD Dashboard]
-            ArchGallery[Architecture Gallery]
-        end
-
-        subgraph ApplicationSG [Application & Automation Logic]
-            GHActions[GitHub Actions Workflows]
-            DiagramGen[Diagram Generator Script]
-            ForemanAudit[Foreman Audit Engine]
-            RepoAuditor[Repo Auditor Script]
-            DashboardGen[Dashboard Generator Script]
-            OpsPageGen[Ops Page Generator Script]
-            CleanupAgent[Cleanup Agent Script]
-            PythonEnv[Python Runtime]
-        end
-
-        subgraph DataSG [Data & Configuration]
-            SecretMan[Secret Manager]
-            AuditReport[Audit Report JSON]
-            ArchDiagrams[Architecture Diagrams - Mermaid/Draw.io/PNG]
-            ArchitectConfig[ARCHITECT_CONFIG.json]
-            PromptLib[PROMPT_LIBRARY]
-        end
-
-        subgraph DevOpsSG [DevOps & Infrastructure]
+        subgraph ApplicationSG [Application Services]
+            GHActions[GitHub Actions CI/CD]
             CloudBuild[Cloud Build]
-            ArtifactRegistry[Artifact Registry]
             Terraform[Terraform IaC]
-            CloudRunServices[Cloud Run Environment]
+            CHADDashCR[CHAD Dashboard · Cloud Run]
+            ArchGalleryCR[Arch Gallery · Cloud Run]
+            GenDiagramScript[Diagram Generator Script]
+            ForemanAudit[Foreman Audit Engine]
+            RepoAuditor[Repo Auditor Agent]
+            DashboardGen[Dashboard Generator]
+            OpsPageGen[Ops Page Generator]
+            CleanupAgent[Cleanup Agent]
         end
+        style ApplicationSG fill:#1E3A5F,color:#BFDBFE
 
-        User[External User] -->|HTTPS Request| LoadBalancer
-        LoadBalancer -->|Traffic Filtering| CloudArmor
-        CloudArmor -->|Routes to| CHADDash
-        CloudArmor -->|Routes to| ArchGallery
+        subgraph DataSG [Data & Secrets]
+            ArtifactRegistry[Artifact Registry]
+            SecretManager[Secret Manager]
+            ArchitectConfig[ARCHITECT_CONFIG.json]
+        end
+        style DataSG fill:#0F172A,color:#BFDBFE
 
-        CHADDash -->|API Calls via HTTPS| GitHub
-        CHADDash -->|Serves HTML/JSON| AuditReport
-        CHADDash -->|Serves HTML/Mermaid| ArchDiagrams
-
-        ArchGallery -->|API Calls via HTTPS| GitHub
-        ArchGallery -->|Serves HTML/Mermaid| ArchDiagrams
-
-        GHActions -->|Executes Scripts| PythonEnv
-        GHActions -->|Auth via WIF| WIF
-        WIF -->|Access Credentials| SecretMan
-
-        PythonEnv -->|Runs| DiagramGen
-        PythonEnv -->|Runs| ForemanAudit
-        PythonEnv -->|Runs| RepoAuditor
-        PythonEnv -->|Runs| DashboardGen
-        PythonEnv -->|Runs| OpsPageGen
-        PythonEnv -->|Runs| CleanupAgent
-
-        DiagramGen -->|Generates Mermaid| ArchDiagrams
-        DiagramGen -->|Calls API| GeminiAPI
-        DiagramGen -->|Converts to PNG| DrawIO_CLI
-        DiagramGen -->|Reads Config| ArchitectConfig
-        DiagramGen -->|Uses Prompts| PromptLib
-
-        ForemanAudit -->|Audits| ArchDiagrams
-        ForemanAudit -->|Reads Config| ArchitectConfig
-
-        RepoAuditor -->|Fetches Repo Data| GitHub
-        RepoAuditor -->|Writes| AuditReport
-
-        DashboardGen -->|Reads| AuditReport
-        DashboardGen -->|Generates HTML| CHADDash
-
-        OpsPageGen -->|Reads| AuditReport
-        OpsPageGen -->|Reads Mermaid| ArchDiagrams
-        OpsPageGen -->|Generates HTML| CHADDash
-
-        CleanupAgent -->|Reads| AuditReport
-        CleanupAgent -->|Modifies Repos| GitHub
-
-        GHActions -->|Triggers Build| CloudBuild
-        CloudBuild -->|Builds & Scans Image| ArtifactRegistry
-        ArtifactRegistry -->|Deploys Image| CloudRunServices
-        CloudRunServices -->|Hosts Service| CHADDash
-        CloudRunServices -->|Hosts Service| ArchGallery
-
-        GHActions -->|Applies Config| Terraform
-        Terraform -->|Provisions Resources| CloudRunServices
-        Terraform -->|Manages Secrets| SecretMan
-        Terraform -->|Configures Auth| WIF
-
-        SecretMan -->|Provides GITHUB_PAT| CHADDash
-        SecretMan -->|Provides GITHUB_PAT| ArchGallery
-        SecretMan -->|Provides GEMINI_API_KEY| DiagramGen
-
-        ArchDiagrams -->|Stored in| GitHub
-        AuditReport -->|Stored as Artifact/Local| GHActions
-
-    end
-
-    FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
-
-    style SecuritySG fill:#1E40AF,color:#BFDBFE
-    style ApplicationSG fill:#1E3A5F,color:#BFDBFE
-    style DataSG fill:#0F172A,color:#BFDBFE
-    style BFI_Arch fill:#0F172A,color:#BFDBFE
-    style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
+        subgraph AISG [AI Services]
+            GeminiAPI[Google Gemini API]
+        end
+        style
     style Security fill:#1E40AF,color:#BFDBFE
     style Data fill:#0F172A,color:#BFDBFE
+    FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
+    style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
 ```
 
 </details>
