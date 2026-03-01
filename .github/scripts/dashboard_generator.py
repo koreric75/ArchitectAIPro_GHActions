@@ -129,6 +129,8 @@ def generate_dashboard(report: dict) -> str:
             svc_html = '<span style="color:var(--text-muted);font-size:11px">—</span>'
 
         repo_owner = r.get('owner', owner)
+        app_name = br.get("readme_h1", "")
+        app_name_html = f'<div class="app-name">{app_name}</div>' if app_name else ""
         repo_rows += f"""
         <tr class="repo-row" data-tier="{tier}" data-repo="{r['name']}" data-owner="{repo_owner}" data-archived="{str(r.get('is_archived', False)).lower()}">
             <td class="cb-cell"><input type="checkbox" class="repo-cb" data-repo="{r['name']}" /></td>
@@ -136,7 +138,7 @@ def generate_dashboard(report: dict) -> str:
                 <a href="{r.get('url', '#')}" target="_blank" class="repo-link">
                     {visibility} {r['name']}
                 </a>{fork_badge}
-                <div class="repo-desc">{r.get('description', '')[:80]}</div>
+                {app_name_html}<div class="repo-desc">{r.get('description', '')[:80]}</div>
             </td>
             <td><span class="tier-dot" style="background:{status_color(tier)}"></span>{tier}</td>
             <td>{action_badge(cls.get('action', 'NONE'))}</td>
@@ -364,6 +366,7 @@ tr:hover {{ background: var(--bg-card); }}
 }}
 .repo-link:hover {{ text-decoration: underline; }}
 .repo-desc {{ color: var(--text-muted); font-size: 11px; margin-top: 2px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
+.app-name {{ color: var(--text-secondary); font-size: 11px; font-style: italic; margin-top: 1px; }}
 .tier-dot {{
     display: inline-block;
     width: 8px;
