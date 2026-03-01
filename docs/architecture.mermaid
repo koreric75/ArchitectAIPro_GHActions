@@ -2,41 +2,87 @@
 %% https://architect-ai-pro-mobile-edition-484078543321.us-west1.run.app/
 graph TD
     subgraph BFI_Arch [BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture]
+        subgraph ExternalSG [External Systems]
+            User[Developer · User]
+            GitHub[GitHub Platform]
+            Gemini[Google Gemini API]
+            Drawio[Draw.io Headless Renderer]
+        end
+
         subgraph SecuritySG [Security]
             CloudArmor[Cloud Armor]
-            SecretMan[Secret Manager]
-            GCP_WIF[GCP Workload Identity Federation]
+            LoadBalancer[Global External Load Balancer]
+            SecretManager[Secret Manager]
+            WIF[Workload Identity Federation]
         end
+        style SecuritySG fill:#1E40AF,color:#BFDBFE
 
         subgraph ApplicationSG [Application Services]
-            CLB[Cloud Load Balancer]
-            CR_ArchitectAI[Cloud Run · Architect AI Pro Engine]
-            CR_CHAD[Cloud Run · CHAD Dashboard]
-            CR_Gallery[Cloud Run · Architecture Gallery]
+            CHADDashboard[CHAD Dashboard · Cloud Run]
+            ArchGallery[Architecture Gallery · Cloud Run]
         end
+        style ApplicationSG fill:#1E3A5F,color:#BFDBFE
 
-        subgraph DevOpsSG [CI/CD & Automation]
+        subgraph DevOpsSG [DevOps & Automation]
             GHActions[GitHub Actions Workflows]
-            PyScripts[Python Scripts · - Generator, Auditor, Agents]
+            ArchitectAIEngine[Architect AI Pro Engine · Python Scripts]
+            CHADAgents[CHAD Audit & Ops Agents · Python Scripts]
             CloudBuild[Cloud Build]
+            ArtifactRegistry[Artifact Registry]
             Terraform[Terraform IaC]
         end
+        style DevOpsSG fill:#1E3A5F,color:#BFDBFE
 
-        subgraph DataSG [Data & Artifacts]
-            GitHub[GitHub Repositories]
-            ArtifactReg[Artifact Registry]
-            PromptLib[Prompt Library]
-            Plugins[Plugins]
-            ArchDiagrams[Architecture Diagrams]
-            CHAD_Outputs[CHAD Dashboard & Reports]
+        subgraph DataSG [Data Layer]
+            GitHubRepoData[GitHub Repository Data]
         end
+        style DataSG fill:#0F172A,color:#BFDBFE
 
-        subgraph ExternalSG [External Integrations]
-            User
-    style SecuritySG fill:#1E40AF,color:#BFDBFE
-    style ApplicationSG fill:#1E3A5F,color:#BFDBFE
-    style DataSG fill:#0F172A,color:#BFDBFE
+        %% Flows
+        User -->|HTTPS Requests| LoadBalancer
+        LoadBalancer -->|Traffic Filtering| CloudArmor
+        CloudArmor -->|Routes Traffic| CHADDashboard
+        CloudArmor -->|Routes Traffic| ArchGallery
+
+        User -->|Code Push · PRs · Triggers| GitHub
+        GitHub -->|Workflow Triggers| GHActions
+
+        GHActions -->|Executes Scripts| ArchitectAIEngine
+        ArchitectAIEngine -->|API Calls| Gemini
+        ArchitectAIEngine -->|Renders Diagrams| Drawio
+        ArchitectAIEngine -->|Commits Diagrams · PR Comments| GitHub
+
+        GHActions -->|Executes Scripts| CHADAgents
+        CHADAgents -->|GitHub API Calls| GitHub
+        CHADAgents -->|Triggers Refresh| CHADDashboard
+
+        CHADDashboard -->|GitHub API Calls| GitHub
+        CHADDashboard -->|Retrieves Secrets| SecretManager
+        ArchGallery -->|GitHub API Calls| GitHub
+        ArchGallery -->|Retrieves Secrets| SecretManager
+
+        GitHub -->|Source Code| GitHubRepoData
+        CHADDashboard -->|Reads Audit Reports| GitHubRepoData
+        ArchGallery -->|Reads Diagrams · Configs| GitHubRepoData
+
+        GHActions -->|Auth via WIF| WIF
+        WIF -->|GCP Access Token| CloudBuild
+        WIF -->|GCP Access Token| Terraform
+        WIF -->|GCP Access Token| SecretManager
+
+        GHActions -->|Build Triggers| CloudBuild
+        CloudBuild -->|Builds Docker Images| ArtifactRegistry
+        ArtifactRegistry -->|Deploys Images| CHADDashboard
+        ArtifactRegistry -->|Deploys Images| ArchGallery
+
+        GHActions -->|Applies Config| Terraform
+        Terraform -->|Deploys/Manages Resources| CHADDashboard
+        Terraform -->|Deploys/Manages Resources| ArchGallery
+        Terraform -->|Deploys/Manages Resources| SecretManager
+        Terraform -->|Deploys/Manages Resources| LoadBalancer
+        Terraform -->|Deploys/Manages Resources| CloudArmor
+        Terraform -->|Deploys/Manages Resources| ArtifactRegistry
+    end
+
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
-    end
-    end
