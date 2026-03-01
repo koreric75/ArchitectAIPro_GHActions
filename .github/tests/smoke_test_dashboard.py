@@ -125,6 +125,13 @@ def test_dashboard_has_services_column():
     assert has_header or has_css, "Services column not found in dashboard"
 
 
+def test_dashboard_has_app_name():
+    """Dashboard HTML includes the app-name CSS class for repo name subtitles."""
+    r = requests.get(f"{SERVICE_URL}/", timeout=MAX_RESPONSE_TIME)
+    assert r.status_code == 200, f"Expected 200, got {r.status_code}"
+    assert "app-name" in r.text, "App name subtitle CSS class not found in dashboard"
+
+
 def test_audit_report_json():
     """GET /audit_report.json returns valid JSON."""
     r = requests.get(f"{SERVICE_URL}/audit_report.json", timeout=MAX_RESPONSE_TIME)
@@ -291,6 +298,7 @@ def main():
         ("Root serves dashboard", test_root_serves_dashboard),
         ("Dashboard has table", test_dashboard_has_table),
         ("Dashboard has Services column", test_dashboard_has_services_column),
+        ("Dashboard has app name", test_dashboard_has_app_name),
         ("Audit report JSON", test_audit_report_json),
         ("Audit report has repos", test_audit_report_has_repos),
         ("Audit report has services", test_audit_report_has_services),

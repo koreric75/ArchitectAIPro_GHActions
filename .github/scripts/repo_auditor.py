@@ -52,6 +52,13 @@ BRAND_INCORRECT = [
     "@BlueFalconRCandMedia",
 ]
 
+# Generic README H1 phrases that indicate an un-branded AI Studio template
+GENERIC_README_PHRASES = [
+    "run and deploy your ai studio app",
+    "getting started with firebase studio",
+    "getting started with google ai studio",
+]
+
 # Staleness thresholds
 STALE_DAYS = 180      # 6 months -> candidate for archive
 DEAD_DAYS = 365 * 2   # 2 years -> candidate for deletion
@@ -245,6 +252,7 @@ def audit_branding(owner: str, repo_name: str, token: str, default_branch: str) 
                       "ARCHITECT_CONFIG.json"]
     issues = []
     files_checked = 0
+    readme_h1 = ""
 
     for fname in files_to_check:
         url = f"{GITHUB_API}/repos/{owner}/{repo_name}/contents/{fname}?ref={default_branch}"
@@ -253,6 +261,17 @@ def audit_branding(owner: str, repo_name: str, token: str, default_branch: str) 
             continue
 
         files_checked += 1
+
+        # Extract app name from README H1 (no extra API call — file already fetched)
+        if fname == "README.md":
+            for line in content.splitlines():
+                stripped = line.strip()
+                if stripped.startswith("# "):
+                    h1 = stripped[2:].strip()
+                    if not any(phrase in h1.lower() for phrase in GENERIC_README_PHRASES):
+                        readme_h1 = h1
+                    break
+
         for bad in BRAND_INCORRECT:
             if bad.lower() in content.lower():
                 issues.append({
@@ -271,6 +290,7 @@ def audit_branding(owner: str, repo_name: str, token: str, default_branch: str) 
         "issues": issues,
         "compliant": len(issues) == 0,
         "has_branding": has_branding,
+        "readme_h1": readme_h1,
     }
 
 
@@ -599,7 +619,7 @@ def run_audit(owner: str, token: str, extra_orgs: list = None) -> dict:
         print(f"   [DATE] {staleness['status']} ({staleness['days_since_push']}d)")
 
         # Deep audit for active/core repos only (budget conservation)
-        branding = {"compliant": True, "issues": [], "files_checked": 0}
+        branding = {"compliant": True, "issues": [], "files_checked": 0, "readme_h1": ""}
         architecture = {"fully_configured": False, "has_workflow": False, "files": {}}
         secrets = {"has_gemini_key": False}
         workflows = {"health": "UNKNOWN", "recent_runs": []}
