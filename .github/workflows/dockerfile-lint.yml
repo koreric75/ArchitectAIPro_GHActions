@@ -1,0 +1,58 @@
+name: Dockerfile Lint (Hadolint)
+
+on:
+  push:
+    paths:
+      - 'Dockerfile*'
+      - '.github/workflows/dockerfile-lint.yml'
+  pull_request:
+    paths:
+      - 'Dockerfile*'
+
+jobs:
+  hadolint:
+    runs-on: ubuntu-latest
+    name: Hadolint - Lint Dockerfile
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Hadolint (fail on error)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: error
+          ignore: DL3008,DL3009,DL4006
+        continue-on-error: false
+
+      - name: Run Hadolint (warnings)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: warning
+        continue-on-error: true
+
+      - name: Comment PR with Hadolint results
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ Dockerfile lint failed. Please review Hadolint output above and fix issues.'
+            })
+
+      - name: Comment PR with success
+        if: github.event_name == 'pull_request' && success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ Dockerfile lint passed (Hadolint validation)'
+            })
