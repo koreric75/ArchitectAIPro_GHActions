@@ -20,82 +20,84 @@
 graph TD
     subgraph BFI_Arch [BlueFalconInk LLC - ArchitectAIPro_GHActions Architecture]
         subgraph ExternalSG [External Systems]
-            User[Developer/User]
-            GitHubRepo[GitHub Repository]
+            User[User]
+            GitHub[GitHub.com]
             GeminiAPI[Google Gemini API]
         end
 
-        subgraph DevOpsSG [DevOps & CI/CD]
-            GHActions[GitHub Actions Runner]
-            CloudBuild[Cloud Build]
-            ArtifactRegistry[Artifact Registry]
-            AIAgent[Architect AI Pro Agent]
-            ForemanAudit[Foreman Audit Engine]
-            CHADAgentScripts[CHAD Agent Scripts]
-            DrawIO[Draw.io CLI · Headless]
-        end
-
-        subgraph ApplicationSG [Application Services]
-            CHADDash[CHAD Dashboard Service · Cloud Run]
-            ArchGallery[Architecture Gallery Service · Cloud Run]
-        end
-
         subgraph SecuritySG [Security]
-            CloudArmor[Cloud Armor · WAF]
+            CloudCDN[Cloud CDN]
+            LoadBalancer[Cloud Load Balancer]
+            CloudArmor[Cloud Armor]
             WIF[Workload Identity Federation]
-            GCP_SA[GCP Service Account · architect-ai-foreman]
             SecretManager[Secret Manager]
         end
 
-        subgraph DataSG [Data & Storage]
-            CloudStorage[Cloud Storage · Audit Reports]
-            CloudCDN[Cloud CDN]
+        subgraph DevOpsSG [CI/CD & Governance]
+            GHActions[GitHub Actions Workflows]
+            CloudBuild[Cloud Build]
+            Terraform[Terraform IaC]
+            ArchitectAIScripts[Architect AI Pro Scripts]
+            DrawIO[Draw.io CLI - headless]
+            Trivy[Trivy Scanner]
         end
 
-        %% External Interactions
-        User -->|Manages Code/Workflows| GitHubRepo
-        User -->|Views Dashboard| CloudArmor
-        User -->|Views Gallery| CloudArmor
-        GitHubRepo -->|Triggers Workflows| GHActions
-        GHActions -->|Fetches Code| GitHubRepo
-        GHActions -->|Authenticates via| WIF
-        GHActions -->|Calls AI for Diagram Gen| AIAgent
-        GHActions -->|Runs Compliance Checks| ForemanAudit
-        GHActions -->|Runs CHAD Audit| CHADAgentScripts
-        GHActions -->|Builds Docker Images| CloudBuild
-        GHActions -->|Publishes Reports/Diagrams| GitHubRepo
-        GHActions -->|Renders Diagrams| DrawIO
-        AIAgent -->|Generates Diagrams| GeminiAPI
-        ForemanAudit -->|Audits Diagrams| GitHubRepo
-        CHADAgentScripts -->|Audits Repos| GitHubRepo
-        CHADAgentScripts -->|Generates Reports| CloudStorage
-        CHADAgentScripts -->|Updates Dashboard HTML| CHADDash
+        subgraph ApplicationSG [BlueFalconInk Applications]
+            CHADDashboard[CHAD Dashboard - Cloud Run]
+            ArchGallery[Architecture Gallery - Cloud Run]
+        end
 
-        %% GCP CI/CD Flow
-        CloudBuild -->|Builds Docker Image| ArtifactRegistry
-        ArtifactRegistry -->|Deploys Image| CloudRun
-        CloudRun -->|Uses Service Account| GCP_SA
-        GCP_SA -->|Accesses Secrets| SecretManager
-        WIF -->|Provides GCP Credentials| GHActions
+        subgraph DataSG [Data Storage]
+            ArtifactRegistry[Artifact Registry]
+            GitHubRepos[GitHub Repositories]
+            StaticData[CHAD Static Data - Local]
+        end
 
-        %% Application Flows
-        CloudArmor -->|Protects Public Endpoint| CHADDash
-        CloudArmor -->|Protects Public Endpoint| ArchGallery
-        CHADDash -->|Serves HTML/JSON Reports| CloudCDN
-        CHADDash -->|Triggers Audit Refresh Internal| CHADAgentScripts
-        CHADDash -->|Fetches Audit Data| CloudStorage
-        CHADDash -->|Deploys Workflows| GitHubRepo
-        ArchGallery -->|Fetches Repo List/Diagrams| GitHubRepo
-        ArchGallery -->|Serves Diagrams/Content| CloudCDN
+        %% External User Access
+        User -->|Accesses Web UI| CloudCDN
+        CloudCDN -->|Dynamic Content| LoadBalancer
+        LoadBalancer --> CloudArmor
+        CloudArmor -->|HTTPS| CHADDashboard
+        CloudArmor -->|HTTPS| ArchGallery
 
-        CloudCDN -->|Delivers Content| User
+        %% CHAD Dashboard Interactions
+        CHADDashboard -->|API Calls| GitHub
+        CHADDashboard -->|Reads/Writes Audit Data| StaticData
+        CHADDashboard -->|Fetches GITHUB_PAT| SecretManager
+        CHADDashboard -->|Triggers Self-Refresh| CHADDashboard
 
-        SecretManager -->|Provides GITHUB_PAT| CHADDash
-        SecretManager -->|Provides GITHUB_PAT| ArchGallery
+        %% Architecture Gallery Interactions
+        ArchGallery -->|API Calls| GitHub
+        ArchGallery -->|Fetches GITHUB_TOKEN| SecretManager
 
-        style SecuritySG fill:#1E40AF,color:#BFDBFE
-        style ApplicationSG fill:#1E3A5F,color:#BFDBFE
-        style DataSG fill:#0F172A,color:#BFDBFE
+        %% GitHub Actions Orchestration
+        User -->|Push/PR/Dispatch| GHActions
+        GHActions -->|Auth via WIF| WIF
+        WIF -->|GCP Credentials| GHActions
+        GHActions -->|Executes Python Scripts| ArchitectAIScripts
+        ArchitectAIScripts -->|Generates Diagram Text| GeminiAPI
+        ArchitectAIScripts -->|Renders Image| DrawIO
+        ArchitectAIScripts -->|Commits Docs/Reports| GitHubRepos
+        ArchitectAIScripts -->|Reads Code for Audit| GitHubRepos
+
+        %% Deployment Pipelines
+        GHActions -->|Triggers Build| CloudBuild
+        CloudBuild -->|Builds Docker Image| GitHubRepos
+        CloudBuild -->|Scans Image| Trivy
+        CloudBuild -->|Pushes Image| ArtifactRegistry
+        GHActions -->|Deploys Image| CHADDashboard
+        GHActions -->|Deploys Image| ArchGallery
+        GHActions -->|Executes IaC| Terraform
+        Terraform -->|Manages GCP Resources| ArtifactRegistry
+        Terraform -->|Manages GCP Resources| SecretManager
+        Terraform -->|Manages GCP Resources| CHADDashboard
+        Terraform -->|Manages GCP Resources| ArchGallery
+
+        %% Data Flow for Generated Content
+        GitHubRepos -->|Diagrams/Reports| ArchGallery
+        GitHubRepos -->|Diagrams/Reports| CHADDashboard
+        StaticData -->|Serves Audit Report| CHADDashboard
+
     end
 
         subgraph DataSG [Data Storage]
@@ -104,6 +106,10 @@ graph TD
     style FrontendSG fill:#1E3A5F,color:#BFDBFE
     style DataSG fill:#0F172A,color:#BFDBFE
     FOOTER[🏗️ Created with Architect AI Pro · BlueFalconInk LLC]
+
+    style SecuritySG fill:#1E40AF,color:#BFDBFE
+    style ApplicationSG fill:#1E3A5F,color:#BFDBFE
+    style DataSG fill:#0F172A,color:#BFDBFE
     style FOOTER fill:#1E40AF,color:#BFDBFE,stroke:#3B82F6
     end
     end
